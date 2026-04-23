@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ucrania: Análisis de Inversión en Reconstrucción v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --bg:#0a0e1a; --bg2:#111827; --bg3:#1a2235; --bg4:#0f1629;
+    --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.14);
+    --text:#f0f2f8; --muted:#8b93a8; --accent:#e8c97d; --accent2:#4ecdc4;
+    --blue:#5b9cf6; --green:#4ade80; --amber:#fbbf24; --red:#f87171;
+    --spain:#e74c3c; --spain-light:rgba(231,76,60,0.15);
+    --font-d:'Playfair Display',Georgia,serif;
+    --font-b:'DM Sans',sans-serif;
+    --font-m:'DM Mono',monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:15px;line-height:1.7;}
+
+  .hero{position:relative;padding:80px 0 56px;text-align:center;border-bottom:1px solid var(--border);}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(232,201,125,0.07) 0%,transparent 70%);pointer-events:none;}
+  .hero-label{display:inline-block;font-family:var(--font-m);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(232,201,125,0.3);padding:5px 14px;border-radius:20px;margin-bottom:24px;}
+  .hero h1{font-family:var(--font-d);font-size:clamp(30px,6vw,68px);font-weight:900;line-height:1.05;letter-spacing:-0.02em;margin-bottom:16px;}
+  .hero h1 em{color:var(--accent);font-style:normal;}
+  .hero-sub{font-size:15px;color:var(--muted);max-width:580px;margin:0 auto 40px;line-height:1.6;}
+  .hero-stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;}
+  .hs{text-align:center;} .hs .n{font-family:var(--font-d);font-size:34px;font-weight:700;color:var(--accent);display:block;} .hs .l{font-size:11px;color:var(--muted);letter-spacing:.05em;}
+
+  .container{max-width:1200px;margin:0 auto;padding:0 24px;}
+  .section{padding:64px 0;border-bottom:1px solid var(--border);}
+  .section.spain-section{background:linear-gradient(180deg,rgba(231,76,60,0.04) 0%,transparent 100%);}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:36px;}
+  .sec-num{font-family:var(--font-m);font-size:11px;color:var(--accent);letter-spacing:.1em;border:1px solid rgba(232,201,125,0.25);padding:3px 9px;border-radius:4px;flex-shrink:0;}
+  .sec-title{font-family:var(--font-d);font-size:clamp(20px,3vw,28px);font-weight:700;letter-spacing:-0.01em;}
+  .spain-badge{background:var(--spain-light);color:var(--spain);border:1px solid rgba(231,76,60,0.3);border-radius:4px;padding:3px 10px;font-size:11px;font-family:var(--font-m);}
+
+  nav{position:sticky;top:0;z-index:100;background:rgba(10,14,26,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 0;}
+  .nav-inner{display:flex;gap:6px;overflow-x:auto;padding:0 24px;max-width:1200px;margin:0 auto;}
+  .nav-inner::-webkit-scrollbar{display:none;}
+  .nb{padding:5px 14px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:var(--font-b);font-size:12px;cursor:pointer;white-space:nowrap;transition:all .2s;}
+  .nb:hover,.nb.active{background:rgba(232,201,125,0.1);color:var(--accent);border-color:rgba(232,201,125,0.3);}
+  .nb.spain-nav{border-color:rgba(231,76,60,0.3);color:var(--spain);}
+  .nb.spain-nav:hover,.nb.spain-nav.active{background:var(--spain-light);}
+
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px;}
+  .tab{padding:5px 14px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:all .2s;}
+  .tab.active,.tab:hover{background:rgba(91,156,246,0.15);color:var(--blue);border-color:rgba(91,156,246,0.4);}
+
+  /* FUNDAMENTAL CARDS — extended */
+  .fcard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px 22px;transition:border-color .2s,transform .15s;}
+  .fcard:hover{border-color:var(--border2);transform:translateY(-2px);}
+  .fcard.top{border:1.5px solid rgba(232,201,125,0.4);background:rgba(232,201,125,0.03);}
+  .fcard.spain{border:1px solid rgba(231,76,60,0.3);background:rgba(231,76,60,0.03);}
+  .fcard-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .fcard-name{font-weight:500;font-size:16px;} .fcard-ticker{font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:2px;}
+  .rating{font-size:11px;font-family:var(--font-m);padding:3px 9px;border-radius:20px;flex-shrink:0;font-weight:500;}
+  .r-buy{background:rgba(74,222,128,0.12);color:#4ade80;} .r-hold{background:rgba(251,191,36,0.12);color:#fbbf24;} .r-watch{background:rgba(248,113,113,0.12);color:#f87171;}
+  .top-badge{display:inline-block;font-size:10px;font-family:var(--font-m);background:rgba(232,201,125,0.12);color:var(--accent);padding:2px 8px;border-radius:20px;margin-bottom:6px;}
+  .spain-flag-badge{display:inline-block;font-size:10px;font-family:var(--font-m);background:var(--spain-light);color:var(--spain);padding:2px 8px;border-radius:20px;margin-bottom:6px;}
+  .fcard-sector{font-size:11px;color:var(--muted);margin-bottom:12px;}
+
+  /* Metrics grid */
+  .metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
+  .met{background:var(--bg3);border-radius:6px;padding:8px;}
+  .met-l{font-size:10px;color:var(--muted);margin-bottom:3px;line-height:1.3;}
+  .met-v{font-size:13px;font-weight:500;font-family:var(--font-m);color:var(--text);}
+  .met-v.pos{color:var(--green);} .met-v.neg{color:var(--red);} .met-v.warn{color:var(--amber);}
+  .metrics-grid2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;}
+
+  /* Thesis sections */
+  .thesis-block{background:var(--bg3);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
+  .thesis-title{font-size:10px;font-family:var(--font-m);color:var(--accent);letter-spacing:.08em;margin-bottom:6px;}
+  .thesis-text{font-size:12px;color:var(--muted);line-height:1.6;}
+
+  /* Upside bar */
+  .upside-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;}
+  .bar-bg{height:5px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-bottom:12px;}
+  .bar-fill{height:100%;border-radius:3px;}
+
+  /* Timing block */
+  .timing-block{border:1px solid var(--border2);border-radius:8px;padding:12px 14px;margin-top:12px;}
+  .timing-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .timing-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .timing-label{font-size:11px;font-family:var(--font-m);font-weight:500;}
+  .timing-text{font-size:11px;color:var(--muted);line-height:1.6;}
+  .timing-now{border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.04);}
+  .timing-wait{border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.04);}
+  .timing-watch{border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.04);}
+
+  /* Cards grid */
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+
+  /* Charts */
+  .chart-wrap{position:relative;width:100%;}
+  .leg{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px;font-size:12px;color:var(--muted);}
+  .leg span{display:flex;align-items:center;gap:5px;}
+  .leg-sq{width:10px;height:10px;border-radius:2px;display:inline-block;}
+
+  /* Table */
+  .ftable{width:100%;border-collapse:collapse;font-size:13px;}
+  .ftable th{text-align:left;padding:10px 12px;font-size:10px;font-family:var(--font-m);letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border2);white-space:nowrap;}
+  .ftable td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .ftable tr:last-child td{border-bottom:none;}
+  .ftable tr:hover td{background:rgba(255,255,255,0.02);}
+  .ftable td.mono{font-family:var(--font-m);}
+  .ftable td.pos{color:var(--green);font-family:var(--font-m);font-weight:500;}
+  .ftable td.neg{color:var(--red);font-family:var(--font-m);}
+  .ftable td.warn{color:var(--amber);font-family:var(--font-m);}
+  .ftable td.spain-col{color:var(--spain);font-family:var(--font-m);font-weight:500;}
+
+  /* Overlap */
+  .ov-item{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .ov-name{font-size:12px;width:150px;flex-shrink:0;} .ov-ticker{font-family:var(--font-m);font-size:10px;color:var(--muted);display:block;}
+  .ov-track{flex:1;display:flex;height:20px;border-radius:5px;overflow:hidden;}
+  .ov-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-family:var(--font-m);color:rgba(255,255,255,.85);font-weight:500;}
+  .ov-n{font-family:var(--font-m);font-size:12px;color:var(--accent);min-width:22px;text-align:right;}
+
+  /* Risk grid */
+  .risk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
+  .rc{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+  .rc-n{font-weight:500;font-size:14px;margin-bottom:2px;} .rc-t{font-family:var(--font-m);font-size:10px;color:var(--muted);margin-bottom:8px;}
+  .rm{display:flex;gap:3px;} .rdot{flex:1;height:5px;border-radius:3px;}
+
+  /* Disclaimer */
+  .disclaimer{padding:22px;background:rgba(248,113,113,0.05);border:1px solid rgba(248,113,113,0.18);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.65;margin-top:48px;}
+  footer{text-align:center;padding:40px 24px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);}
+
+  @media(max-width:700px){
+    .cards-grid{grid-template-columns:1fr;}
+    .metrics-grid{grid-template-columns:repeat(2,1fr);}
+    .metrics-grid2{grid-template-columns:repeat(2,1fr);}
+    .hero-stats{gap:20px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-label">Análisis de Inversión · Versión 2.0 · Marzo 2026</div>
+    <h1>Ucrania: La mayor<br><em>Reconstrucción</em><br>del siglo XXI</h1>
+    <p class="hero-sub">Análisis fundamental extendido · Cestas institucionales · Empresas españolas · Timing de entrada óptimo</p>
+    <div class="hero-stats">
+      <div class="hs"><span class="n">$588B</span><span class="l">Coste reconstrucción (RDNA5 · Feb 2026)</span></div>
+      <div class="hs"><span class="n">$195B</span><span class="l">Daños directos confirmados</span></div>
+      <div class="hs"><span class="n">15</span><span class="l">Empresas análisis profundo</span></div>
+      <div class="hs"><span class="n">3</span><span class="l">Españolas destacadas</span></div>
+      <div class="hs"><span class="n">4</span><span class="l">Cestas institucionales</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <button class="nb active" onclick="goTo('#fundamental')">Análisis fundamental</button>
+    <button class="nb" onclick="goTo('#graficos')">Gráficos</button>
+    <button class="nb" onclick="goTo('#cestas')">Cestas institucionales</button>
+    <button class="nb spain-nav" onclick="goTo('#espanolas')">Empresas españolas</button>
+    <button class="nb" onclick="goTo('#timing')">Timing de entrada</button>
+    <button class="nb" onclick="goTo('#ranking')">Ranking final</button>
+  </div>
+</nav>
+
+<!-- SECTION 1: FUNDAMENTAL -->
+<div class="section" id="fundamental">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">Análisis fundamental extendido</h2>
+    </div>
+    <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:28px;line-height:1.7;">
+      Cada ficha incluye: valoración completa (P/E, EV/EBITDA, P/FCF, P/Ventas), calidad del negocio (ROE, ROIC, márgenes), solidez financiera (deuda, cobertura), momentum (revisiones EPS) y la tesis de inversión desglosada en tres bloques: catalizador, riesgo y timing recomendado.
+    </p>
+    <div class="tabs" id="tabs1">
+      <button class="tab active" data-f="all">Todas (12)</button>
+      <button class="tab" data-f="top">Top picks (6)</button>
+      <button class="tab" data-f="materiales">Materiales</button>
+      <button class="tab" data-f="energia">Energía</button>
+      <button class="tab" data-f="infraestructura">Infraestructura</button>
+      <button class="tab" data-f="acero">Acero / Industria</button>
+    </div>
+    <div class="cards-grid" id="cards1"></div>
+  </div>
+</div>
+
+<!-- SECTION 2: GRAFICOS -->
+<div class="section" id="graficos">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Comparativa visual</h2></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-bottom:48px;" id="chart-grid">
+      <div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Upside consenso vs P/E forward</div>
+        <div class="leg"><span><span class="leg-sq" style="background:#5b9cf6;"></span>Upside (%)</span><span><span class="leg-sq" style="background:#4ade80;"></span>P/E (x)</span></div>
+        <div class="chart-wrap" style="height:300px;"><canvas id="c1"></canvas></div>
+      </div>
+      <div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Retorno estimado a 3 años</div>
+        <div class="leg"><span><span class="leg-sq" style="background:#5b9cf6;"></span>Escenario base</span><span><span class="leg-sq" style="background:#4ade80;"></span>Escenario paz</span></div>
+        <div class="chart-wrap" style="height:300px;"><canvas id="c2"></canvas></div>
+      </div>
+    </div>
+    <div style="margin-bottom:48px;">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">ROE vs ROIC — calidad del negocio (%) · burbuja = capitalización relativa</div>
+      <div class="chart-wrap" style="height:340px;"><canvas id="c3"></canvas></div>
+    </div>
+    <div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Deuda Neta / EBITDA — solidez financiera (menor = mejor)</div>
+      <div class="chart-wrap" style="height:300px;"><canvas id="c4"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: CESTAS -->
+<div class="section" id="cestas">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Cestas institucionales — mapa completo</h2></div>
+    <p style="color:var(--muted);font-size:14px;max-width:640px;margin-bottom:32px;line-height:1.7;">
+      Morgan Stanley, Goldman Sachs, Bank of America y Erste Group han publicado sus selecciones. Las empresas con mayor solapamiento tienen máximo consenso institucional.
+    </p>
+    <div style="margin-bottom:40px;">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--font-m);letter-spacing:.05em;">EMPRESAS EN 2+ CESTAS</div>
+      <div id="ov-list"></div>
+    </div>
+    <div class="tabs" id="tabs2">
+      <button class="tab active" data-f2="all">Todas (21)</button>
+      <button class="tab" data-f2="ms">Morgan Stanley</button>
+      <button class="tab" data-f2="gs">Goldman Sachs</button>
+      <button class="tab" data-f2="bofa">Bank of America</button>
+      <button class="tab" data-f2="erste">Erste Group</button>
+      <button class="tab" data-f2="new">Solo nuevas</button>
+    </div>
+    <div class="cards-grid" id="cards2"></div>
+  </div>
+</div>
+
+<!-- SECTION 4: ESPAÑOLAS -->
+<div class="section spain-section" id="espanolas">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">Empresas españolas</h2>
+      <span class="spain-badge">Sección especial</span>
+    </div>
+    <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:32px;line-height:1.7;">
+      Tres compañías cotizadas españolas con posicionamiento directo o indirecto en la reconstrucción de Ucrania, analizadas en profundidad con sus catalizadores, riesgos y el mejor momento de entrada.
+    </p>
+    <div class="cards-grid" id="cards-spain"></div>
+  </div>
+</div>
+
+<!-- SECTION 5: TIMING -->
+<div class="section" id="timing">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">Timing de entrada recomendado</h2></div>
+    <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:32px;line-height:1.7;">
+      El timing en esta tesis tiene tres fases: <strong style="color:var(--green);">Entrar ahora</strong> (acumulación silenciosa antes de que el mercado cotice la paz), <strong style="color:var(--amber);">Esperar corrección</strong> (empresas ya revalorizadas donde hay que buscar el pull-back), y <strong style="color:var(--red);">Comprar al anuncio de la paz</strong> (empresas cuyo catalizador principal es el evento puntual). El mapa completo por empresa está en las fichas. Aquí el resumen:
+    </p>
+    <div id="timing-table-wrap" style="overflow-x:auto;">
+      <table class="ftable" id="timing-table"></table>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: RANKING -->
+<div class="section" id="ranking">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title">Ranking final por potencial de inversión</h2></div>
+    <div style="overflow-x:auto;"><table class="ftable" id="ranking-table"></table></div>
+    <div style="margin-top:48px;">
+      <div style="font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:.05em;margin-bottom:14px;">PERFIL DE RIESGO POR EMPRESA</div>
+      <div class="risk-grid" id="risk-grid"></div>
+    </div>
+    <div class="disclaimer">
+      <strong style="color:var(--red);">Aviso importante:</strong> Este documento es un análisis informativo elaborado con datos públicos de consenso de analistas y publicaciones institucionales. No constituye asesoramiento financiero ni recomendación de inversión. Las proyecciones de retorno son estimaciones basadas en supuestos sobre la evolución del conflicto y la reconstrucción de Ucrania, y pueden no materializarse. El daño total estimado fue actualizado por el World Bank, la CE y la ONU al 23 de febrero de 2026 ($588B, RDNA5). Consulta siempre con un asesor financiero autorizado antes de tomar cualquier decisión de inversión. Toda inversión conlleva riesgo de pérdida parcial o total del capital.
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>Análisis de Inversión · Ucrania: Reconstrucción post-conflicto · Marzo 2026 · v2.0</div>
+  <div style="margin-top:6px;opacity:.45;font-size:11px;">Fuentes: RDNA5 (World Bank / CE / ONU, Feb 2026) · Morgan Stanley · Goldman Sachs · Bank of America · Erste Group · ACS Group · Sacyr · Técnicas Reunidas · Alpha Spread · Simply Wall St · MarketScreener</div>
+</footer>
+
+<script>
+// =============================================
+// DATA
+// =============================================
+const companies = [
+  {
+    name:"Wienerberger", ticker:"VIE:WIE", sector:"materiales",
+    price:15.2, target:21.3,
+    pe:11.3, evEbitda:6.0, pfcf:8.5, pventas:0.6,
+    roe:5.9, roic:7.2, margenEbit:8.1, margenNeto:4.2,
+    deudaEbitda:2.1, cobertura:4.8, creditRating:"BBB",
+    revenueGrowth:8, epsGrowth:12, revEps:"+ revisiones al alza",
+    div:3.7, upside:35, retBase:55, retPaz:90, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:1, erste:1, prev:true,
+    mktCap:"2.8B€", employees:17800,
+    timingType:"now",
+    timingLabel:"Entrar ahora",
+    timingText:"Cotiza un 32% por debajo de su media histórica. Múltiplos en mínimos de 8 años. El punto de entrada es excepcional ahora mismo — antes de que el mercado anticipe un acuerdo de paz. Acumulación gradual recomendada.",
+    catalysts:"Sector residencial ucraniano valorado en $84B. Mayor fabricante europeo de ladrillos y tejas. Ya tiene infraestructura en Europa del Este.",
+    risks:"Alta dependencia de la paz para máximo rendimiento. Negocio cíclico muy sensible a tipos de interés. Deuda neta de €2.1x EBITDA es manejable pero no despreciable.",
+    note:"La más infravalorada de la lista. P/E 11x + dividendo 3.7% crean un suelo de valoración. Upside asimétrico enorme si hay paz."
+  },
+  {
+    name:"Heidelberg Materials", ticker:"ETR:HEIG", sector:"materiales",
+    price:175, target:233,
+    pe:10.1, evEbitda:5.8, pfcf:9.2, pventas:0.7,
+    roe:14.2, roic:9.8, margenEbit:14.5, margenNeto:6.8,
+    deudaEbitda:1.8, cobertura:6.2, creditRating:"BBB",
+    revenueGrowth:5, epsGrowth:14, revEps:"+ 13 analistas en Buy",
+    div:2.8, upside:33, retBase:50, retPaz:85, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:1, gs:0, bofa:1, erste:1, prev:true,
+    mktCap:"15B€", employees:51000,
+    timingType:"now",
+    timingLabel:"Entrar ahora",
+    timingText:"P/E de 10x es históricamente barato para una empresa de este tamaño y calidad. Cesta Morgan Stanley da visibilidad institucional. Acumulación antes del verano 2026.",
+    catalysts:"Cemento masivo para reconstrucción. Cesta MS + BofA + Erste. Negocios low-carbon alineados con estándares UE.",
+    risks:"Alta ciclicidad del sector cemento. Costes energéticos pueden presionar márgenes. Regulación medioambiental creciente.",
+    note:"Valor profundo con catalizador claro. 13 analistas en Buy, solo 4 en Sell. Upside del 33% solo al consenso."
+  },
+  {
+    name:"Vinci", ticker:"EPA:DG", sector:"infraestructura",
+    price:105, target:118,
+    pe:15.0, evEbitda:6.9, pfcf:8.2, pventas:0.7,
+    roe:16.3, roic:11.4, margenEbit:8.8, margenNeto:6.1,
+    deudaEbitda:3.1, cobertura:5.5, creditRating:"A-",
+    revenueGrowth:6, epsGrowth:9, revEps:"Estable",
+    div:3.9, upside:12, retBase:35, retPaz:60, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:1, gs:1, bofa:1, erste:0, prev:true,
+    mktCap:"38B€", employees:280000,
+    timingType:"now",
+    timingLabel:"Entrar ahora",
+    timingText:"La más defensiva de la lista. FCF yield 12.1%, dividendo 3.9%, rating A-. No depende de la paz para dar retornos. Punto de entrada razonable ahora mismo con margen de seguridad.",
+    catalysts:"Concesiones estables independientes de Ucrania. Presencia directa en Europa del Este. Precedente de Chernóbil ($1.5B) como carta de presentación.",
+    risks:"Deuda 3.1x EBITDA es la más alta del grupo. Concesiones reguladas limitan el upside. Múltiple 15x ya refleja parte de la calidad.",
+    note:"Super Stock en Stockopedia. La opción más inteligente para el inversor conservador. Combina calidad + dividendo + exposición Ucrania."
+  },
+  {
+    name:"ArcelorMittal", ticker:"AMS:MT", sector:"acero",
+    price:22.5, target:29.0,
+    pe:16.0, evEbitda:5.9, pfcf:6.5, pventas:0.3,
+    roe:6.1, roic:5.8, margenEbit:5.2, margenNeto:2.8,
+    deudaEbitda:0.9, cobertura:8.1, creditRating:"BBB",
+    revenueGrowth:3, epsGrowth:18, revEps:"Revisiones al alza por acero",
+    div:1.9, upside:25, retBase:40, retPaz:70, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:0, erste:0, prev:true,
+    mktCap:"20B€", employees:155000,
+    timingType:"now",
+    timingLabel:"Entrar ahora",
+    timingText:"EV/EBITDA 5.9x es ridículamente barato para el mayor productor de acero del mundo. Deuda muy baja (0.9x). Planta histórica en Kryvyi Rih lista para la reconstrucción.",
+    catalysts:"Acero esencial para puentes, ferrocarriles, estructuras. Presencia física en Ucrania. Ciclo de commodities favorable.",
+    risks:"Cíclico. Sensible a precio del acero. Competencia china con dumping. Geopolítica de su planta ucraniana.",
+    note:"La más directa sobre el acero ucraniano. Deuda casi cero. EV/EBITDA baratísimo."
+  },
+  {
+    name:"Budimex", ticker:"WAR:BDX", sector:"infraestructura",
+    price:395, target:475,
+    pe:29.6, evEbitda:14.2, pfcf:22.0, pventas:0.5,
+    roe:31.5, roic:24.8, margenEbit:6.2, margenNeto:4.1,
+    deudaEbitda:0.2, cobertura:35, creditRating:"ND (small cap)",
+    revenueGrowth:12, epsGrowth:15, revEps:"Positivo, pocos analistas",
+    div:4.2, upside:18, retBase:45, retPaz:80, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:0, erste:0, prev:true,
+    mktCap:"2.1B€", employees:13000,
+    timingType:"now",
+    timingLabel:"Entrar ahora",
+    timingText:"Poca cobertura de analistas = ineficiencia de mercado = oportunidad. ROE 31%, caja neta, dividendo 4.2%. La joya menos conocida. Acumular antes de que la paz ponga el foco en Polonia.",
+    catalysts:"Polonia es el hub logístico de Ucrania. Backlog récord. ROE estructuralmente alto por modelo de concesiones.",
+    risks:"Liquidez limitada (small cap). Poca cobertura analítica. Sensible a obra pública polaca.",
+    note:"La joya oculta de la lista. Solo cotiza en Varsovia. ROE del 31% con deuda casi cero."
+  },
+  {
+    name:"Acciona Energía", ticker:"BME:ANE", sector:"energia",
+    price:16.8, target:22.5,
+    pe:14.8, evEbitda:9.2, pfcf:12.0, pventas:1.8,
+    roe:7.8, roic:6.2, margenEbit:22.0, margenNeto:8.5,
+    deudaEbitda:4.8, cobertura:3.2, creditRating:"BB+",
+    revenueGrowth:10, epsGrowth:20, revEps:"Revisiones positivas 2026",
+    div:2.1, upside:28, retBase:38, retPaz:75, risk:4, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:0, erste:0, prev:true,
+    mktCap:"2.6B€", employees:3800,
+    timingType:"wait",
+    timingLabel:"Esperar corrección",
+    timingText:"Ya subió 40% desde mínimos. Esperar pullback al rango €14-15 para entrar con mejor riesgo/recompensa. La deuda es el principal punto de atención (4.8x EBITDA). Tiene activos reales en Ucrania — es especulativa pero con fundamento.",
+    catalysts:"57.6 MWp solar ya operativos en Ucrania. Primera mover advantage. Estándares UE requieren renovables.",
+    risks:"Deuda alta (4.8x). Regulación eléctrica española cambiante. Sensible a tipos de interés.",
+    note:"La más arriesgada pero con activos físicos sobre el terreno ucraniano. Acciona tiene piel en el juego."
+  },
+  {
+    name:"Holcim", ticker:"SWX:HOLN", sector:"materiales",
+    price:92, target:108,
+    pe:18.2, evEbitda:8.4, pfcf:14.5, pventas:1.1,
+    roe:12.1, roic:9.5, margenEbit:14.8, margenNeto:8.2,
+    deudaEbitda:1.5, cobertura:7.0, creditRating:"BBB+",
+    revenueGrowth:5, epsGrowth:8, revEps:"Neutral",
+    div:2.5, upside:17, retBase:30, retPaz:55, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:1, gs:0, bofa:1, erste:1, prev:true,
+    mktCap:"30B€", employees:63000,
+    timingType:"now",
+    timingLabel:"Entrar ahora",
+    timingText:"Mejor calidad que Heidelberg Materials con rating BBB+. Múltiplo 18x es razonable para este nivel de calidad. El solapamiento en tres cestas institucionales (MS + BofA + Erste) da confianza.",
+    catalysts:"Cemento sostenible bajo-carbono para estándares UE. 3 cestas institucionales. Fuerte en Europa del Este.",
+    risks:"Múltiplo más exigente que Heidelberg. Exposición a América Latina puede ser lastres en FX.",
+    note:"La versión premium y más diversificada de Heidelberg. Menor upside pero mayor seguridad."
+  },
+  {
+    name:"CRH", ticker:"NYSE:CRH", sector:"materiales",
+    price:82, target:94,
+    pe:19.3, evEbitda:11.6, pfcf:16.2, pventas:1.6,
+    roe:15.7, roic:12.3, margenEbit:14.2, margenNeto:9.1,
+    deudaEbitda:1.3, cobertura:8.5, creditRating:"BBB+",
+    revenueGrowth:7, epsGrowth:10, revEps:"Neutral-positivo",
+    div:1.2, upside:14, retBase:25, retPaz:45, risk:2, dep:"Alta",
+    rating:"HOLD", rc:"r-hold", top:false,
+    ms:1, gs:0, bofa:1, erste:1, prev:true,
+    mktCap:"50B€", employees:78500,
+    timingType:"wait",
+    timingLabel:"Esperar corrección",
+    timingText:"Monopolio 46% cemento ucraniano pero cotiza cerca de valor justo. Esperar corrección al rango $75-78 para entrar con margen. Upside 14% desde precio actual es insuficiente dado el riesgo.",
+    catalysts:"46% mercado cemento ucraniano. Planta local = ventaja de velocidad. CEO comprometido explícitamente con Ucrania.",
+    risks:"Posibles disputas antimonopolio. Cotiza a premium vs peers. Dividendo escaso (1.2%).",
+    note:"La apuesta más obvia pero no la más barata. Mejor esperar."
+  },
+  {
+    name:"Siemens Energy", ticker:"ETR:ENR", sector:"energia",
+    price:58, target:35,
+    pe:44, evEbitda:22, pfcf:38, pventas:1.1,
+    roe:8.2, roic:6.1, margenEbit:4.5, margenNeto:2.8,
+    deudaEbitda:0.8, cobertura:6.0, creditRating:"BB+",
+    revenueGrowth:13, epsGrowth:25, revEps:"Revisiones muy positivas pero ya en precio",
+    div:0.4, upside:-41, retBase:15, retPaz:40, risk:2, dep:"Baja",
+    rating:"WATCH", rc:"r-watch", top:false,
+    ms:0, gs:0, bofa:1, erste:1, prev:true,
+    mktCap:"52B€", employees:98000,
+    timingType:"watch",
+    timingLabel:"Esperar gran corrección",
+    timingText:"Ha subido +300% desde mínimos. Alpha Spread estima downside del 41% vs valor intrínseco. Cartera de €138B da visibilidad pero el precio actual ya descuenta todo el optimismo. Esperar corrección al rango €35-38.",
+    catalysts:"Transformadores y equipos eléctricos para reconstrucción de red ucraniana. Cartera €138B. Crecimiento ingresos 11-13%.",
+    risks:"Múltiplo P/E 44x injustificado. Muy lejos de valor justo. Alta volatilidad.",
+    note:"Gran empresa, precio incorrecto. No entrar ahora."
+  },
+  {
+    name:"ABB", ticker:"SWX:ABBN", sector:"energia",
+    price:52, target:53,
+    pe:35.8, evEbitda:24, pfcf:28, pventas:3.5,
+    roe:29.4, roic:21.5, margenEbit:18.5, margenNeto:12.1,
+    deudaEbitda:0.1, cobertura:45, creditRating:"A",
+    revenueGrowth:5, epsGrowth:8, revEps:"Neutral",
+    div:1.4, upside:0, retBase:20, retPaz:38, risk:1, dep:"Baja",
+    rating:"HOLD", rc:"r-hold", top:false,
+    ms:0, gs:1, bofa:0, erste:0, prev:true,
+    mktCap:"105B€", employees:105000,
+    timingType:"watch",
+    timingLabel:"Esperar corrección",
+    timingText:"ROE 29% y deuda casi nula (0.1x) hacen de ABB una empresa de calidad excepcional. El problema es el precio: cotiza en máximos históricos sin upside. Esperar corrección del 15-20% para una entrada interesante.",
+    catalysts:"Subestaciones eléctricas y automatización industrial para Ucrania. ROE estructural del 29%. Rating A.",
+    risks:"P/E 35.8x con upside 0% = perfección ya cotizada. Ciclo industrial puede enfriar márgenes.",
+    note:"La mejor calidad de negocio de toda la lista. El precio no acompaña ahora mismo."
+  },
+  {
+    name:"Prysmian", ticker:"BIT:PRY", sector:"energia",
+    price:62, target:62,
+    pe:19.5, evEbitda:12.1, pfcf:14.8, pventas:0.8,
+    roe:18.5, roic:13.2, margenEbit:8.5, margenNeto:4.2,
+    deudaEbitda:2.2, cobertura:5.8, creditRating:"BBB",
+    revenueGrowth:8, epsGrowth:12, revEps:"Positivo, momentum fuerte",
+    div:1.8, upside:-2, retBase:22, retPaz:42, risk:2, dep:"Baja",
+    rating:"HOLD", rc:"r-hold", top:false,
+    ms:0, gs:0, bofa:1, erste:0, prev:true,
+    mktCap:"13B€", employees:30000,
+    timingType:"wait",
+    timingLabel:"Esperar pullback",
+    timingText:"Excelente empresa pero subió 76% en un año. Esperar pullback al rango €52-55 para entrar. El catalizador de cables offshore y Ucrania es real pero el mercado ya lo ha cotizado.",
+    catalysts:"Líder mundial cables. Offshore wind + cables red eléctrica + data centers. Múltiples catalizadores.",
+    risks:"Múltiplo exigente con upside casi nulo en consenso. Volatilidad por ciclo de materias primas.",
+    note:"Negocio excelente, timing correcto pendiente. Watchlist."
+  },
+  {
+    name:"Ferrovial", ticker:"BME:FER", sector:"infraestructura",
+    price:36, target:35,
+    pe:10.3, evEbitda:31, pfcf:45, pventas:2.1,
+    roe:53.9, roic:8.2, margenEbit:15.2, margenNeto:9.8,
+    deudaEbitda:5.2, cobertura:3.1, creditRating:"BBB-",
+    revenueGrowth:4, epsGrowth:6, revEps:"Jefferies bajó a Hold",
+    div:1.8, upside:-3, retBase:18, retPaz:35, risk:2, dep:"Media",
+    rating:"HOLD", rc:"r-hold", top:false,
+    ms:0, gs:0, bofa:0, erste:0, prev:true,
+    mktCap:"24B€", employees:24000,
+    timingType:"wait",
+    timingLabel:"Esperar nivel €30-32",
+    timingText:"EV/EBITDA 31x es excesivo vs peers. Jefferies bajó a Hold. La tesis de reconstrucción vía Budimex (Polonia) es válida pero el precio no compensa el riesgo actual. Esperar corrección.",
+    catalysts:"Budimex domina construcción polaca (hub de Ucrania). ROE elevado. Dividendo regular.",
+    risks:"EV/EBITDA 31x caro. Deuda 5.2x. Jefferies rebaja. EPS revisions negativas.",
+    note:"La tesis es válida pero el precio no. Budimex directamente es mejor opción."
+  }
+];
+
+const spanishCompanies = [
+  {
+    name:"ACS Group", ticker:"BME:ACS", sector:"infraestructura global",
+    price:107, target:96,
+    pe:15.2, evEbitda:8.5, pfcf:11.0, pventas:0.5,
+    roe:22.5, roic:14.8, margenEbit:3.8, margenNeto:1.9,
+    deudaEbitda:2.1, cobertura:6.5, creditRating:"BBB",
+    revenueGrowth:20, epsGrowth:25, revEps:"Barclays y Jefferies compradores, Deutsche Bank nuevo coverage",
+    div:3.8, upside:-11, retBase:20, retPaz:45, risk:2, dep:"Baja-Media",
+    rating:"HOLD", rc:"r-hold",
+    timingType:"wait",
+    timingLabel:"Esperar corrección al rango €88-95",
+    timingText:"ACS ha subido un 160% en dos años, alcanzando máximos históricos de €111. El consenso de analistas tiene un precio objetivo de €93 — un downside del 13% desde precio actual. La tesis de fondo es excelente (backlog €92.9B, crecimiento 25%, profit guidance €1.03B-1.07B para 2026) pero el precio ya descuenta mucho optimismo. Esperar la inevitable corrección al rango €88-95 para entrar con margen de seguridad del 15-20%.",
+    catalysts:"Backlog €92.9B (2 años de trabajo). Turner creció 45% en 2025. Hochtief dominante en Alemania (plan infraestructura €500B). Defensa + data centers + renovables = tres motores simultáneos. Inversión de €1B en defensa. Beneficia del plan europeo de rearme y de Ucrania como gestor EPC.",
+    risks:"Cotiza a máximos históricos sin upside en consenso. Alta diversificación diluye el upside específico de Ucrania. Margen neto bajo (1.9%) típico de construcción. Riesgo divisa por exposición a USA/Australia.",
+    note:"La mayor constructora española y 4ª del mundo. Resulados 2025 espectaculares (+25% beneficio). No es la mejor entrada ahora, pero es el nombre más sólido a largo plazo si se espera el precio adecuado."
+  },
+  {
+    name:"Sacyr", ticker:"BME:SCYR", sector:"concesiones / infraestructura",
+    price:4.26, target:4.53,
+    pe:20.3, evEbitda:12.5, pfcf:14.0, pventas:0.7,
+    roe:8.5, roic:6.8, margenEbit:5.1, margenNeto:3.5,
+    deudaEbitda:1.8, cobertura:5.2, creditRating:"BBB (low) — DBRS",
+    revenueGrowth:8, epsGrowth:46, revEps:"Primeros ratings investment grade DBRS 2025 — muy positivo",
+    div:0, upside:6, retBase:25, retPaz:55, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy",
+    timingType:"now",
+    timingLabel:"Entrar ahora — precio atractivo",
+    timingText:"Sacyr cotiza muy cerca de sus máximos anuales pero la transformación estructural justifica el precio actual. La obtención del primer rating investment grade de su historia (DBRS BBB low, Feb 2026) es un catalizador muy relevante que abre nuevas fuentes de financiación. Con deuda recourse en mínimos históricos (0.18x), caja libre de €2.14B para nuevas inversiones, y un portfolio de concesiones que generará €19B a lo largo de su vida, la valoración actual es razonable. La tesis ucraniana añade un upside potencial del 30-50% adicional en un escenario de paz.",
+    catalysts:"93% del EBITDA ya proviene de concesiones (visibilidad altísima). Rating investment grade recién obtenido. Backlog de obra €12.47B. Divisiones de Agua en máximos. PPP model es el ideal para contratos de reconstrucción. Presente en más de 20 países — experiencia en mercados emergentes.",
+    risks:"Sin dividendo actualmente. Margen neto bajo (3.5%). Alta dependencia de Latinoamérica (exposición FX). Upside consenso solo 6% — mercado no lo está valorando como apuesta Ucrania.",
+    note:"La menos seguida institucionalmente como apuesta Ucrania pero con el modelo de concesiones PPP ideal para contratos post-guerra. El rating investment grade es un game-changer que baja el coste de capital estructuralmente."
+  },
+  {
+    name:"Técnicas Reunidas", ticker:"BME:TRE", sector:"ingeniería industrial / EPC",
+    price:28.5, target:30.4,
+    pe:14.4, evEbitda:7.8, pfcf:9.5, pventas:0.3,
+    roe:28.5, roic:19.2, margenEbit:3.8, margenNeto:2.1,
+    deudaEbitda:-0.5, cobertura:99, creditRating:"Caja neta positiva",
+    revenueGrowth:12, epsGrowth:22, revEps:"Revisiones EPS muy positivas últimos 4 meses",
+    div:2.2, upside:7, retBase:30, retPaz:65, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy",
+    timingType:"now",
+    timingLabel:"Entrar ahora — infravalorada estructuralmente",
+    timingText:"Simply Wall St estima que TRE cotiza un 26% por debajo de su valor intrínseco. Caja neta positiva (deuda/EBITDA negativo = sin deuda neta) + ROE 28.5% + P/E 14.4x es una combinación difícil de encontrar. Las revisiones EPS de los últimos 4 meses han sido 'significativamente al alza' según MarketScreener. El ángulo ucraniano es potente: TRE construye refinerías, plantas de gas, infraestructura industrial — exactamente lo que Ucrania necesita para la fase de modernización industrial 2026-2032.",
+    catalysts:"Caja neta (empresa sin deuda). ROE 28.5% extraordinario para ingeniería EPC. Fase de modernización industrial ucraniana 2026-2032 ($64B en industria y comercio). Experiencia en más de 50 países. EPS revisiones muy positivas. P/E 14.4x barato.",
+    risks:"Negocio depende de grandes contratos únicos — visibilidad limitada. Alta exposición a Oriente Medio y gas (transición energética es riesgo). Solo 7-8 analistas cubren el valor. Upside consenso limitado al 7%.",
+    note:"La más técnica y menos conocida de las tres españolas. Caja neta + ROE 28% + P/E 14x es una combinación muy atractiva. El upside de Ucrania es enorme si consigue contratos EPC de infraestructura industrial."
+  }
+];
+
+const allBasket = [
+  ...companies.filter(c=>c.ms||c.gs||c.bofa||c.erste),
+  {name:"Assa Abloy",ticker:"OM:ASSA B",sector:"seguridad/cerrajería",pe:20.1,evEbitda:14,upside:22,div:1.5,roe:22,retBase:35,retPaz:58,risk:1,dep:"Media",rating:"BUY",rc:"r-buy",ms:1,gs:1,bofa:1,erste:0,prev:false,note:"Mayor fabricante mundial de sistemas de cierre. Millones de puertas/ventanas a reponer en Ucrania.",timingType:"wait",timingLabel:"Esperar pullback",timingText:"Cotiza cerca de máximos. Esperar retroceso 10-15%."},
+  {name:"Sika AG",ticker:"SWX:SIKA",sector:"especialidades construcción",pe:28,evEbitda:17.5,upside:20,div:1.1,roe:24,retBase:33,retPaz:55,risk:1,dep:"Media",rating:"BUY",rc:"r-buy",ms:0,gs:1,bofa:1,erste:1,prev:false,note:"Líder global aditivos hormigón. Márgenes altos diferenciados.",timingType:"now",timingLabel:"Entrar ahora",timingText:"Valoración razonable para la calidad del negocio."},
+  {name:"Kingspan Group",ticker:"ISE:KRX",sector:"aislamiento industrial",pe:24.5,evEbitda:13.8,upside:24,div:0.7,roe:20.1,retBase:40,retPaz:65,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:1,bofa:1,erste:0,prev:false,note:"Primera empresa en invertir físicamente en Ucrania: fábrica €280M anunciada.",timingType:"now",timingLabel:"Entrar ahora",timingText:"First mover advantage real. Inversión ya comprometida."},
+  {name:"Rockwool",ticker:"CPH:ROCK B",sector:"aislamiento mineral",pe:16.8,evEbitda:9.5,upside:18,div:1.3,roe:16.5,retBase:28,retPaz:50,risk:2,dep:"Media",rating:"BUY",rc:"r-buy",ms:0,gs:1,bofa:0,erste:1,prev:false,note:"Lana de roca para eficiencia energética. Estándares UE Ucrania.",timingType:"now",timingLabel:"Entrar ahora",timingText:"Valoración razonable, buen dividendo."},
+  {name:"Raiffeisen Bank Intl",ticker:"VIE:RBI",sector:"banca CEE",pe:5.8,evEbitda:null,upside:42,div:5.2,roe:14.5,retBase:45,retPaz:85,risk:4,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:1,erste:1,prev:false,note:"Banco más barato de Europa por P/E. Paz = resolución filial rusa = catalizador masivo.",timingType:"now",timingLabel:"Entrar ahora — alta convicción",timingText:"P/E 5.8x es el más barato de toda la lista. El mercado está descontando el peor escenario para su filial rusa. Si hay paz, explosión al alza."},
+  {name:"Schneider Electric",ticker:"EPA:SU",sector:"gestión de energía",pe:29,evEbitda:19,upside:8,div:1.8,roe:16.8,retBase:18,retPaz:35,risk:1,dep:"Media",rating:"HOLD",rc:"r-hold",ms:0,gs:1,bofa:0,erste:1,prev:false,note:"Redes eléctricas inteligentes para modernización ucraniana.",timingType:"wait",timingLabel:"Esperar corrección",timingText:"Cotiza caro. Esperar pull-back del 10%."},
+  {name:"Siemens AG",ticker:"ETR:SIE",sector:"industrial diversificado",pe:22,evEbitda:13.5,upside:10,div:2.8,roe:18,retBase:20,retPaz:38,risk:1,dep:"Media",rating:"HOLD",rc:"r-hold",ms:0,gs:1,bofa:1,erste:0,prev:false,note:"Automatización y digitalización industrial post-reconstrucción.",timingType:"wait",timingLabel:"Esperar nivel justo",timingText:"Buen negocio pero cotiza a múltiplo justo."},
+  {name:"MOL Group",ticker:"BSE:MOL",sector:"energía CEE",pe:8,evEbitda:4.5,upside:35,div:9,roe:12,retBase:40,retPaz:65,risk:3,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:1,prev:false,note:"P/E 8x, dividendo 9%. Energética húngara infravalorada.",timingType:"now",timingLabel:"Entrar ahora",timingText:"P/E 8x y dividendo 9% es una combinación irresistible."},
+  {name:"Iberdrola",ticker:"BME:IBE",sector:"utilities / renovables",pe:18.5,evEbitda:10.2,upside:12,div:4.5,roe:11,retBase:22,retPaz:38,risk:1,dep:"Baja",rating:"HOLD",rc:"r-hold",ms:0,gs:1,bofa:0,erste:0,prev:false,note:"Líder mundial renovables. Beneficia de reconstrucción eléctrica.",timingType:"now",timingLabel:"Entrar ahora — defensivo",timingText:"Defensiva con dividendo 4.5%. Válida como anchor de cartera."},
+  {name:"Buzzi Unicem",ticker:"BIT:BZU",sector:"cemento italiano",pe:9.5,evEbitda:5.2,upside:28,div:3.5,roe:12,retBase:35,retPaz:60,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:1,gs:0,bofa:0,erste:1,prev:false,note:"3er cementero europeo. Cotiza muy barato. Cesta MS + Erste.",timingType:"now",timingLabel:"Entrar ahora",timingText:"P/E 9.5x y upside 28%. Muy similar a Heidelberg pero más pequeño."},
+  {name:"Samsung C&T",ticker:"KRX:028260",sector:"construcción Corea",pe:18,evEbitda:9.5,upside:15,div:1.2,roe:8.5,retBase:25,retPaz:48,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:1,gs:0,bofa:0,erste:0,prev:false,note:"Identificado como core de la cesta MS Rebuild Ukraine. Conglomerado coreano de construcción.",timingType:"wait",timingLabel:"Esperar — ángulo geopolítico",timingText:"Complejidad adicional de ser acción coreana. Para el inversor avanzado."},
+];
+
+// ============================================
+// RENDER FUNCTIONS
+// ============================================
+function uColor(u){if(u>20)return '#4ade80';if(u>8)return '#fbbf24';return '#f87171';}
+function tClass(t){if(t==='now')return 'timing-now';if(t==='wait')return 'timing-wait';return 'timing-watch';}
+function tDot(t){if(t==='now')return '#4ade80';if(t==='wait')return '#fbbf24';return '#f87171';}
+function riskLabel(r){return['','Bajo','Medio','Medio-Alto','Alto'][r]||'';}
+function riskClass(r){if(r<=1)return'pos';if(r<=2)return'warn';return'neg';}
+
+function makeFCard(c, isSpain=false) {
+  const uc = uColor(c.upside);
+  const bw = Math.max(0, Math.min(100, c.upside+5));
+  const topB = c.top ? '<div class="top-badge">Top pick</div>' : '';
+  const spainB = isSpain ? '<div class="spain-flag-badge">Empresa española</div>' : '';
+  return `<div class="fcard${c.top?' top':''}${isSpain?' spain':''}">
+    ${topB}${spainB}
+    <div class="fcard-head">
+      <div><div class="fcard-name">${c.name}</div><div class="fcard-ticker">${c.ticker}</div></div>
+      <span class="rating ${c.rc}">${c.rating}</span>
+    </div>
+    <div class="fcard-sector">${c.sector.charAt(0).toUpperCase()+c.sector.slice(1)} · Cap: ${c.mktCap||'—'} · Empleados: ${c.employees?c.employees.toLocaleString('es'):'-'}</div>
+
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">VALORACIÓN</div>
+    <div class="metrics-grid">
+      <div class="met"><div class="met-l">P/E forward</div><div class="met-v ${c.pe>30?'warn':c.pe<13?'pos':''}">${c.pe}x</div></div>
+      <div class="met"><div class="met-l">EV/EBITDA</div><div class="met-v ${c.evEbitda>18?'warn':c.evEbitda<8?'pos':''}">${c.evEbitda||'—'}x</div></div>
+      <div class="met"><div class="met-l">P/FCF</div><div class="met-v">${c.pfcf||'—'}x</div></div>
+      <div class="met"><div class="met-l">P/Ventas</div><div class="met-v">${c.pventas||'—'}x</div></div>
+    </div>
+
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">CALIDAD DEL NEGOCIO</div>
+    <div class="metrics-grid">
+      <div class="met"><div class="met-l">ROE</div><div class="met-v ${c.roe>20?'pos':c.roe<8?'warn':''}">${c.roe}%</div></div>
+      <div class="met"><div class="met-l">ROIC</div><div class="met-v ${c.roic>15?'pos':''}">${c.roic||'—'}%</div></div>
+      <div class="met"><div class="met-l">Margen EBIT</div><div class="met-v">${c.margenEbit||'—'}%</div></div>
+      <div class="met"><div class="met-l">Margen neto</div><div class="met-v">${c.margenNeto||'—'}%</div></div>
+    </div>
+
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">SOLIDEZ FINANCIERA</div>
+    <div class="metrics-grid2">
+      <div class="met"><div class="met-l">Deuda/EBITDA</div><div class="met-v ${c.deudaEbitda>3.5?'neg':c.deudaEbitda<1?'pos':''}">${c.deudaEbitda<0?'Caja neta':c.deudaEbitda+'x'}</div></div>
+      <div class="met"><div class="met-l">Cobertura int.</div><div class="met-v ${c.cobertura>10?'pos':c.cobertura<4?'warn':''}">${c.cobertura>50?'>50':c.cobertura+'x'}</div></div>
+      <div class="met"><div class="met-l">Credit rating</div><div class="met-v">${c.creditRating||'—'}</div></div>
+    </div>
+
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">MOMENTUM Y DIVIDENDO</div>
+    <div class="metrics-grid2">
+      <div class="met"><div class="met-l">Rev. Ingresos</div><div class="met-v pos">+${c.revenueGrowth}%</div></div>
+      <div class="met"><div class="met-l">Crecim. EPS</div><div class="met-v pos">+${c.epsGrowth}%</div></div>
+      <div class="met"><div class="met-l">Dividendo</div><div class="met-v ${c.div>3?'pos':''}">${c.div}%</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-style:italic;">${c.revEps}</div>
+
+    <div class="upside-row"><span>Precio actual vs objetivo</span><span style="color:${uc};font-family:var(--font-m);font-weight:500;">${c.upside>0?'+':''}${c.upside}%</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${bw}%;background:${uc};"></div></div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:12px;">Retorno base +${c.retBase}% · Escenario paz +${c.retPaz}% · Riesgo: ${riskLabel(c.risk)} · Dep. paz: ${c.dep}</div>
+
+    <div class="thesis-block">
+      <div class="thesis-title">CATALIZADORES</div>
+      <div class="thesis-text">${c.catalysts||c.note}</div>
+    </div>
+    <div class="thesis-block">
+      <div class="thesis-title">RIESGOS PRINCIPALES</div>
+      <div class="thesis-text">${c.risks||'Ver análisis completo.'}</div>
+    </div>
+    <div class="timing-block ${tClass(c.timingType)}">
+      <div class="timing-head">
+        <div class="timing-dot" style="background:${tDot(c.timingType)};"></div>
+        <span class="timing-label" style="color:${tDot(c.timingType)};">TIMING: ${c.timingLabel}</span>
+      </div>
+      <div class="timing-text">${c.timingText}</div>
+    </div>
+  </div>`;
+}
+
+function renderGrid(id, data, isSpain=false) {
+  document.getElementById(id).innerHTML = data.map(c=>makeFCard(c,isSpain)).join('');
+}
+
+document.querySelectorAll('#tabs1 .tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#tabs1 .tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  const f=b.dataset.f;
+  renderGrid('cards1', f==='all'?companies:f==='top'?companies.filter(c=>c.top):companies.filter(c=>c.sector===f));
+}));
+renderGrid('cards1', companies);
+renderGrid('cards-spain', spanishCompanies, true);
+
+// CESTAS
+function makeBasketCard(c) {
+  const iB = ['ms','gs','bofa','erste'].filter(k=>c[k]).map(k=>({ms:'b-ms',gs:'b-gs',bofa:'b-bofa',erste:'b-erste'})[k]);
+  const labels = {ms:'Morgan Stanley',gs:'Goldman Sachs',bofa:'BofA',erste:'Erste'};
+  const badgeHtml = ['ms','gs','bofa','erste'].filter(k=>c[k]).map(k=>`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:${k==='ms'?'rgba(91,156,246,0.15)':k==='gs'?'rgba(74,222,128,0.12)':k==='bofa'?'rgba(251,191,36,0.12)':'rgba(248,113,113,0.12)'};color:${k==='ms'?'#5b9cf6':k==='gs'?'#4ade80':k==='bofa'?'#fbbf24':'#f87171'};">${labels[k]}</span>`).join('');
+  const newBadge = !c.prev ? '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(78,205,196,0.12);color:#4ecdc4;">Nueva</span>' : '';
+  const uc = uColor(c.upside||0);
+  const bw = Math.max(0,Math.min(100,(c.upside||0)+5));
+  return `<div class="fcard" style="padding:16px 18px;">
+    <div class="fcard-head">
+      <div><div class="fcard-name">${c.name}</div><div class="fcard-ticker">${c.ticker}</div></div>
+      <span class="rating ${c.rc}">${c.rating}</span>
+    </div>
+    <div class="fcard-sector">${c.sector}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">${badgeHtml}${newBadge}</div>
+    <div class="metrics-grid2">
+      <div class="met"><div class="met-l">P/E</div><div class="met-v">${c.pe}x</div></div>
+      <div class="met"><div class="met-l">Dividendo</div><div class="met-v">${c.div}%</div></div>
+      <div class="met"><div class="met-l">ROE</div><div class="met-v">${c.roe}%</div></div>
+    </div>
+    <div class="upside-row"><span>Upside</span><span style="color:${uc};font-family:var(--font-m);">${(c.upside||0)>0?'+':''}${c.upside||0}%</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${bw}%;background:${uc};"></div></div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.55;">${c.note}</div>
+    <div class="timing-block ${tClass(c.timingType||'wait')}" style="margin-top:10px;">
+      <div class="timing-head"><div class="timing-dot" style="background:${tDot(c.timingType||'wait')};"></div><span class="timing-label" style="color:${tDot(c.timingType||'wait')};">${c.timingLabel||'Ver análisis'}</span></div>
+      <div class="timing-text">${c.timingText||''}</div>
+    </div>
+  </div>`;
+}
+
+document.querySelectorAll('#tabs2 .tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#tabs2 .tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  const f=b.dataset.f2;
+  const d=f==='all'?allBasket:f==='new'?allBasket.filter(c=>!c.prev):allBasket.filter(c=>c[f]);
+  document.getElementById('cards2').innerHTML=d.map(makeBasketCard).join('');
+}));
+document.getElementById('cards2').innerHTML=allBasket.map(makeBasketCard).join('');
+
+// OVERLAP
+const ovData=allBasket.filter(c=>(c.ms+c.gs+c.bofa+c.erste)>=2).sort((a,b)=>(b.ms+b.gs+b.bofa+b.erste)-(a.ms+a.gs+a.bofa+a.erste));
+const ovEl=document.getElementById('ov-list');
+ovData.forEach(c=>{
+  const seg=(k,col,lbl)=>c[k]?`<div class="ov-seg" style="width:25%;background:${col};">${lbl}</div>`:`<div style="width:25%;background:rgba(255,255,255,0.04);"></div>`;
+  ovEl.innerHTML+=`<div class="ov-item">
+    <div class="ov-name">${c.name}<span class="ov-ticker">${c.ticker}</span></div>
+    <div class="ov-track">${seg('ms','#185FA5','MS')}${seg('gs','#3B6D11','GS')}${seg('bofa','#BA7517','BofA')}${seg('erste','#993556','Erste')}</div>
+    <span class="ov-n">${c.ms+c.gs+c.bofa+c.erste}/4</span>
+  </div>`;
+});
+
+// TIMING TABLE
+const allForTiming=[...companies,...spanishCompanies];
+const timingTbl=document.getElementById('timing-table');
+timingTbl.innerHTML=`<thead><tr>
+  <th>#</th><th>Empresa</th><th>Ticker</th><th>Timing</th><th>Precio actual</th><th>Target</th><th>Entrada ideal</th><th>Retorno base</th><th>Retorno paz</th>
+</tr></thead><tbody>${allForTiming.sort((a,b)=>{const o={now:0,wait:1,watch:2};return o[a.timingType]-o[b.timingType];}).map((c,i)=>{
+  const dot=tDot(c.timingType);
+  return `<tr>
+    <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
+    <td style="font-weight:500;">${c.name}${c.top?'<span style="color:var(--accent);margin-left:6px;">★</span>':''}</td>
+    <td class="mono" style="font-size:11px;">${c.ticker}</td>
+    <td><span style="font-size:11px;padding:3px 9px;border-radius:20px;background:${dot==='#4ade80'?'rgba(74,222,128,0.12)':dot==='#fbbf24'?'rgba(251,191,36,0.12)':'rgba(248,113,113,0.12)'};color:${dot};font-family:var(--font-m);">${c.timingLabel}</span></td>
+    <td class="mono">${c.price?c.price+'€':'-'}</td>
+    <td class="mono pos">${c.target?c.target+'€':'-'}</td>
+    <td style="font-size:11px;color:var(--muted);max-width:200px;">${c.timingText.substring(0,80)}…</td>
+    <td class="pos">+${c.retBase}%</td>
+    <td style="color:#4ade80;font-family:var(--font-m);font-weight:500;">+${c.retPaz}%</td>
+  </tr>`;}).join('')}</tbody>`;
+
+// RANKING TABLE
+const sortedR=[...companies,...spanishCompanies].sort((a,b)=>(b.retBase+b.upside+b.div)-(a.retBase+a.upside+a.div));
+document.getElementById('ranking-table').innerHTML=`<thead><tr>
+  <th>#</th><th>Empresa</th><th>Ticker</th><th>Rating</th><th>P/E</th><th>EV/EBITDA</th><th>ROE</th><th>Div.</th><th>Upside</th><th>Ret. base</th><th>Ret. paz</th><th>Riesgo</th><th>Dep. paz</th>
+</tr></thead><tbody>${sortedR.map((c,i)=>`<tr>
+  <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
+  <td style="font-weight:500;">${c.top?'<span style="color:var(--accent);margin-right:5px;">★</span>':''}${c.name}</td>
+  <td class="mono" style="font-size:11px;color:var(--muted);">${c.ticker}</td>
+  <td><span class="rating ${c.rc}" style="font-size:11px;">${c.rating}</span></td>
+  <td class="mono">${c.pe}x</td>
+  <td class="mono">${c.evEbitda||'—'}x</td>
+  <td class="mono ${c.roe>20?'pos':c.roe>12?'':'warn'}">${c.roe}%</td>
+  <td class="mono">${c.div}%</td>
+  <td class="mono" style="color:${uColor(c.upside)}">${c.upside>0?'+':''}${c.upside}%</td>
+  <td class="pos">+${c.retBase}%</td>
+  <td style="color:#4ade80;font-family:var(--font-m);font-weight:500;">+${c.retPaz}%</td>
+  <td class="${riskClass(c.risk)}">${riskLabel(c.risk)}</td>
+  <td style="color:var(--muted);font-size:12px;">${c.dep}</td>
+</tr>`).join('')}</tbody>`;
+
+// RISK GRID
+[...companies,...spanishCompanies].forEach(c=>{
+  const dots=[1,2,3,4].map(i=>`<div class="rdot" style="background:${i<=c.risk?'#fbbf24':'rgba(255,255,255,0.08)'}"></div>`).join('');
+  document.getElementById('risk-grid').innerHTML+=`<div class="rc">
+    <div class="rc-n">${c.name}</div>
+    <div class="rc-t">${c.ticker}</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Dep. paz: <span style="color:${c.dep==='Alta'?'#f87171':c.dep.includes('Media')?'#fbbf24':'#4ade80'}">${c.dep}</span></div>
+    <div class="rm">${dots}</div>
+  </div>`;
+});
+
+// CHARTS
+const labels=companies.map(c=>c.name.split(' ')[0]);
+new Chart(document.getElementById('c1'),{
+  type:'bar',data:{labels,datasets:[
+    {label:'Upside (%)',data:companies.map(c=>c.upside),backgroundColor:companies.map(c=>uColor(c.upside)),yAxisID:'y'},
+    {label:'P/E',data:companies.map(c=>c.pe),backgroundColor:'rgba(74,222,128,0.6)',yAxisID:'y2'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#8b93a8',font:{size:10},autoSkip:false,maxRotation:45},grid:{color:'rgba(255,255,255,0.05)'}},
+      y:{position:'left',ticks:{color:'#5b9cf6',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.05)'}},
+      y2:{position:'right',ticks:{color:'#4ade80',callback:v=>v+'x'},grid:{display:false}}}}
+});
+new Chart(document.getElementById('c2'),{
+  type:'bar',data:{labels,datasets:[
+    {label:'Base',data:companies.map(c=>c.retBase),backgroundColor:'#185FA5'},
+    {label:'Paz',data:companies.map(c=>c.retPaz),backgroundColor:'#1D9E75'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#8b93a8',font:{size:10},autoSkip:false,maxRotation:45},grid:{color:'rgba(255,255,255,0.05)'}},
+      y:{ticks:{color:'#8b93a8',callback:v=>'+'+v+'%'},grid:{color:'rgba(255,255,255,0.05)'}}}}
+});
+const bubbleColors=['#5b9cf6','#4ade80','#fbbf24','#f87171','#4ecdc4','#e8c97d','#a78bfa','#fb7185','#34d399','#60a5fa','#f59e0b','#ef4444'];
+new Chart(document.getElementById('c3'),{
+  type:'bubble',
+  data:{datasets:companies.map((c,i)=>({label:c.name.split(' ')[0],data:[{x:c.roe,y:c.roic||c.roe*0.7,r:Math.max(6,c.retBase/7)}],backgroundColor:bubbleColors[i]+'99',borderColor:bubbleColors[i]}))},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ROE ${ctx.raw.x}% · ROIC ${ctx.raw.y.toFixed(1)}%`}}},
+    scales:{x:{title:{display:true,text:'ROE (%)',color:'#8b93a8'},ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.05)'},min:3,max:58},
+      y:{title:{display:true,text:'ROIC (%)',color:'#8b93a8'},ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.05)'},min:3,max:28}}}
+});
+new Chart(document.getElementById('c4'),{
+  type:'bar',data:{labels,datasets:[{
+    label:'Deuda/EBITDA',
+    data:companies.map(c=>c.deudaEbitda),
+    backgroundColor:companies.map(c=>c.deudaEbitda<0?'#4ade80':c.deudaEbitda>3.5?'#f87171':c.deudaEbitda>2.5?'#fbbf24':'#5b9cf6')
+  }]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#8b93a8',font:{size:10},autoSkip:false,maxRotation:45},grid:{color:'rgba(255,255,255,0.05)'}},
+      y:{ticks:{color:'#8b93a8',callback:v=>v+'x'},grid:{color:'rgba(255,255,255,0.05)'}}}}
+});
+
+// RESPONSIVE
+function fixChartGrid(){
+  const cg=document.getElementById('chart-grid');
+  cg.style.gridTemplateColumns=window.innerWidth<700?'1fr':'1fr 1fr';
+}
+fixChartGrid();
+window.addEventListener('resize',fixChartGrid);
+
+// NAV
+function goTo(id){document.querySelector(id).scrollIntoView({behavior:'smooth'});}
+document.querySelectorAll('.nb').forEach(b=>b.addEventListener('click',function(){
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');
+}));
+</script>
+</body>
+</html>
