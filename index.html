@@ -128,7 +128,7 @@
   /* Disclaimer */
   .disclaimer{padding:22px;background:rgba(248,113,113,0.05);border:1px solid rgba(248,113,113,0.18);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.65;margin-top:48px;}
   footer{text-align:center;padding:40px 24px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);}
-  .live-px{display:block;min-height:16px;margin-top:3px;font-size:11px;font-family:var(--font-m);color:var(--muted);}
+  .live-px{display:block;min-height:16px;margin-top:3px;font-size:11px;font-family:var(--font-m);color:var(--amber);}
   .live-px.ok{color:inherit;}
 
   /* GEOPOLITICAL SECTION */
@@ -920,7 +920,7 @@ function makeFCard(c, isSpain=false) {
     ${topB}${spainB}
     <div class="fcard-head">
       <div><div class="fcard-name">${c.name}</div><div class="fcard-ticker">${c.ticker}</div></div>
-      <div style="text-align:right;flex-shrink:0"><span class="rating ${c.rc}">${c.rating}</span><span class="live-px">—</span></div>
+      <div style="text-align:right;flex-shrink:0"><span class="rating ${c.rc}">${c.rating}</span><span class="live-px">${c.price?'~'+c.price:'—'}</span></div>
     </div>
     <div class="fcard-sector">${c.sector.charAt(0).toUpperCase()+c.sector.slice(1)} · Cap: ${c.mktCap||'—'} · Empleados: ${c.employees?c.employees.toLocaleString('es'):'-'}</div>
 
@@ -1004,7 +1004,7 @@ function makeBasketCard(c) {
   return `<div class="fcard" style="padding:16px 18px;" data-tid="${btid}">
     <div class="fcard-head">
       <div><div class="fcard-name">${c.name}</div><div class="fcard-ticker">${c.ticker}</div></div>
-      <div style="text-align:right;flex-shrink:0"><span class="rating ${c.rc}">${c.rating}</span><span class="live-px">—</span></div>
+      <div style="text-align:right;flex-shrink:0"><span class="rating ${c.rc}">${c.rating}</span><span class="live-px">${c.price?'~'+c.price:'—'}</span></div>
     </div>
     <div class="fcard-sector">${c.sector}</div>
     <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">${badgeHtml}${newBadge}</div>
