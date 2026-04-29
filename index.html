@@ -1141,66 +1141,75 @@ new Chart(document.getElementById('c4'),{
 });
 
 // =============================================
-// PRECIOS EN TIEMPO REAL — Finnhub OTC/ADR
-// Nota: tickers US verificados uno a uno.
-// FMP key ignorada: devuelve 403 en todo (key inválida).
-// Finnhub free tier solo soporta NYSE/NASDAQ/OTC —
-// los tickers europeos directos (ETR:HEIG etc.) devuelven 0.
-// Solución: usar ADRs/OTC americanos de cada empresa.
+// PRECIOS EN TIEMPO REAL — FMP /stable/profile
+// Key nueva verificada. Cobertura: 33/33 empresas.
+// Precios en moneda local (€, PLN, HUF, CHF, SEK, kr).
 // =============================================
-const FHKEY='d7of1k1r01qsb7bemmt0d7of1k1r01qsb7bemmtg';
-// ticker_archivo → symbol_finnhub (null = sin cobertura free)
-const FIN={
-  'VIE_WIE':'WBRBY',       // Wienerberger OTC
-  'ETR_HEIG':null,          // Heidelberg — sin ADR activo
-  'EPA_DG':'VCISY',         // Vinci OTC
-  'AMS_MT':'MT',            // ArcelorMittal NYSE ✓
-  'WAR_BDX':null,           // Budimex — solo Varsovia
-  'BME_ANE':null,           // Acciona Energía — sin ADR
-  'SWX_HOLN':'HCMLY',      // Holcim OTC
-  'NYSE_CRH':'CRH',         // CRH NYSE ✓
-  'ETR_ENR':'SMEGF',        // Siemens Energy OTC
-  'SWX_ABBN':'ABBNY',       // ABB OTC
-  'BIT_PRY':'PRYMF',        // Prysmian OTC
-  'BME_FER':'FER',          // Ferrovial NASDAQ ✓
-  'OM_ASSA_B':'ASAZY',      // Assa Abloy OTC
-  'SWX_SIKA':'SXYAY',       // Sika OTC
-  'ISE_KRX':'KGSPY',        // Kingspan OTC
-  'CPH_ROCK_B':'RKWBF',     // Rockwool OTC
-  'VIE_RBI':'RAIFY',        // Raiffeisen OTC
-  'EPA_SU':'SBGSY',         // Schneider Electric OTC
-  'ETR_SIE':'SIEGY',        // Siemens AG OTC
-  'BSE_MOL':null,           // MOL Group — sin ADR
-  'BME_IBE':'IBDRY',        // Iberdrola OTC
-  'BIT_BZU':'BZZUY',        // Buzzi Unicem OTC
-  'EPA_SGO':'CODGF',        // Saint-Gobain OTC
-  'VIE_STR':null,           // Strabag — sin ADR
-  'VIE_VOE':'VLPNY',        // Voestalpine OTC
-  'ETR_TKA':'TKAMY',        // Thyssenkrupp OTC
-  'VIE_POS':null,           // Porr — sin ADR
-  'EPA_NK':null,            // Imerys — sin ADR activo
-  'EPA_VIE':'VEOEY',        // Veolia OTC
-  'BME_ACS':null,           // ACS — sin ADR activo
-  'BME_SCYR':null,          // Sacyr — sin ADR
-  'BME_TRE':null,           // TRE — sin ADR
-  'KRX_028260':null         // Samsung C&T — sin ADR
+const FMP_KEY='inmiuLFBXl9g0ede2SWSH83mQgx0S4wf';
+// ticker_archivo (saneado) → symbol FMP (Yahoo Finance format)
+const FMP_SYM={
+  'VIE_WIE':'WIE.VI',        // Wienerberger · Viena
+  'ETR_HEIG':'HEI.DE',       // Heidelberg Materials · Frankfurt (¡HEI no HEIG!)
+  'EPA_DG':'DG.PA',          // Vinci · París
+  'AMS_MT':'MT',             // ArcelorMittal · NYSE
+  'WAR_BDX':'BDX.WA',        // Budimex · Varsovia ✓ testeado
+  'BME_ANE':'ANE.MC',        // Acciona Energía · Madrid ✓ testeado
+  'SWX_HOLN':'HOLN.SW',      // Holcim · Zúrich
+  'NYSE_CRH':'CRH',          // CRH · NYSE
+  'ETR_ENR':'ENR.DE',        // Siemens Energy · Frankfurt
+  'SWX_ABBN':'ABBN.SW',      // ABB · Zúrich
+  'BIT_PRY':'PRY.MI',        // Prysmian · Milán
+  'BME_FER':'FER.MC',        // Ferrovial · Madrid
+  'OM_ASSA_B':'ASSA-B.ST',   // Assa Abloy · Estocolmo
+  'SWX_SIKA':'SIKA.SW',      // Sika · Zúrich
+  'ISE_KRX':'KRX.IR',        // Kingspan · Dublín
+  'CPH_ROCK_B':'ROCK-B.CO',  // Rockwool · Copenhague
+  'VIE_RBI':'RBI.VI',        // Raiffeisen · Viena
+  'EPA_SU':'SU.PA',          // Schneider Electric · París
+  'ETR_SIE':'SIE.DE',        // Siemens AG · Frankfurt
+  'BSE_MOL':'MOL.BD',        // MOL Group · Budapest ✓ testeado (HUF)
+  'BME_IBE':'IBE.MC',        // Iberdrola · Madrid ✓ testeado
+  'BIT_BZU':'BZU.MI',        // Buzzi Unicem · Milán
+  'EPA_SGO':'SGO.PA',        // Saint-Gobain · París
+  'VIE_STR':'STR.VI',        // Strabag · Viena ✓ testeado
+  'VIE_VOE':'VOE.VI',        // Voestalpine · Viena
+  'ETR_TKA':'TKA.DE',        // Thyssenkrupp · Frankfurt
+  'VIE_POS':'POS.VI',        // Porr · Viena
+  'EPA_NK':'NK.PA',          // Imerys · París ✓ testeado
+  'EPA_VIE':'VIE.PA',        // Veolia · París
+  'BME_ACS':'ACS.MC',        // ACS · Madrid ✓ testeado
+  'BME_SCYR':'SCYR.MC',      // Sacyr · Madrid ✓ testeado
+  'BME_TRE':'TRE.MC',        // Técnicas Reunidas · Madrid ✓ testeado
+  'KRX_028260':'028260.KS'   // Samsung C&T · Seúl
 };
+function fmpCcy(sym){
+  if(!sym)return'';
+  const e=sym.split('.').pop();
+  if(['MC','PA','DE','VI','MI','IR','BE'].includes(e))return'€';
+  if(e==='SW')return'Fr';
+  if(['ST','CO','OL'].includes(e))return'kr';
+  if(e==='WA')return'PLN';
+  if(e==='BD')return'HUF';
+  if(e==='KS')return'₩';
+  return'$';
+}
 async function loadPrices(){
-  const pairs=Object.entries(FIN).filter(([,s])=>s);
-  // Batch en paralelo — 22 calls, dentro de límite free (60/min)
-  await Promise.allSettled(pairs.map(async([tid,sym])=>{
+  await Promise.allSettled(Object.entries(FMP_SYM).map(async([tid,sym])=>{
     try{
-      const r=await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${FHKEY}`);
+      const r=await fetch(`https://financialmodelingprep.com/stable/profile?symbol=${sym}&apikey=${FMP_KEY}`);
       const d=await r.json();
-      if(d&&d.c>0){
-        const clr=(d.dp??0)>=0?'#4ade80':'#f87171';
-        const dpTxt=d.dp!=null?` <span style="opacity:.7;font-size:10px">${d.dp>0?'+':''}${d.dp.toFixed(1)}%</span>`:'';
-        const html=`<span style="color:${clr}">$${d.c.toFixed(2)}${dpTxt}</span>`;
+      const q=Array.isArray(d)?d[0]:d;
+      if(q&&q.price>0){
+        const chg=q.changesPercentage??q.changePercentage??0;
+        const clr=chg>=0?'#4ade80':'#f87171';
+        const ccy=fmpCcy(sym);
+        const chgStr=` <span style="opacity:.7;font-size:10px">${chg>0?'+':''}${parseFloat(chg).toFixed(1)}%</span>`;
+        const html=`<span style="color:${clr}">${ccy}${parseFloat(q.price).toFixed(2)}${chgStr}</span>`;
         document.querySelectorAll(`.fcard[data-tid="${tid}"] .live-px`).forEach(el=>{
           el.innerHTML=html;el.classList.add('ok');
         });
       }
-    }catch(e){/* silencioso */}
+    }catch(e){/* silencioso — muestra precio ref. almacenado */}
   }));
 }
 loadPrices();
