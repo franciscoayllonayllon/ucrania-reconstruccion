@@ -922,7 +922,8 @@ function makeFCard(c, isSpain=false) {
       <div><div class="fcard-name">${c.name}</div><div class="fcard-ticker">${c.ticker}</div></div>
       <div style="text-align:right;flex-shrink:0"><span class="rating ${c.rc}">${c.rating}</span><span class="live-px">${c.price?'~'+c.price:'—'}</span></div>
     </div>
-    <div class="fcard-sector">${c.sector.charAt(0).toUpperCase()+c.sector.slice(1)} · Cap: ${c.mktCap||'—'} · Empleados: ${c.employees?c.employees.toLocaleString('es'):'-'}</div>
+    <div class="fcard-sector">${c.sector.charAt(0).toUpperCase()+c.sector.slice(1)} · Cap: <span class="live-mcap">${c.mktCap||'—'}</span> · Emp: <span class="live-emp">${c.employees?c.employees.toLocaleString('es'):'-'}</span></div>
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);margin-bottom:8px;">52s: <span class="live-range">—</span> · Beta: <span class="live-beta">—</span></div>
 
     <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">VALORACIÓN</div>
     <div class="metrics-grid">
@@ -1006,7 +1007,8 @@ function makeBasketCard(c) {
       <div><div class="fcard-name">${c.name}</div><div class="fcard-ticker">${c.ticker}</div></div>
       <div style="text-align:right;flex-shrink:0"><span class="rating ${c.rc}">${c.rating}</span><span class="live-px">${c.price?'~'+c.price:'—'}</span></div>
     </div>
-    <div class="fcard-sector">${c.sector}</div>
+    <div class="fcard-sector">${c.sector} · Cap: <span class="live-mcap">—</span></div>
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);margin-bottom:6px;">52s: <span class="live-range">—</span> · Beta: <span class="live-beta">—</span></div>
     <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">${badgeHtml}${newBadge}</div>
     <div class="metrics-grid2">
       <div class="met"><div class="met-l">P/E</div><div class="met-v">${c.pe}x</div></div>
@@ -1193,23 +1195,35 @@ function fmpCcy(sym){
   if(e==='KS')return'₩';
   return'$';
 }
+function fmtMcap(v,ccy){
+  if(!v)return'—';
+  if(v>=1e12)return(v/1e12).toFixed(2)+'T '+ccy;
+  if(v>=1e9)return(v/1e9).toFixed(1)+'B '+ccy;
+  return(v/1e6).toFixed(0)+'M '+ccy;
+}
 async function loadPrices(){
   await Promise.allSettled(Object.entries(FMP_SYM).map(async([tid,sym])=>{
     try{
       const r=await fetch(`https://financialmodelingprep.com/stable/profile?symbol=${sym}&apikey=${FMP_KEY}`);
       const d=await r.json();
       const q=Array.isArray(d)?d[0]:d;
-      if(q&&q.price>0){
-        const chg=q.changesPercentage??q.changePercentage??0;
-        const clr=chg>=0?'#4ade80':'#f87171';
-        const ccy=fmpCcy(sym);
-        const chgStr=` <span style="opacity:.7;font-size:10px">${chg>0?'+':''}${parseFloat(chg).toFixed(1)}%</span>`;
-        const html=`<span style="color:${clr}">${ccy}${parseFloat(q.price).toFixed(2)}${chgStr}</span>`;
-        document.querySelectorAll(`.fcard[data-tid="${tid}"] .live-px`).forEach(el=>{
-          el.innerHTML=html;el.classList.add('ok');
-        });
-      }
-    }catch(e){/* silencioso — muestra precio ref. almacenado */}
+      if(!q||!q.price)return;
+      const sel=s=>document.querySelectorAll(`.fcard[data-tid="${tid}"] ${s}`);
+      const ccy=fmpCcy(sym);
+      // Precio live
+      const chg=parseFloat(q.changesPercentage??q.changePercentage??0);
+      const clr=chg>=0?'#4ade80':'#f87171';
+      const chgStr=` <span style="opacity:.7;font-size:10px">${chg>0?'+':''}${chg.toFixed(1)}%</span>`;
+      sel('.live-px').forEach(el=>{el.innerHTML=`<span style="color:${clr}">${ccy}${parseFloat(q.price).toFixed(2)}${chgStr}</span>`;el.classList.add('ok');});
+      // Market cap
+      if(q.marketCap) sel('.live-mcap').forEach(el=>el.textContent=fmtMcap(q.marketCap,ccy));
+      // Empleados
+      if(q.fullTimeEmployees) sel('.live-emp').forEach(el=>el.textContent=parseInt(q.fullTimeEmployees).toLocaleString('es'));
+      // Rango 52 semanas
+      if(q.range) sel('.live-range').forEach(el=>el.textContent=ccy+q.range.replace('-',' – '+ccy));
+      // Beta
+      if(q.beta) sel('.live-beta').forEach(el=>el.textContent=parseFloat(q.beta).toFixed(2));
+    }catch(e){/* silencioso */}
   }));
 }
 loadPrices();
