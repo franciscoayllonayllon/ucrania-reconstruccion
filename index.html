@@ -484,18 +484,18 @@
   <div class="container">
     <div class="sec-head">
       <span class="sec-num">01</span>
-      <h2 class="sec-title">Análisis fundamental extendido</h2>
+      <h2 class="sec-title">Análisis Fundamental — Empresas en Cestas Institucionales (2+)</h2>
     </div>
     <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:28px;line-height:1.7;">
-      Cada ficha incluye: valoración completa (P/E, EV/EBITDA, P/FCF, P/Ventas), calidad del negocio (ROE, ROIC, márgenes), solidez financiera (deuda, cobertura), momentum (revisiones EPS) y la tesis de inversión desglosada en tres bloques: catalizador, riesgo y timing recomendado.
+      Las 17 empresas presentes en 2 o más cestas de grandes bancos de inversión (Morgan Stanley, Goldman Sachs, BofA, Erste, Jefferies, JPMorgan, Citi, Deutsche Bank, Barclays). Análisis fundamental completo: valoración, calidad, solidez financiera, momentum y tesis de inversión.
     </p>
     <div class="tabs" id="tabs1">
-      <button class="tab active" data-f="all">Todas (12)</button>
-      <button class="tab" data-f="top">Top picks (6)</button>
+      <button class="tab active" data-f="all">Todas (17)</button>
+      <button class="tab" data-f="top">Top picks</button>
       <button class="tab" data-f="materiales">Materiales</button>
-      <button class="tab" data-f="energia">Energía</button>
+      <button class="tab" data-f="energia">Energía & Utilities</button>
       <button class="tab" data-f="infraestructura">Infraestructura</button>
-      <button class="tab" data-f="acero">Acero / Industria</button>
+      <button class="tab" data-f="industrial">Industrial</button>
     </div>
     <div class="cards-grid" id="cards1"></div>
   </div>
@@ -528,30 +528,13 @@
   </div>
 </div>
 
-<!-- SECTION 3: CESTAS -->
+<!-- SECTION 3: TOP 6 FUERA DE CESTAS -->
 <div class="section" id="cestas">
   <div class="container">
-    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Cestas institucionales — mapa completo</h2></div>
-    <p style="color:var(--muted);font-size:14px;max-width:640px;margin-bottom:32px;line-height:1.7;">
-      9 instituciones han publicado cestas de reconstrucción de Ucrania. Las empresas con mayor solapamiento representan el máximo consenso institucional y menor riesgo de selección.
+    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">TOP 6 — Mejores Oportunidades Fuera de Cestas</h2></div>
+    <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:32px;line-height:1.7;">
+      Las 6 mejores empresas no españolas con 0 ó 1 aparición en cestas institucionales, seleccionadas por su posicionamiento directo para beneficiarse de la reconstrucción de Ucrania. Análisis fundamental completo.
     </p>
-    <div style="margin-bottom:40px;">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--font-m);letter-spacing:.05em;">EMPRESAS EN 2+ CESTAS</div>
-      <div id="ov-list"></div>
-    </div>
-    <div class="tabs" id="tabs2">
-      <button class="tab active" data-f2="all">Todas</button>
-      <button class="tab" data-f2="ms">Morgan Stanley</button>
-      <button class="tab" data-f2="gs">Goldman Sachs</button>
-      <button class="tab" data-f2="bofa">Bank of America</button>
-      <button class="tab" data-f2="erste">Erste Group</button>
-      <button class="tab" data-f2="jeff">Jefferies</button>
-      <button class="tab" data-f2="jpm">JPMorgan</button>
-      <button class="tab" data-f2="citi">Citi</button>
-      <button class="tab" data-f2="db">Deutsche Bank</button>
-      <button class="tab" data-f2="barc">Barclays</button>
-      <button class="tab" data-f2="new">Solo nuevas</button>
-    </div>
     <div class="cards-grid" id="cards2"></div>
   </div>
 </div>
@@ -609,6 +592,7 @@
 // DATA
 // =============================================
 const companies = [
+  // ── SECCIÓN 01: Empresas en 2+ Cestas Institucionales ──────────────────────
   {
     name:"Wienerberger", ticker:"VIE:WIE", sector:"materiales",
     price:15.2, target:21.3,
@@ -700,24 +684,6 @@ const companies = [
     note:"La joya oculta de la lista. Solo cotiza en Varsovia. ROE del 31% con deuda casi cero."
   },
   {
-    name:"Acciona Energía", ticker:"BME:ANE", sector:"energia",
-    price:16.8, target:22.5,
-    pe:14.8, evEbitda:9.2, pfcf:12.0, pventas:1.8,
-    roe:7.8, roic:6.2, margenEbit:22.0, margenNeto:8.5,
-    deudaEbitda:4.8, cobertura:3.2, creditRating:"BB+",
-    revenueGrowth:10, epsGrowth:20, revEps:"Revisiones positivas 2026",
-    div:2.1, upside:28, retBase:38, retPaz:75, risk:4, dep:"Alta",
-    rating:"BUY", rc:"r-buy", top:true,
-    ms:0, gs:0, bofa:0, erste:0, prev:true,
-    mktCap:"2.6B€", employees:3800,
-    timingType:"wait",
-    timingLabel:"Esperar corrección",
-    timingText:"Ya subió 40% desde mínimos. Esperar pullback al rango €14-15 para entrar con mejor riesgo/recompensa. La deuda es el principal punto de atención (4.8x EBITDA). Tiene activos reales en Ucrania — es especulativa pero con fundamento.",
-    catalysts:"57.6 MWp solar ya operativos en Ucrania. Primera mover advantage. Estándares UE requieren renovables.",
-    risks:"Deuda alta (4.8x). Regulación eléctrica española cambiante. Sensible a tipos de interés.",
-    note:"La más arriesgada pero con activos físicos sobre el terreno ucraniano. Acciona tiene piel en el juego."
-  },
-  {
     name:"Holcim", ticker:"SWX:HOLN", sector:"materiales",
     price:92, target:108,
     pe:18.2, evEbitda:8.4, pfcf:14.5, pventas:1.1,
@@ -771,8 +737,311 @@ const companies = [
     risks:"Múltiplo P/E 44x injustificado. Muy lejos de valor justo. Alta volatilidad.",
     note:"Gran empresa, precio incorrecto. No entrar ahora."
   },
+  // ── 7 Siemens AG (GS + BofA) ───────────────────────────────────────────────
   {
-    name:"ABB", ticker:"SWX:ABBN", sector:"energia",
+    name:"Siemens AG", ticker:"ETR:SIE", sector:"industrial diversificado",
+    price:195, target:234,
+    pe:24, evEbitda:15, pfcf:20, pventas:1.5,
+    roe:20, roic:13, margenEbit:13, margenNeto:11,
+    deudaEbitda:1.0, cobertura:12, creditRating:"A+",
+    revenueGrowth:4, epsGrowth:8, revEps:"Neutral. Beneficia de infraestructura UE y contratos defensa",
+    div:2.5, upside:20, retBase:30, retPaz:55, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:1, bofa:1, erste:0,
+    mktCap:"€118B", employees:320000,
+    timingType:"wait", timingLabel:"Esperar corrección 10%",
+    timingText:"Excelente calidad (A+, ROE 20%) pero cotiza a múltiplo justo. Esperar pullback al rango €170-180 para entrar con margen de seguridad.",
+    catalysts:"Automatización, redes inteligentes y ferroviario. Backlog récord. La modernización ferroviaria ucraniana (ancho de vía europeo) es su mercado natural.",
+    risks:"P/E 24x no deja margen de error. Ciclo industrial puede enfriar márgenes. Muy grande para moverse mucho.",
+    note:"La calidad industrial de referencia. Backlog récord. Rating A+."
+  },
+  // ── 8 Assa Abloy (MS + GS + BofA) ─────────────────────────────────────────
+  {
+    name:"Assa Abloy", ticker:"OM:ASSA-B", sector:"seguridad & acceso",
+    price:290, target:345,
+    pe:24.9, evEbitda:14.5, pfcf:20, pventas:2.6,
+    roe:17, roic:13, margenEbit:15, margenNeto:10.5,
+    deudaEbitda:2.0, cobertura:7.5, creditRating:"BBB+",
+    revenueGrowth:7, epsGrowth:10, revEps:"Revisiones neutras-positivas. Integración adquisiciones en curso",
+    div:1.8, upside:18, retBase:28, retPaz:52, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:1, gs:1, bofa:1, erste:0,
+    mktCap:"€34B", employees:62000,
+    timingType:"wait", timingLabel:"Esperar pullback 10-15%",
+    timingText:"Cotiza cerca de máximos históricos. Esperar retroceso al rango 240-260 SEK para entrar con margen de seguridad. La tesis es excelente pero el precio ya descuenta mucho.",
+    catalysts:"Líder mundial en sistemas de acceso y seguridad. Cada edificio reconstruido en Ucrania necesita cerraduras, controles de acceso electrónico y puertas de seguridad. Exposición directa a oleada de nueva construcción.",
+    risks:"P/E 24.9x exigente para sector maduro. Crecimiento mayormente adquisitivo. Integración ASSA-ABLOY + HID pendiente.",
+    note:"Mayor fabricante mundial de sistemas de cierre. Millones de puertas/ventanas a reponer en Ucrania."
+  },
+  // ── 9 Sika AG (GS + BofA + Erste) ─────────────────────────────────────────
+  {
+    name:"Sika AG", ticker:"SWX:SIKA", sector:"química construcción",
+    price:230, target:280,
+    pe:30, evEbitda:19, pfcf:25, pventas:3.5,
+    roe:24, roic:16, margenEbit:17, margenNeto:11.5,
+    deudaEbitda:1.8, cobertura:9, creditRating:"A-",
+    revenueGrowth:8, epsGrowth:12, revEps:"Revisiones positivas tras integración MBCC. Márgenes en expansión",
+    div:1.3, upside:22, retBase:32, retPaz:58, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:1, bofa:1, erste:1,
+    mktCap:"CHF 40B", employees:33000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"Valoración razonable para un negocio de esta calidad. La integración de MBCC añade CHF 3B de revenue incremental. Pricing power excepcional — puede repercutir inflación de costes.",
+    catalysts:"Líder mundial en adhesivos, sellantes e impermeabilizantes para construcción. Absolutamente indispensable en cualquier proceso constructivo: cada m² de Ucrania que se reconstruya requiere productos Sika.",
+    risks:"P/E 30x exige ejecución perfecta. La integración MBCC añade complejidad. Exposición CHF puede penalizar en FX.",
+    note:"Líder global aditivos hormigón. Márgenes altos diferenciados. 3 cestas institucionales."
+  },
+  // ── 10 Kingspan Group (GS + BofA) ─────────────────────────────────────────
+  {
+    name:"Kingspan Group", ticker:"ISE:KRX", sector:"aislamiento & envolvente",
+    price:68, target:84,
+    pe:23, evEbitda:15, pfcf:22, pventas:1.6,
+    roe:19, roic:13, margenEbit:9, margenNeto:7,
+    deudaEbitda:1.5, cobertura:8, creditRating:"BBB+",
+    revenueGrowth:9, epsGrowth:14, revEps:"Revisiones positivas 2026. Fábrica Ucrania anunciada",
+    div:0.4, upside:24, retBase:38, retPaz:68, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:1, bofa:1, erste:0,
+    mktCap:"€13B", employees:21000,
+    timingType:"now", timingLabel:"Entrar ahora — first mover",
+    timingText:"Primera empresa occidental en comprometer inversión física en Ucrania: fábrica de paneles €280M anunciada en 2024. First mover advantage real. Entrada razonable al precio actual.",
+    catalysts:"Líder europeo en paneles aislantes de alto rendimiento. Normativas energéticas UE obligan a usar sus soluciones en toda nueva construcción ucraniana. Fábrica propia en Ucrania = ventaja logística única.",
+    risks:"Margen EBIT 9% moderado vs sector. Fábrica Ucrania implica riesgo de ejecución. Exposición EUR/GBP.",
+    note:"Primera empresa en invertir físicamente en Ucrania: fábrica €280M anunciada."
+  },
+  // ── 11 Rockwool International (GS + Erste) ────────────────────────────────
+  {
+    name:"Rockwool International", ticker:"CPH:ROCK-B", sector:"aislamiento mineral",
+    price:2800, target:3360,
+    pe:20, evEbitda:10, pfcf:15, pventas:1.5,
+    roe:20, roic:15, margenEbit:15, margenNeto:10,
+    deudaEbitda:1.2, cobertura:10, creditRating:"BBB+",
+    revenueGrowth:6, epsGrowth:10, revEps:"Estable con revisiones leves al alza. Demanda estructural en Europa",
+    div:1.5, upside:20, retBase:30, retPaz:55, risk:2, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:1, bofa:0, erste:1,
+    mktCap:"€9B", employees:12000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"Valoración razonable con dividendo estable. Posición de monopolio efectivo en lana mineral — barreras de entrada altísimas. Demanda estructural por normativas Net Zero independiente de Ucrania.",
+    catalysts:"Productor dominante de lana de roca para aislamiento térmico y acústico. Exigencias UE para reconstrucción Ucrania generan demanda estructural. Barreras de entrada altísimas por proximidad a canteras y escala.",
+    risks:"Cotiza en DKK — riesgo divisa para inversor europeo. Crecimiento moderado en escenario sin paz. Capacidad limitada para expansión rápida.",
+    note:"Lana de roca para eficiencia energética. Estándares UE Ucrania. Monopolio efectivo."
+  },
+  // ── 12 Raiffeisen Bank Intl. (BofA + Erste) ───────────────────────────────
+  {
+    name:"Raiffeisen Bank Intl.", ticker:"VIE:RBI", sector:"banca CEE",
+    price:18, target:30,
+    pe:7, evEbitda:null, pfcf:null, pventas:null,
+    roe:16, roic:null, margenEbit:null, margenNeto:14,
+    deudaEbitda:null, cobertura:null, creditRating:"BBB",
+    revenueGrowth:5, epsGrowth:8, revEps:"Revisiones al alza. Reducción exposición rusa es catalizador positivo",
+    div:5.5, upside:62, retBase:65, retPaz:110, risk:4, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:1, erste:1,
+    mktCap:"€6B", employees:43000,
+    timingType:"now", timingLabel:"Entrar ahora — alta convicción",
+    timingText:"P/E 7x y dividendo 5.5% es la combinación más barata de toda la lista. El mercado descuenta el peor escenario ruso. Cada paso hacia la resolución de su filial rusa es un catalizador masivo. Mayor banco en Europa del Este = infraestructura clave para fondos UE.",
+    catalysts:"Mayor banco austriaco con mayor red en Europa Central y del Este. Infraestructura bancaria esencial para canalizar los €588B de fondos UE/WB/EBRD hacia Ucrania. P/B 0.6x implica descuento masivo.",
+    risks:"Exposición residual filial rusa (en proceso de reducción). Regulación bancaria europea cambiante. Alta dependencia del ciclo CEE.",
+    note:"Banco más barato de Europa por P/E. Paz = resolución filial rusa = catalizador masivo."
+  },
+  // ── 13 Schneider Electric (GS + Erste) ────────────────────────────────────
+  {
+    name:"Schneider Electric", ticker:"EPA:SU", sector:"gestión energía & automatización",
+    price:188, target:216,
+    pe:30, evEbitda:19, pfcf:26, pventas:4.5,
+    roe:16, roic:13, margenEbit:18, margenNeto:12,
+    deudaEbitda:1.5, cobertura:10, creditRating:"A-",
+    revenueGrowth:9, epsGrowth:12, revEps:"Revisiones muy positivas. Backlog AI/energía récord. Doble digit guidance",
+    div:1.3, upside:15, retBase:25, retPaz:48, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:1, bofa:0, erste:1,
+    mktCap:"€108B", employees:153000,
+    timingType:"wait", timingLabel:"Esperar corrección 10%",
+    timingText:"Excelente empresa pero cotiza caro (P/E 30x). Esperar pullback al rango €160-170 para entrar con mayor margen. El upside de 15% desde precio actual es insuficiente para el riesgo de valoración.",
+    catalysts:"Líder mundial en gestión energética. La reconstrucción del sistema eléctrico ucraniano (redes, subestaciones, distribución inteligente) es el núcleo de su negocio. Contratos directos con EBRD y UE.",
+    risks:"P/E 30x exige perfección. Muy grande para crecer rápido. Dependencia de ciclo de inversión en infraestructura.",
+    note:"Redes eléctricas inteligentes para modernización ucraniana."
+  },
+  // ── 14 Buzzi Unicem (MS + Erste) ──────────────────────────────────────────
+  {
+    name:"Buzzi Unicem", ticker:"BIT:BZU", sector:"cemento & materiales",
+    price:26, target:35,
+    pe:8, evEbitda:5.5, pfcf:8, pventas:1.5,
+    roe:20, roic:13, margenEbit:23, margenNeto:17,
+    deudaEbitda:0.5, cobertura:25, creditRating:"BBB",
+    revenueGrowth:5, epsGrowth:12, revEps:"Revisiones al alza por márgenes récord en USA y caja neta casi alcanzada",
+    div:2.5, upside:35, retBase:48, retPaz:82, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:1, gs:0, bofa:0, erste:1,
+    mktCap:"€6.5B", employees:11000,
+    timingType:"now", timingLabel:"Entrar ahora — muy barata",
+    timingText:"P/E 8x con margen EBITDA ~30% y prácticamente sin deuda es una combinación excepcional. Muy similar a Heidelberg Materials pero un 40% más barata en múltiplos. Upside asimétrico enorme.",
+    catalysts:"Cementera italiana con fuerte posición en Europa del Este (Polonia, Rep. Checa, Ucrania histórica). El cemento es el insumo más básico de cualquier reconstrucción masiva. Márgenes EBITDA superiores al sector (~30%).",
+    risks:"Alta ciclicidad del sector cemento. Menos diversificada que Heidelberg o CRH. Liquidez moderada en Bolsa italiana.",
+    note:"3er cementero europeo. Cotiza muy barato. Cesta MS + Erste."
+  },
+  // ── 15 Saint-Gobain (Jefferies + JPMorgan + Citi) ─────────────────────────
+  {
+    name:"Saint-Gobain", ticker:"EPA:SGO", sector:"materiales construcción",
+    price:72, target:92,
+    pe:13, evEbitda:7.5, pfcf:12, pventas:0.5,
+    roe:17, roic:11, margenEbit:9.5, margenNeto:6.5,
+    deudaEbitda:1.6, cobertura:7, creditRating:"BBB+",
+    revenueGrowth:4, epsGrowth:10, revEps:"Positivo. Programa de recompras en curso. Márgenes en expansión",
+    div:2.5, upside:26, retBase:38, retPaz:68, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:0, bofa:0, erste:0, jeff:1, jpm:1, citi:1,
+    mktCap:"€23B", employees:160000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"P/E 13x razonable para la calidad del negocio. Triple cobertura institucional (Jefferies + JPMorgan + Citi). Complementario a Wienerberger y Holcim en reconstrucción residencial ucraniana.",
+    catalysts:"Fabricante mundial de materiales de construcción (vidrio, aislamiento, morteros, tuberías). Presente en 70+ países con capacidad logística para suministrar a Ucrania a escala. División High Performance Solutions aplicable a edificios eficientes.",
+    risks:"Margen neto 6.5% moderado para el tamaño. Alta ciclicidad de construcción. Competencia intensa en materiales básicos.",
+    note:"3 cestas institucionales (Jefferies + JPMorgan + Citi). Líder mundial vidrio, aislamiento y tuberías."
+  },
+  // ── 16 Strabag SE (Erste + Barclays) ──────────────────────────────────────
+  {
+    name:"Strabag SE", ticker:"VIE:STR", sector:"construcción & ingeniería civil",
+    price:38, target:50,
+    pe:9, evEbitda:3.5, pfcf:8, pventas:0.2,
+    roe:12, roic:10, margenEbit:4.5, margenNeto:3,
+    deudaEbitda:1.0, cobertura:8, creditRating:"BBB",
+    revenueGrowth:6, epsGrowth:10, revEps:"Revisiones al alza. Backlog €26B récord histórico",
+    div:4.0, upside:30, retBase:42, retPaz:78, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:0, erste:1, jeff:0, jpm:0, citi:0, db:0, barc:1,
+    mktCap:"€3.5B", employees:86000,
+    timingType:"now", timingLabel:"Entrar ahora — pure play Ucrania",
+    timingText:"Mayor constructora austriaca con la presencia histórica más profunda en Europa del Este. Ya participando activamente en contratos de reconstrucción temprana en Ucrania. Backlog €26B récord. P/E 9x con dividendo 4% es muy barato.",
+    catalysts:"Mayor constructora austriaca con presencia en CEE. Ya ejecutando contratos en Ucrania. Conocimiento del mercado, relaciones con autoridades ucranianas y capacidad técnica son ventajas competitivas únicas. Valoración muy barata.",
+    risks:"Márgenes de construcción siempre bajos (3%). Alta dependencia de obra pública. Riesgo de ejecución en mercados emergentes.",
+    note:"2ª constructora europea. Backlog €26B. Muy posicionada para contratos en Ucrania."
+  },
+  // ── 17 Veolia Environment (JPMorgan + Citi) ───────────────────────────────
+  {
+    name:"Veolia Environment", ticker:"EPA:VIE", sector:"agua & gestión ambiental",
+    price:26, target:32,
+    pe:15, evEbitda:7.5, pfcf:14, pventas:0.3,
+    roe:12, roic:9, margenEbit:7.5, margenNeto:3.5,
+    deudaEbitda:3.2, cobertura:4.5, creditRating:"BBB",
+    revenueGrowth:5, epsGrowth:8, revEps:"Estable con dividendo creciente. Contratos agua a largo plazo",
+    div:4.5, upside:22, retBase:32, retPaz:55, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:0, bofa:0, erste:0, jeff:0, jpm:1, citi:1,
+    mktCap:"€15B", employees:213000,
+    timingType:"now", timingLabel:"Entrar ahora — defensivo",
+    timingText:"La más defensiva de las nuevas incorporaciones. Dividendo 4.5% + tesis agua/saneamiento independiente de los frentes militares. Contratos de largo plazo = ingresos predecibles. Acumulación válida ya.",
+    catalysts:"Líder mundial en servicios de agua, residuos y energía. La reconstrucción de Ucrania requiere: sistemas de agua potable, tratamiento aguas residuales, gestión de escombros de guerra y redes de calefacción urbana a escala masiva.",
+    risks:"Deuda 3.2x EBITDA elevada (característica del sector utilities). Margen neto 3.5% bajo. Regulación tarifaria puede limitar upside.",
+    note:"JPMorgan + Citi coinciden. Ucrania necesita reconstruir toda su infraestructura de agua y saneamiento (>$30B en daños)."
+  }
+];
+
+// ── SECCIÓN 03: TOP 6 — Mejores Oportunidades Fuera de Cestas ─────────────
+const top6Section3 = [
+  {
+    name:"ArcelorMittal", ticker:"AMS:MT", sector:"acero",
+    price:22.5, target:29.0,
+    pe:16.0, evEbitda:5.9, pfcf:6.5, pventas:0.3,
+    roe:6.1, roic:5.8, margenEbit:5.2, margenNeto:2.8,
+    deudaEbitda:0.9, cobertura:8.1, creditRating:"BBB",
+    revenueGrowth:3, epsGrowth:18, revEps:"Revisiones al alza por acero",
+    div:1.9, upside:25, retBase:40, retPaz:70, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:0, erste:0,
+    mktCap:"€20B", employees:155000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"EV/EBITDA 5.9x es ridículamente barato para el mayor productor de acero del mundo. Deuda muy baja (0.9x). Planta histórica en Kryvyi Rih lista para la reconstrucción.",
+    catalysts:"Acero esencial para puentes, ferrocarriles, estructuras. Presencia física en Ucrania. Ciclo de commodities favorable. EV/EBITDA 5.9x muy barato.",
+    risks:"Cíclico. Sensible a precio del acero. Competencia china con dumping. Geopolítica de su planta ucraniana.",
+    note:"La más directa sobre el acero ucraniano. Deuda casi cero. EV/EBITDA baratísimo."
+  },
+  {
+    name:"Budimex", ticker:"WAR:BDX", sector:"infraestructura",
+    price:395, target:475,
+    pe:29.6, evEbitda:14.2, pfcf:22.0, pventas:0.5,
+    roe:31.5, roic:24.8, margenEbit:6.2, margenNeto:4.1,
+    deudaEbitda:0.2, cobertura:35, creditRating:"ND (small cap)",
+    revenueGrowth:12, epsGrowth:15, revEps:"Positivo, pocos analistas — ineficiencia de mercado",
+    div:4.2, upside:18, retBase:45, retPaz:80, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:0, erste:0,
+    mktCap:"€2.1B", employees:13000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"Poca cobertura de analistas = ineficiencia de mercado = oportunidad. ROE 31%, caja neta, dividendo 4.2%. La joya menos conocida. Acumular antes de que la paz ponga el foco en Polonia.",
+    catalysts:"Polonia es el hub logístico de Ucrania. Backlog récord. ROE estructuralmente alto por modelo de concesiones. Mayor constructora polaca con acceso privilegiado a contratos frontera.",
+    risks:"Liquidez limitada (small cap). Poca cobertura analítica. Sensible a obra pública polaca.",
+    note:"La joya oculta de la lista. Solo cotiza en Varsovia. ROE del 31% con deuda casi cero."
+  },
+  {
+    name:"ABB", ticker:"SWX:ABBN", sector:"electrificación industrial",
+    price:52, target:53,
+    pe:35.8, evEbitda:24, pfcf:28, pventas:3.5,
+    roe:29.4, roic:21.5, margenEbit:18.5, margenNeto:12.1,
+    deudaEbitda:0.1, cobertura:45, creditRating:"A",
+    revenueGrowth:5, epsGrowth:8, revEps:"Neutral. Backlog robotics e infraestructura fuerte",
+    div:1.4, upside:0, retBase:20, retPaz:38, risk:1, dep:"Baja",
+    rating:"HOLD", rc:"r-hold", top:false,
+    ms:0, gs:1, bofa:0, erste:0,
+    mktCap:"€105B", employees:105000,
+    timingType:"watch", timingLabel:"Esperar corrección 15-20%",
+    timingText:"ROE 29% y deuda casi nula (0.1x) hacen de ABB una empresa de calidad excepcional. El problema es el precio: cotiza en máximos históricos sin upside. Esperar corrección del 15-20% para una entrada interesante.",
+    catalysts:"Subestaciones eléctricas y automatización industrial para Ucrania. ROE estructural del 29%. Rating A. Líder en electrificación y robótica industrial.",
+    risks:"P/E 35.8x con upside 0% = perfección ya cotizada. Ciclo industrial puede enfriar márgenes. Cotiza en máximos históricos.",
+    note:"La mejor calidad de negocio de toda la lista. El precio no acompaña ahora mismo."
+  },
+  {
+    name:"Prysmian", ticker:"BIT:PRY", sector:"cables & redes eléctricas",
+    price:62, target:62,
+    pe:19.5, evEbitda:12.1, pfcf:14.8, pventas:0.8,
+    roe:18.5, roic:13.2, margenEbit:8.5, margenNeto:4.2,
+    deudaEbitda:2.2, cobertura:5.8, creditRating:"BBB",
+    revenueGrowth:8, epsGrowth:12, revEps:"Positivo, momentum fuerte. Offshore wind + AI datacenters + Ucrania",
+    div:1.8, upside:-2, retBase:22, retPaz:42, risk:2, dep:"Baja",
+    rating:"HOLD", rc:"r-hold", top:false,
+    ms:0, gs:0, bofa:1, erste:0,
+    mktCap:"€13B", employees:30000,
+    timingType:"wait", timingLabel:"Esperar pullback €52-55",
+    timingText:"Excelente empresa pero subió 76% en un año. Esperar pullback al rango €52-55 para entrar. El catalizador de cables offshore y Ucrania es real pero el mercado ya lo ha cotizado.",
+    catalysts:"Líder mundial cables. Offshore wind + cables red eléctrica + data centers + reconstrucción ucraniana. Múltiples catalizadores simultáneos e independientes.",
+    risks:"Múltiplo exigente con upside casi nulo en consenso. Volatilidad por ciclo de materias primas. Muy lejos del mínimo del año.",
+    note:"Negocio excelente, timing correcto pendiente. Watchlist."
+  },
+  {
+    name:"Voestalpine AG", ticker:"VIE:VOE", sector:"acero especial & ferroviario",
+    price:22, target:31,
+    pe:10, evEbitda:5, pfcf:8, pventas:0.25,
+    roe:9, roic:8, margenEbit:6, margenNeto:4,
+    deudaEbitda:2.0, cobertura:5, creditRating:"BBB-",
+    revenueGrowth:4, epsGrowth:8, revEps:"Revisiones al alza por demanda ferroviaria europea y Green Deal",
+    div:3.5, upside:40, retBase:48, retPaz:80, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:0, bofa:0, erste:0, jeff:0, jpm:0, citi:0, db:1,
+    mktCap:"€3.8B", employees:51000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"Deutsche Bank la incluye como top pick de reconstrucción. P/E 10x con dividendo 3.5% es muy barato. La modernización ferroviaria ucraniana (21.700 km de red) requiere raíles UIC que Voestalpine fabrica en exclusiva para gran parte de Europa.",
+    catalysts:"Fabricante austríaco de acero de alta calidad y perfiles de precisión. Suministrador clave de raíles ferroviarios, vigas estructurales y acero para construcción pesada. La modernización ferroviaria ucraniana al estándar europeo es su mercado natural.",
+    risks:"Acero especial sigue siendo cíclico. Competencia de acerías asiáticas. Transición energética puede reducir demanda acero industrial a largo plazo.",
+    note:"Deutsche Bank top pick. Especialista en acero para ferrocarriles y infraestructura de transporte. Ucrania tiene 21.700 km de red ferroviaria."
+  },
+  {
+    name:"Porr AG", ticker:"VIE:POS", sector:"construcción & obra civil",
+    price:14, target:20,
+    pe:9, evEbitda:3.5, pfcf:9, pventas:0.11,
+    roe:11, roic:8, margenEbit:2.5, margenNeto:1.8,
+    deudaEbitda:1.2, cobertura:6, creditRating:"BB+",
+    revenueGrowth:8, epsGrowth:15, revEps:"Revisiones positivas 2025-2026. Contratos CEE en alza",
+    div:4.0, upside:45, retBase:52, retPaz:90, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:0, bofa:0, erste:0, jeff:0, jpm:0, citi:0, db:0, barc:1,
+    mktCap:"€650M", employees:20000,
+    timingType:"now", timingLabel:"Entrar ahora — máximo upside",
+    timingText:"Barclays la incluye como su nombre más puro en reconstrucción ucraniana. Small cap con expertise exacto para infraestructura de transporte y obras civiles. Cualquier contrato ucraniano de escala media tendría impacto material en resultados.",
+    catalysts:"Constructora austriaca mediana con presencia operativa en Europa del Este (Polonia, Rep. Checa, Eslovaquia, Rumanía). Especialista en infraestructura de transporte (autopistas, túneles, puentes) y edificación pública.",
+    risks:"Márgenes de construcción bajos (1.8% neto). Liquidez reducida en Viena. Alta dependencia de obra pública. Riesgo de ejecución en mercados emergentes.",
+    note:"Barclays top pick para reconstrucción. Small cap con expertise en obras civiles complejas."
+  }
+];
     price:52, target:53,
     pe:35.8, evEbitda:24, pfcf:28, pventas:3.5,
     roe:29.4, roic:21.5, margenEbit:18.5, margenNeto:12.1,
@@ -878,27 +1147,16 @@ const spanishCompanies = [
   }
 ];
 
+// allBasket: todas las empresas con al menos 1 cesta (para overlap y filtros)
+// Incluye companies (17) + empresas de 1 sola cesta no incluidas en secciones principales
 const allBasket = [
-  ...companies.filter(c=>c.ms||c.gs||c.bofa||c.erste||c.jeff||c.jpm||c.citi||c.db||c.barc),
-  {name:"Assa Abloy",ticker:"OM:ASSA B",sector:"seguridad/cerrajería",pe:20.1,evEbitda:14,upside:22,div:1.5,roe:22,retBase:35,retPaz:58,risk:1,dep:"Media",rating:"BUY",rc:"r-buy",ms:1,gs:1,bofa:1,erste:0,prev:false,note:"Mayor fabricante mundial de sistemas de cierre. Millones de puertas/ventanas a reponer en Ucrania.",timingType:"wait",timingLabel:"Esperar pullback",timingText:"Cotiza cerca de máximos. Esperar retroceso 10-15%."},
-  {name:"Sika AG",ticker:"SWX:SIKA",sector:"especialidades construcción",pe:28,evEbitda:17.5,upside:20,div:1.1,roe:24,retBase:33,retPaz:55,risk:1,dep:"Media",rating:"BUY",rc:"r-buy",ms:0,gs:1,bofa:1,erste:1,prev:false,note:"Líder global aditivos hormigón. Márgenes altos diferenciados.",timingType:"now",timingLabel:"Entrar ahora",timingText:"Valoración razonable para la calidad del negocio."},
-  {name:"Kingspan Group",ticker:"ISE:KRX",sector:"aislamiento industrial",pe:24.5,evEbitda:13.8,upside:24,div:0.7,roe:20.1,retBase:40,retPaz:65,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:1,bofa:1,erste:0,prev:false,note:"Primera empresa en invertir físicamente en Ucrania: fábrica €280M anunciada.",timingType:"now",timingLabel:"Entrar ahora",timingText:"First mover advantage real. Inversión ya comprometida."},
-  {name:"Rockwool",ticker:"CPH:ROCK B",sector:"aislamiento mineral",pe:16.8,evEbitda:9.5,upside:18,div:1.3,roe:16.5,retBase:28,retPaz:50,risk:2,dep:"Media",rating:"BUY",rc:"r-buy",ms:0,gs:1,bofa:0,erste:1,prev:false,note:"Lana de roca para eficiencia energética. Estándares UE Ucrania.",timingType:"now",timingLabel:"Entrar ahora",timingText:"Valoración razonable, buen dividendo."},
-  {name:"Raiffeisen Bank Intl",ticker:"VIE:RBI",sector:"banca CEE",pe:5.8,evEbitda:null,upside:42,div:5.2,roe:14.5,retBase:45,retPaz:85,risk:4,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:1,erste:1,prev:false,note:"Banco más barato de Europa por P/E. Paz = resolución filial rusa = catalizador masivo.",timingType:"now",timingLabel:"Entrar ahora — alta convicción",timingText:"P/E 5.8x es el más barato de toda la lista. El mercado está descontando el peor escenario para su filial rusa. Si hay paz, explosión al alza."},
-  {name:"Schneider Electric",ticker:"EPA:SU",sector:"gestión de energía",pe:29,evEbitda:19,upside:8,div:1.8,roe:16.8,retBase:18,retPaz:35,risk:1,dep:"Media",rating:"HOLD",rc:"r-hold",ms:0,gs:1,bofa:0,erste:1,prev:false,note:"Redes eléctricas inteligentes para modernización ucraniana.",timingType:"wait",timingLabel:"Esperar corrección",timingText:"Cotiza caro. Esperar pull-back del 10%."},
-  {name:"Siemens AG",ticker:"ETR:SIE",sector:"industrial diversificado",pe:22,evEbitda:13.5,upside:10,div:2.8,roe:18,retBase:20,retPaz:38,risk:1,dep:"Media",rating:"HOLD",rc:"r-hold",ms:0,gs:1,bofa:1,erste:0,prev:false,note:"Automatización y digitalización industrial post-reconstrucción.",timingType:"wait",timingLabel:"Esperar nivel justo",timingText:"Buen negocio pero cotiza a múltiplo justo."},
-  {name:"MOL Group",ticker:"BSE:MOL",sector:"energía CEE",pe:8,evEbitda:4.5,upside:35,div:9,roe:12,retBase:40,retPaz:65,risk:3,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:1,prev:false,note:"P/E 8x, dividendo 9%. Energética húngara infravalorada.",timingType:"now",timingLabel:"Entrar ahora",timingText:"P/E 8x y dividendo 9% es una combinación irresistible."},
-  {name:"Iberdrola",ticker:"BME:IBE",sector:"utilities / renovables",pe:18.5,evEbitda:10.2,upside:12,div:4.5,roe:11,retBase:22,retPaz:38,risk:1,dep:"Baja",rating:"HOLD",rc:"r-hold",ms:0,gs:1,bofa:0,erste:0,prev:false,note:"Líder mundial renovables. Beneficia de reconstrucción eléctrica.",timingType:"now",timingLabel:"Entrar ahora — defensivo",timingText:"Defensiva con dividendo 4.5%. Válida como anchor de cartera."},
-  {name:"Buzzi Unicem",ticker:"BIT:BZU",sector:"cemento italiano",pe:9.5,evEbitda:5.2,upside:28,div:3.5,roe:12,retBase:35,retPaz:60,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:1,gs:0,bofa:0,erste:1,prev:false,note:"3er cementero europeo. Cotiza muy barato. Cesta MS + Erste.",timingType:"now",timingLabel:"Entrar ahora",timingText:"P/E 9.5x y upside 28%. Muy similar a Heidelberg pero más pequeño."},
-  {name:"Samsung C&T",ticker:"KRX:028260",sector:"construcción Corea",pe:18,evEbitda:9.5,upside:15,div:1.2,roe:8.5,retBase:25,retPaz:48,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:1,gs:0,bofa:0,erste:0,jeff:0,jpm:0,citi:0,db:0,barc:0,prev:false,note:"Identificado como core de la cesta MS Rebuild Ukraine. Conglomerado coreano de construcción.",timingType:"wait",timingLabel:"Esperar — ángulo geopolítico",timingText:"Complejidad adicional de ser acción coreana. Para el inversor avanzado."},
-  // NUEVAS CESTAS — Jefferies, JPMorgan, Citi, Deutsche Bank, Barclays (2024-2026)
-  {name:"Saint-Gobain",ticker:"EPA:SGO",sector:"materiales construcción",pe:13.5,evEbitda:8.2,upside:26,div:2.9,roe:16.8,retBase:38,retPaz:68,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:0,jeff:1,jpm:1,citi:1,db:0,barc:0,prev:false,note:"3 cestas institucionales (Jefferies + JPMorgan + Citi). Líder mundial vidrio, aislamiento y tuberías. €80B+ de productos esenciales para reconstrucción residencial ucraniana. Márgenes en expansión.",timingType:"now",timingLabel:"Entrar ahora",timingText:"P/E 13.5x razonable para la calidad del negocio. Triple cobertura institucional. Complementario a Wienerberger y Holcim en reconstrucción residencial."},
-  {name:"Strabag SE",ticker:"VIE:STR",sector:"construcción / ingeniería civil",pe:12.1,evEbitda:7.4,upside:31,div:3.8,roe:14.2,retBase:42,retPaz:78,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:1,jeff:0,jpm:0,citi:0,db:0,barc:1,prev:false,note:"2ª constructora europea por tamaño. Barclays + Erste coinciden. Sede Austria, presencia CEE masiva. Backlog récord €26B. Muy posicionada para contratos carreteras, puentes y vivienda en Ucrania.",timingType:"now",timingLabel:"Entrar ahora",timingText:"P/E 12x con dividendo 3.8% y backlog €26B. Una de las mejor posicionadas geográficamente para Ucrania. Infravalorada vs peers."},
-  {name:"Voestalpine",ticker:"VIE:VOE",sector:"acero / infraestructura ferroviaria",pe:10.8,evEbitda:5.6,upside:34,div:4.1,roe:11.5,retBase:40,retPaz:72,risk:3,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:0,jeff:0,jpm:0,citi:0,db:1,barc:0,prev:false,note:"Deutsche Bank top pick. Especialista en acero para ferrocarriles y infraestructura de transporte. Ucrania tiene 21.700 km de red ferroviaria a reconstruir — catalizador enorme. P/E 10.8x muy barato.",timingType:"now",timingLabel:"Entrar ahora",timingText:"Infraestructura ferroviaria ucraniana es el corazón logístico de la reconstrucción. Voestalpine es el proveedor natural de raíles y componentes."},
-  {name:"Thyssenkrupp",ticker:"ETR:TKA",sector:"acero / industrial diversificado",pe:9.2,evEbitda:4.8,upside:38,div:0,roe:7.1,retBase:35,retPaz:65,risk:4,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:0,jeff:0,jpm:0,citi:0,db:1,barc:0,prev:false,note:"Deutsche Bank incluye por exposición a acero estructural y componentes industriales. Mayor upside de la lista pero también mayor riesgo (reestructuración interna en curso). Potencial asimétrico si Ucrania activa demanda acero.",timingType:"watch",timingLabel:"Esperar gran corrección",timingText:"Alto potencial pero reestructuración interna añade riesgo de ejecución. Esperar señales de estabilización operativa antes de entrar. Solo para tolerancia de riesgo alta."},
-  {name:"Porr AG",ticker:"VIE:POS",sector:"construcción / obra civil",pe:11.4,evEbitda:6.9,upside:28,div:2.5,roe:12.8,retBase:38,retPaz:70,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:0,jeff:0,jpm:0,citi:0,db:0,barc:1,prev:false,note:"Barclays top pick para reconstrucción. Constructora austriaca especializada en obras civiles complejas (túneles, metros, puentes). Presencia activa en Europa del Este. Small cap con liquidez limitada pero upside enorme.",timingType:"now",timingLabel:"Entrar ahora",timingText:"Pequeña capitalización con expertise exacto para infraestructura de transporte y obras civiles. Barclays la incluye como su nombre más puro en reconstrucción ucraniana."},
-  {name:"Imerys",ticker:"EPA:NK",sector:"minerales industriales / construcción",pe:14.2,evEbitda:8.8,upside:22,div:3.2,roe:10.5,retBase:28,retPaz:52,risk:2,dep:"Media",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:0,jeff:1,jpm:0,citi:0,db:0,barc:0,prev:false,note:"Jefferies incluye por minerales especiales para construcción (caolinita, talco, carbonato cálcico). Complementario a Wienerberger. Menor upside pero más defensivo con dividendo 3.2%.",timingType:"now",timingLabel:"Entrar ahora",timingText:"Perfil defensivo dentro de la tesis de reconstrucción. Minerales industriales con demanda estructural independiente del timing exacto de la paz."},
-  {name:"Veolia Environment",ticker:"EPA:VIE",sector:"agua / gestión ambiental",pe:16.8,evEbitda:9.5,upside:18,div:4.2,roe:13.2,retBase:25,retPaz:48,risk:1,dep:"Media",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:0,jeff:0,jpm:1,citi:1,db:0,barc:0,prev:false,note:"JPMorgan + Citi coinciden. Ucrania necesita reconstruir toda su infraestructura de agua y saneamiento (>$30B en daños). Veolia es el operador global líder. Dividendo 4.2% protege mientras llega el catalizador.",timingType:"now",timingLabel:"Entrar ahora — defensivo",timingText:"La más defensiva de las nuevas incorporaciones. Dividendo 4.2% + tesis de agua/saneamiento independiente de los frentes militares. Acumulación válida ya."},
+  ...companies,
+  // ── 1 sola cesta ──────────────────────────────────────────────────────────
+  {name:"MOL Group",ticker:"BSE:MOL",sector:"energía CEE",pe:8,evEbitda:4.5,upside:35,div:9,roe:12,retBase:40,retPaz:65,risk:3,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:1,jeff:0,jpm:0,citi:0,db:0,barc:0,prev:false,note:"P/E 8x, dividendo 9%. Energética húngara infravalorada.",timingType:"now",timingLabel:"Entrar ahora",timingText:"P/E 8x y dividendo 9% es una combinación irresistible."},
+  {name:"Iberdrola",ticker:"BME:IBE",sector:"utilities / renovables",pe:18.5,evEbitda:10.2,upside:12,div:4.5,roe:11,retBase:22,retPaz:38,risk:1,dep:"Baja",rating:"HOLD",rc:"r-hold",ms:0,gs:1,bofa:0,erste:0,jeff:0,jpm:0,citi:0,db:0,barc:0,prev:false,note:"Líder mundial renovables. Beneficia de reconstrucción eléctrica.",timingType:"now",timingLabel:"Entrar ahora — defensivo",timingText:"Defensiva con dividendo 4.5%. Válida como anchor de cartera."},
+  {name:"Samsung C&T",ticker:"KRX:028260",sector:"construcción Corea",pe:18,evEbitda:9.5,upside:15,div:1.2,roe:8.5,retBase:25,retPaz:48,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:1,gs:0,bofa:0,erste:0,jeff:0,jpm:0,citi:0,db:0,barc:0,prev:false,note:"Cesta MS Rebuild Ukraine. Conglomerado coreano de construcción.",timingType:"wait",timingLabel:"Esperar — ángulo geopolítico",timingText:"Complejidad adicional de ser acción coreana. Para el inversor avanzado."},
+  {name:"Thyssenkrupp",ticker:"ETR:TKA",sector:"acero / industrial",pe:9.2,evEbitda:4.8,upside:38,div:0,roe:7.1,retBase:35,retPaz:65,risk:4,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:0,jeff:0,jpm:0,citi:0,db:1,barc:0,prev:false,note:"Deutsche Bank incluye por exposición a acero estructural. Reestructuración interna en curso.",timingType:"watch",timingLabel:"Esperar gran corrección",timingText:"Alto potencial pero reestructuración interna añade riesgo de ejecución."},
+  {name:"Imerys",ticker:"EPA:NK",sector:"minerales industriales",pe:14.2,evEbitda:8.8,upside:22,div:3.2,roe:10.5,retBase:28,retPaz:52,risk:2,dep:"Media",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:0,jeff:1,jpm:0,citi:0,db:0,barc:0,prev:false,note:"Jefferies incluye por minerales especiales para construcción. Dividendo 3.2%.",timingType:"now",timingLabel:"Entrar ahora",timingText:"Perfil defensivo dentro de la tesis de reconstrucción."},
 ];
 
 // ============================================
@@ -986,12 +1244,23 @@ document.querySelectorAll('#tabs1 .tab').forEach(b=>b.addEventListener('click',(
   document.querySelectorAll('#tabs1 .tab').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
   const f=b.dataset.f;
-  renderGrid('cards1', f==='all'?companies:f==='top'?companies.filter(c=>c.top):companies.filter(c=>c.sector===f));
+  const sectorMap={
+    'energia':c=>['energia & utilities','gestión energía & automatización','industrial diversificado','agua & gestión ambiental'].some(s=>c.sector.toLowerCase().includes(s.split(' ')[0])),
+    'industrial':c=>['industrial','automatización','seguridad'].some(s=>c.sector.toLowerCase().includes(s))
+  };
+  let filtered;
+  if(f==='all') filtered=companies;
+  else if(f==='top') filtered=companies.filter(c=>c.top);
+  else if(sectorMap[f]) filtered=companies.filter(sectorMap[f]);
+  else filtered=companies.filter(c=>c.sector.toLowerCase().includes(f));
+  renderGrid('cards1', filtered);
 }));
 renderGrid('cards1', companies);
 renderGrid('cards-spain', spanishCompanies, true);
+// TOP 6 SECCIÓN 03
+document.getElementById('cards2').innerHTML=top6Section3.map(c=>makeFCard(c)).join('');
 
-// CESTAS
+// CESTAS (makeBasketCard aún usada para overlap/visualización interna)
 function makeBasketCard(c) {
   const allBanks = ['ms','gs','bofa','erste','jeff','jpm','citi','db','barc'];
   const bankColors = {ms:'#5b9cf6',gs:'#4ade80',bofa:'#fbbf24',erste:'#f87171',jeff:'#4ecdc4',jpm:'#a78bfa',citi:'#fb7185',db:'#e8c97d',barc:'#60a5fa'};
@@ -1025,15 +1294,6 @@ function makeBasketCard(c) {
   </div>`;
 }
 
-document.querySelectorAll('#tabs2 .tab').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('#tabs2 .tab').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  const f=b.dataset.f2;
-  const d=f==='all'?allBasket:f==='new'?allBasket.filter(c=>!c.prev):allBasket.filter(c=>c[f]);
-  document.getElementById('cards2').innerHTML=d.length?d.map(makeBasketCard).join(''):`<p style="color:var(--muted);font-size:13px;padding:20px 0;">No hay empresas en esta cesta.</p>`;
-}));
-document.getElementById('cards2').innerHTML=allBasket.map(makeBasketCard).join('');
-
 // OVERLAP
 const allBankKeys=['ms','gs','bofa','erste','jeff','jpm','citi','db','barc'];
 const bankOvColors={ms:'#185FA5',gs:'#3B6D11',bofa:'#BA7517',erste:'#993556',jeff:'#0e7490',jpm:'#6d28d9',citi:'#be123c',db:'#92400e',barc:'#1e40af'};
@@ -1052,7 +1312,7 @@ ovData.forEach(c=>{
 });
 
 // TIMING TABLE
-const allForTiming=[...companies,...spanishCompanies];
+const allForTiming=[...companies,...top6Section3,...spanishCompanies];
 const timingTbl=document.getElementById('timing-table');
 timingTbl.innerHTML=`<thead><tr>
   <th>#</th><th>Empresa</th><th>Ticker</th><th>Timing</th><th>Precio actual</th><th>Target</th><th>Entrada ideal</th><th>Retorno base</th><th>Retorno paz</th>
@@ -1071,7 +1331,7 @@ timingTbl.innerHTML=`<thead><tr>
   </tr>`;}).join('')}</tbody>`;
 
 // RANKING TABLE
-const sortedR=[...companies,...spanishCompanies].sort((a,b)=>(b.retBase+b.upside+b.div)-(a.retBase+a.upside+a.div));
+const sortedR=[...companies,...top6Section3,...spanishCompanies].sort((a,b)=>(b.retBase+b.upside+b.div)-(a.retBase+a.upside+a.div));
 document.getElementById('ranking-table').innerHTML=`<thead><tr>
   <th>#</th><th>Empresa</th><th>Ticker</th><th>Rating</th><th>P/E</th><th>EV/EBITDA</th><th>ROE</th><th>Div.</th><th>Upside</th><th>Ret. base</th><th>Ret. paz</th><th>Riesgo</th><th>Dep. paz</th>
 </tr></thead><tbody>${sortedR.map((c,i)=>`<tr>
@@ -1091,7 +1351,7 @@ document.getElementById('ranking-table').innerHTML=`<thead><tr>
 </tr>`).join('')}</tbody>`;
 
 // RISK GRID
-[...companies,...spanishCompanies].forEach(c=>{
+[...companies,...top6Section3,...spanishCompanies].forEach(c=>{
   const dots=[1,2,3,4].map(i=>`<div class="rdot" style="background:${i<=c.risk?'#fbbf24':'rgba(255,255,255,0.08)'}"></div>`).join('');
   document.getElementById('risk-grid').innerHTML+=`<div class="rc">
     <div class="rc-n">${c.name}</div>
