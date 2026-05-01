@@ -1248,7 +1248,7 @@ const bankOvLabels={ms:'MS',gs:'GS',bofa:'BofA',erste:'Erste',jeff:'Jeff',jpm:'J
 function countBanks(c){return allBankKeys.reduce((s,k)=>s+(c[k]||0),0);}
 const ovData=allBasket.filter(c=>countBanks(c)>=2).sort((a,b)=>countBanks(b)-countBanks(a));
 const ovEl=document.getElementById('ov-list');
-ovData.forEach(c=>{
+if(ovEl) ovData.forEach(c=>{
   const w=Math.round(100/allBankKeys.length)+'%';
   const segs=allBankKeys.map(k=>c[k]?`<div class="ov-seg" style="width:${w};background:${bankOvColors[k]};">${bankOvLabels[k]}</div>`:`<div style="width:${w};background:rgba(255,255,255,0.04);"></div>`).join('');
   ovEl.innerHTML+=`<div class="ov-item">
