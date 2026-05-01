@@ -1407,7 +1407,7 @@ function fmtMcap(v,ccy){
 }
 async function loadPrices(){
   const CACHE_KEY='fmp_prices';
-  const CACHE_TTL=15*60*1000; // 15 minutos
+  const CACHE_TTL=30*60*1000; // 30 minutos
   let cached=null;
   try{
     const raw=sessionStorage.getItem(CACHE_KEY);
