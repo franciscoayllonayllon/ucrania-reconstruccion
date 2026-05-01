@@ -243,7 +243,7 @@
     <button class="nb active" onclick="goTo('#geopolitica')" style="border-color:rgba(248,113,113,.3);color:#f87171;">Situación geopolítica</button>
     <button class="nb" onclick="goTo('#fundamental')">Análisis fundamental</button>
     <button class="nb" onclick="goTo('#graficos')">Gráficos</button>
-    <button class="nb" onclick="goTo('#cestas')">TOP 6 Oportunidades</button>
+    <button class="nb" onclick="goTo('#cestas')">TOP 6 fuera de Cestas</button>
     <button class="nb spain-nav" onclick="goTo('#espanolas')">Empresas españolas</button>
     <button class="nb" onclick="goTo('#timing')">Timing de entrada</button>
     <button class="nb" onclick="goTo('#ranking')">Ranking final</button>
@@ -1362,17 +1362,15 @@ const FMP_KEY='inmiuLFBXl9g0ede2SWSH83mQgx0S4wf';
 // ticker_archivo (saneado) → symbol FMP (Yahoo Finance format)
 const FMP_SYM={
   'VIE_WIE':'WIE.VI',        // Wienerberger · Viena
-  'ETR_HEIG':'HEI.DE',       // Heidelberg Materials · Frankfurt (¡HEI no HEIG!)
+  'ETR_HEIG':'HEI.DE',       // Heidelberg Materials · Frankfurt
   'EPA_DG':'DG.PA',          // Vinci · París
   'AMS_MT':'MT',             // ArcelorMittal · NYSE
-  'WAR_BDX':'BDX.WA',        // Budimex · Varsovia ✓ testeado
-  'BME_ANE':'ANE.MC',        // Acciona Energía · Madrid ✓ testeado
+  'WAR_BDX':'BDX.WA',        // Budimex · Varsovia
   'SWX_HOLN':'HOLN.SW',      // Holcim · Zúrich
   'NYSE_CRH':'CRH',          // CRH · NYSE
   'ETR_ENR':'ENR.DE',        // Siemens Energy · Frankfurt
   'SWX_ABBN':'ABBN.SW',      // ABB · Zúrich
   'BIT_PRY':'PRY.MI',        // Prysmian · Milán
-  'BME_FER':'FER.MC',        // Ferrovial · Madrid
   'OM_ASSA_B':'ASSA-B.ST',   // Assa Abloy · Estocolmo
   'SWX_SIKA':'SIKA.SW',      // Sika · Zúrich
   'ISE_KRX':'KRX.IR',        // Kingspan · Dublín
@@ -1380,20 +1378,15 @@ const FMP_SYM={
   'VIE_RBI':'RBI.VI',        // Raiffeisen · Viena
   'EPA_SU':'SU.PA',          // Schneider Electric · París
   'ETR_SIE':'SIE.DE',        // Siemens AG · Frankfurt
-  'BSE_MOL':'MOL.BD',        // MOL Group · Budapest ✓ testeado (HUF)
-  'BME_IBE':'IBE.MC',        // Iberdrola · Madrid ✓ testeado
   'BIT_BZU':'BZU.MI',        // Buzzi Unicem · Milán
   'EPA_SGO':'SGO.PA',        // Saint-Gobain · París
-  'VIE_STR':'STR.VI',        // Strabag · Viena ✓ testeado
+  'VIE_STR':'STR.VI',        // Strabag · Viena
   'VIE_VOE':'VOE.VI',        // Voestalpine · Viena
-  'ETR_TKA':'TKA.DE',        // Thyssenkrupp · Frankfurt
   'VIE_POS':'POS.VI',        // Porr · Viena
-  'EPA_NK':'NK.PA',          // Imerys · París ✓ testeado
   'EPA_VIE':'VIE.PA',        // Veolia · París
-  'BME_ACS':'ACS.MC',        // ACS · Madrid ✓ testeado
-  'BME_SCYR':'SCYR.MC',      // Sacyr · Madrid ✓ testeado
-  'BME_TRE':'TRE.MC',        // Técnicas Reunidas · Madrid ✓ testeado
-  'KRX_028260':'028260.KS'   // Samsung C&T · Seúl
+  'BME_ACS':'ACS.MC',        // ACS · Madrid
+  'BME_SCYR':'SCYR.MC',      // Sacyr · Madrid
+  'BME_TRE':'TRE.MC'         // Técnicas Reunidas · Madrid
 };
 function fmpCcy(sym){
   if(!sym)return'';
@@ -1413,29 +1406,40 @@ function fmtMcap(v,ccy){
   return(v/1e6).toFixed(0)+'M '+ccy;
 }
 async function loadPrices(){
-  await Promise.allSettled(Object.entries(FMP_SYM).map(async([tid,sym])=>{
+  const CACHE_KEY='fmp_prices';
+  const CACHE_TTL=15*60*1000; // 15 minutos
+  let cached=null;
+  try{
+    const raw=sessionStorage.getItem(CACHE_KEY);
+    if(raw){const {ts,data}=JSON.parse(raw);if(Date.now()-ts<CACHE_TTL)cached=data;}
+  }catch(e){}
+  const toFetch=cached?[]:Object.entries(FMP_SYM);
+  const freshData=cached||{};
+  await Promise.allSettled(toFetch.map(async([tid,sym])=>{
     try{
       const r=await fetch(`https://financialmodelingprep.com/stable/profile?symbol=${sym}&apikey=${FMP_KEY}`);
       const d=await r.json();
       const q=Array.isArray(d)?d[0]:d;
       if(!q||!q.price)return;
-      const sel=s=>document.querySelectorAll(`.fcard[data-tid="${tid}"] ${s}`);
-      const ccy=fmpCcy(sym);
-      // Precio live
-      const chg=parseFloat(q.changesPercentage??q.changePercentage??0);
-      const clr=chg>=0?'#4ade80':'#f87171';
-      const chgStr=` <span style="opacity:.7;font-size:10px">${chg>0?'+':''}${chg.toFixed(1)}%</span>`;
-      sel('.live-px').forEach(el=>{el.innerHTML=`<span style="color:${clr}">${ccy}${parseFloat(q.price).toFixed(2)}${chgStr}</span>`;el.classList.add('ok');});
-      // Market cap
-      if(q.marketCap) sel('.live-mcap').forEach(el=>el.textContent=fmtMcap(q.marketCap,ccy));
-      // Empleados
-      if(q.fullTimeEmployees) sel('.live-emp').forEach(el=>el.textContent=parseInt(q.fullTimeEmployees).toLocaleString('es'));
-      // Rango 52 semanas
-      if(q.range) sel('.live-range').forEach(el=>el.textContent=ccy+q.range.replace('-',' – '+ccy));
-      // Beta
-      if(q.beta) sel('.live-beta').forEach(el=>el.textContent=parseFloat(q.beta).toFixed(2));
-    }catch(e){/* silencioso */}
+      freshData[tid]=q;
+    }catch(e){}
   }));
+  if(!cached&&Object.keys(freshData).length>0){
+    try{sessionStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),data:freshData}));}catch(e){}
+  }
+  Object.entries(freshData).forEach(([tid,q])=>{
+    const sym=FMP_SYM[tid];if(!sym)return;
+    const sel=s=>document.querySelectorAll(`.fcard[data-tid="${tid}"] ${s}`);
+    const ccy=fmpCcy(sym);
+    const chg=parseFloat(q.changesPercentage??q.changePercentage??0);
+    const clr=chg>=0?'#4ade80':'#f87171';
+    const chgStr=` <span style="opacity:.7;font-size:10px">${chg>0?'+':''}${chg.toFixed(1)}%</span>`;
+    sel('.live-px').forEach(el=>{el.innerHTML=`<span style="color:${clr}">${ccy}${parseFloat(q.price).toFixed(2)}${chgStr}</span>`;el.classList.add('ok');});
+    if(q.marketCap) sel('.live-mcap').forEach(el=>el.textContent=fmtMcap(q.marketCap,ccy));
+    if(q.fullTimeEmployees) sel('.live-emp').forEach(el=>el.textContent=parseInt(q.fullTimeEmployees).toLocaleString('es'));
+    if(q.range) sel('.live-range').forEach(el=>el.textContent=ccy+q.range.replace('-',' – '+ccy));
+    if(q.beta) sel('.live-beta').forEach(el=>el.textContent=parseFloat(q.beta).toFixed(2));
+  });
 }
 loadPrices();
 
