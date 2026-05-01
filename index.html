@@ -1354,11 +1354,12 @@ new Chart(document.getElementById('c4'),{
 });
 
 // =============================================
-// PRECIOS EN TIEMPO REAL — FMP /stable/profile
-// Key nueva verificada. Cobertura: 33/33 empresas.
-// Precios en moneda local (€, PLN, HUF, CHF, SEK, kr).
+// PRECIOS EN TIEMPO REAL — Híbrido Finnhub + FMP
+// Finnhub: precio live (sin límite diario) · sessionStorage 30 min
+// FMP: fundamentales (mcap, empleados, rango, beta) · localStorage 24h
 // =============================================
 const FMP_KEY='inmiuLFBXl9g0ede2SWSH83mQgx0S4wf';
+const FH_KEY='d7of1k1r01qsb7bemmt0d7of1k1r01qsb7bemmtg';
 // ticker_archivo (saneado) → symbol FMP (Yahoo Finance format)
 const FMP_SYM={
   'VIE_WIE':'WIE.VI',        // Wienerberger · Viena
@@ -1406,39 +1407,60 @@ function fmtMcap(v,ccy){
   return(v/1e6).toFixed(0)+'M '+ccy;
 }
 async function loadPrices(){
-  const CACHE_KEY='fmp_prices';
-  const CACHE_TTL=30*60*1000; // 30 minutos
-  let cached=null;
-  try{
-    const raw=sessionStorage.getItem(CACHE_KEY);
-    if(raw){const {ts,data}=JSON.parse(raw);if(Date.now()-ts<CACHE_TTL)cached=data;}
-  }catch(e){}
-  const toFetch=cached?[]:Object.entries(FMP_SYM);
-  const freshData=cached||{};
-  await Promise.allSettled(toFetch.map(async([tid,sym])=>{
-    try{
-      const r=await fetch(`https://financialmodelingprep.com/stable/profile?symbol=${sym}&apikey=${FMP_KEY}`);
-      const d=await r.json();
-      const q=Array.isArray(d)?d[0]:d;
-      if(!q||!q.price)return;
-      freshData[tid]=q;
-    }catch(e){}
-  }));
-  if(!cached&&Object.keys(freshData).length>0){
-    try{sessionStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),data:freshData}));}catch(e){}
+  // — Fundamentales FMP: localStorage 24h (persiste entre pestañas/sesiones)
+  const FK='fmp_fund'; const FT=24*60*60*1000;
+  let fundData={};
+  try{const r=localStorage.getItem(FK);if(r){const{ts,data}=JSON.parse(r);if(Date.now()-ts<FT)fundData=data;}}catch(e){}
+  const needFund=Object.keys(fundData).length===0;
+  if(needFund){
+    await Promise.allSettled(Object.entries(FMP_SYM).map(async([tid,sym])=>{
+      try{
+        const r=await fetch(`https://financialmodelingprep.com/stable/profile?symbol=${sym}&apikey=${FMP_KEY}`);
+        const d=await r.json();const q=Array.isArray(d)?d[0]:d;
+        if(!q||!q.price)return;
+        fundData[tid]=q;
+      }catch(e){}
+    }));
+    if(Object.keys(fundData).length>0)try{localStorage.setItem(FK,JSON.stringify({ts:Date.now(),data:fundData}));}catch(e){}
   }
-  Object.entries(freshData).forEach(([tid,q])=>{
-    const sym=FMP_SYM[tid];if(!sym)return;
+  // — Precios Finnhub: sessionStorage 30 min
+  const PK='fh_px'; const PT=30*60*1000;
+  let pxData={};
+  try{const r=sessionStorage.getItem(PK);if(r){const{ts,data}=JSON.parse(r);if(Date.now()-ts<PT)pxData=data;}}catch(e){}
+  const needPx=Object.keys(pxData).length===0;
+  if(needPx){
+    await Promise.allSettled(Object.entries(FMP_SYM).map(async([tid,sym])=>{
+      try{
+        const r=await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${FH_KEY}`);
+        const q=await r.json();
+        if(!q||!q.c||q.c===0)return; // 0 = símbolo no soportado por Finnhub
+        pxData[tid]={price:q.c,chgPct:q.dp};
+      }catch(e){}
+    }));
+    if(Object.keys(pxData).length>0)try{sessionStorage.setItem(PK,JSON.stringify({ts:Date.now(),data:pxData}));}catch(e){}
+  }
+  // — Pintar DOM
+  Object.keys(FMP_SYM).forEach(tid=>{
+    const sym=FMP_SYM[tid];
+    const fund=fundData[tid];
+    const px=pxData[tid];
+    if(!fund&&!px)return;
     const sel=s=>document.querySelectorAll(`.fcard[data-tid="${tid}"] ${s}`);
     const ccy=fmpCcy(sym);
-    const chg=parseFloat(q.changesPercentage??q.changePercentage??0);
-    const clr=chg>=0?'#4ade80':'#f87171';
-    const chgStr=` <span style="opacity:.7;font-size:10px">${chg>0?'+':''}${chg.toFixed(1)}%</span>`;
-    sel('.live-px').forEach(el=>{el.innerHTML=`<span style="color:${clr}">${ccy}${parseFloat(q.price).toFixed(2)}${chgStr}</span>`;el.classList.add('ok');});
-    if(q.marketCap) sel('.live-mcap').forEach(el=>el.textContent=fmtMcap(q.marketCap,ccy));
-    if(q.fullTimeEmployees) sel('.live-emp').forEach(el=>el.textContent=parseInt(q.fullTimeEmployees).toLocaleString('es'));
-    if(q.range) sel('.live-range').forEach(el=>el.textContent=ccy+q.range.replace('-',' – '+ccy));
-    if(q.beta) sel('.live-beta').forEach(el=>el.textContent=parseFloat(q.beta).toFixed(2));
+    // Precio: Finnhub preferido, FMP como fallback
+    const price=px?.price??fund?.price;
+    const chg=px!=null?parseFloat(px.chgPct??0):parseFloat(fund?.changesPercentage??fund?.changePercentage??0);
+    if(price){
+      const clr=chg>=0?'#4ade80':'#f87171';
+      const chgStr=` <span style="opacity:.7;font-size:10px">${chg>0?'+':''}${parseFloat(chg).toFixed(1)}%</span>`;
+      sel('.live-px').forEach(el=>{el.innerHTML=`<span style="color:${clr}">${ccy}${parseFloat(price).toFixed(2)}${chgStr}</span>`;el.classList.add('ok');});
+    }
+    if(fund){
+      if(fund.marketCap)sel('.live-mcap').forEach(el=>el.textContent=fmtMcap(fund.marketCap,ccy));
+      if(fund.fullTimeEmployees)sel('.live-emp').forEach(el=>el.textContent=parseInt(fund.fullTimeEmployees).toLocaleString('es'));
+      if(fund.range)sel('.live-range').forEach(el=>el.textContent=ccy+fund.range.replace('-',' – '+ccy));
+      if(fund.beta)sel('.live-beta').forEach(el=>el.textContent=parseFloat(fund.beta).toFixed(2));
+    }
   });
 }
 loadPrices();
