@@ -243,7 +243,7 @@
     <button class="nb active" onclick="goTo('#geopolitica')" style="border-color:rgba(248,113,113,.3);color:#f87171;">Situación geopolítica</button>
     <button class="nb" onclick="goTo('#fundamental')">Análisis fundamental</button>
     <button class="nb" onclick="goTo('#graficos')">Gráficos</button>
-    <button class="nb" onclick="goTo('#cestas')">Cestas institucionales</button>
+    <button class="nb" onclick="goTo('#cestas')">TOP 6 Oportunidades</button>
     <button class="nb spain-nav" onclick="goTo('#espanolas')">Empresas españolas</button>
     <button class="nb" onclick="goTo('#timing')">Timing de entrada</button>
     <button class="nb" onclick="goTo('#ranking')">Ranking final</button>
@@ -489,6 +489,10 @@
     <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:28px;line-height:1.7;">
       Las 17 empresas presentes en 2 o más cestas de grandes bancos de inversión (Morgan Stanley, Goldman Sachs, BofA, Erste, Jefferies, JPMorgan, Citi, Deutsche Bank, Barclays). Análisis fundamental completo: valoración, calidad, solidez financiera, momentum y tesis de inversión.
     </p>
+    <div style="margin-bottom:40px;">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--font-m);letter-spacing:.05em;">EMPRESAS EN 2+ CESTAS INSTITUCIONALES — SOLAPAMIENTO</div>
+      <div id="ov-list"></div>
+    </div>
     <div class="tabs" id="tabs1">
       <button class="tab active" data-f="all">Todas (17)</button>
       <button class="tab" data-f="top">Top picks</button>
@@ -1248,7 +1252,7 @@ const bankOvLabels={ms:'MS',gs:'GS',bofa:'BofA',erste:'Erste',jeff:'Jeff',jpm:'J
 function countBanks(c){return allBankKeys.reduce((s,k)=>s+(c[k]||0),0);}
 const ovData=allBasket.filter(c=>countBanks(c)>=2).sort((a,b)=>countBanks(b)-countBanks(a));
 const ovEl=document.getElementById('ov-list');
-if(ovEl) ovData.forEach(c=>{
+ovData.forEach(c=>{
   const w=Math.round(100/allBankKeys.length)+'%';
   const segs=allBankKeys.map(k=>c[k]?`<div class="ov-seg" style="width:${w};background:${bankOvColors[k]};">${bankOvLabels[k]}</div>`:`<div style="width:${w};background:rgba(255,255,255,0.04);"></div>`).join('');
   ovEl.innerHTML+=`<div class="ov-item">
