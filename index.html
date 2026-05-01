@@ -576,10 +576,6 @@
   <div class="container">
     <div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title">Ranking final por potencial de inversión</h2></div>
     <div style="overflow-x:auto;"><table class="ftable" id="ranking-table"></table></div>
-    <div style="margin-top:48px;">
-      <div style="font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:.05em;margin-bottom:14px;">PERFIL DE RIESGO POR EMPRESA</div>
-      <div class="risk-grid" id="risk-grid"></div>
-    </div>
     <div class="disclaimer">
       <strong style="color:var(--red);">Aviso importante:</strong> Este documento es un análisis informativo elaborado con datos públicos de consenso de analistas y publicaciones institucionales. No constituye asesoramiento financiero ni recomendación de inversión. Las proyecciones de retorno son estimaciones basadas en supuestos sobre la evolución del conflicto y la reconstrucción de Ucrania, y pueden no materializarse. El daño total estimado fue actualizado por el World Bank, la CE y la ONU al 23 de febrero de 2026 ($588B, RDNA5). Consulta siempre con un asesor financiero autorizado antes de tomar cualquier decisión de inversión. Toda inversión conlleva riesgo de pérdida parcial o total del capital.
     </div>
@@ -650,42 +646,6 @@ const companies = [
     catalysts:"Concesiones estables independientes de Ucrania. Presencia directa en Europa del Este. Precedente de Chernóbil ($1.5B) como carta de presentación.",
     risks:"Deuda 3.1x EBITDA es la más alta del grupo. Concesiones reguladas limitan el upside. Múltiple 15x ya refleja parte de la calidad.",
     note:"Super Stock en Stockopedia. La opción más inteligente para el inversor conservador. Combina calidad + dividendo + exposición Ucrania."
-  },
-  {
-    name:"ArcelorMittal", ticker:"AMS:MT", sector:"acero",
-    price:22.5, target:29.0,
-    pe:16.0, evEbitda:5.9, pfcf:6.5, pventas:0.3,
-    roe:6.1, roic:5.8, margenEbit:5.2, margenNeto:2.8,
-    deudaEbitda:0.9, cobertura:8.1, creditRating:"BBB",
-    revenueGrowth:3, epsGrowth:18, revEps:"Revisiones al alza por acero",
-    div:1.9, upside:25, retBase:40, retPaz:70, risk:3, dep:"Alta",
-    rating:"BUY", rc:"r-buy", top:true,
-    ms:0, gs:0, bofa:0, erste:0, prev:true,
-    mktCap:"20B€", employees:155000,
-    timingType:"now",
-    timingLabel:"Entrar ahora",
-    timingText:"EV/EBITDA 5.9x es ridículamente barato para el mayor productor de acero del mundo. Deuda muy baja (0.9x). Planta histórica en Kryvyi Rih lista para la reconstrucción.",
-    catalysts:"Acero esencial para puentes, ferrocarriles, estructuras. Presencia física en Ucrania. Ciclo de commodities favorable.",
-    risks:"Cíclico. Sensible a precio del acero. Competencia china con dumping. Geopolítica de su planta ucraniana.",
-    note:"La más directa sobre el acero ucraniano. Deuda casi cero. EV/EBITDA baratísimo."
-  },
-  {
-    name:"Budimex", ticker:"WAR:BDX", sector:"infraestructura",
-    price:395, target:475,
-    pe:29.6, evEbitda:14.2, pfcf:22.0, pventas:0.5,
-    roe:31.5, roic:24.8, margenEbit:6.2, margenNeto:4.1,
-    deudaEbitda:0.2, cobertura:35, creditRating:"ND (small cap)",
-    revenueGrowth:12, epsGrowth:15, revEps:"Positivo, pocos analistas",
-    div:4.2, upside:18, retBase:45, retPaz:80, risk:2, dep:"Alta",
-    rating:"BUY", rc:"r-buy", top:true,
-    ms:0, gs:0, bofa:0, erste:0, prev:true,
-    mktCap:"2.1B€", employees:13000,
-    timingType:"now",
-    timingLabel:"Entrar ahora",
-    timingText:"Poca cobertura de analistas = ineficiencia de mercado = oportunidad. ROE 31%, caja neta, dividendo 4.2%. La joya menos conocida. Acumular antes de que la paz ponga el foco en Polonia.",
-    catalysts:"Polonia es el hub logístico de Ucrania. Backlog récord. ROE estructuralmente alto por modelo de concesiones.",
-    risks:"Liquidez limitada (small cap). Poca cobertura analítica. Sensible a obra pública polaca.",
-    note:"La joya oculta de la lista. Solo cotiza en Varsovia. ROE del 31% con deuda casi cero."
   },
   {
     name:"Holcim", ticker:"SWX:HOLN", sector:"materiales",
@@ -1300,17 +1260,6 @@ document.getElementById('ranking-table').innerHTML=`<thead><tr>
   <td class="${riskClass(c.risk)}">${riskLabel(c.risk)}</td>
   <td style="color:var(--muted);font-size:12px;">${c.dep}</td>
 </tr>`).join('')}</tbody>`;
-
-// RISK GRID
-[...companies,...top6Section3,...spanishCompanies].forEach(c=>{
-  const dots=[1,2,3,4].map(i=>`<div class="rdot" style="background:${i<=c.risk?'#fbbf24':'rgba(255,255,255,0.08)'}"></div>`).join('');
-  document.getElementById('risk-grid').innerHTML+=`<div class="rc">
-    <div class="rc-n">${c.name}</div>
-    <div class="rc-t">${c.ticker}</div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Dep. paz: <span style="color:${c.dep==='Alta'?'#f87171':c.dep.includes('Media')?'#fbbf24':'#4ade80'}">${c.dep}</span></div>
-    <div class="rm">${dots}</div>
-  </div>`;
-});
 
 // CHARTS
 const labels=companies.map(c=>c.name.split(' ')[0]);
