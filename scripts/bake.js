@@ -23,14 +23,18 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-// yahoo-finance2 v2+ es ESM-only — se importa dinámicamente en main()
-let yf;
-
 const ROOT = path.join(__dirname, '..');
 const SRC = path.join(ROOT, 'live', 'index.html');
 const OUT = path.join(ROOT, 'index.html');
 
 const FMP_KEY = process.env.FMP_KEY || '';
+const YAHOO_PROXY_URL = process.env.YAHOO_PROXY_URL || ''; // ej: https://yahoo-proxy.usuario.workers.dev
+
+// Reescribe URL Yahoo → URL via Cloudflare Worker proxy
+function viaProxy(url) {
+  if (!YAHOO_PROXY_URL) return url;
+  return YAHOO_PROXY_URL.replace(/\/$/, '') + '/?url=' + encodeURIComponent(url);
+}
 
 // ───────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -206,11 +210,32 @@ function pickCountryIdx(originalTicker, fmpSym) {
 // ───────────────────────────────────────────────────────────────────────────
 // MAIN
 // ───────────────────────────────────────────────────────────────────────────
+let yf;
+
 async function main() {
-  // Cargar yahoo-finance2 (ESM-only)
+  console.log('▸ FMP_KEY presente:', !!FMP_KEY);
+  console.log('▸ YAHOO_PROXY_URL presente:', !!YAHOO_PROXY_URL);
+
+  // Si tenemos proxy, monkey-patch global fetch ANTES de cargar yahoo-finance2
+  // Esto enruta todas las llamadas Yahoo (query1, query2, finance, guce, consent) por CF Worker
+  if (YAHOO_PROXY_URL) {
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = async (url, opts) => {
+      const target = typeof url === 'string' ? url : (url.url || url.href || String(url));
+      if (target.includes('yahoo.com')) {
+        const proxied = viaProxy(target);
+        return origFetch(proxied, opts);
+      }
+      return origFetch(url, opts);
+    };
+    console.log('▸ Fetch global monkey-patched → proxy CF Worker activo');
+  } else {
+    console.log('▸ ⚠ Sin proxy: las llamadas Yahoo desde GitHub Actions probablemente serán bloqueadas');
+  }
+
+  // Cargar yahoo-finance2 (ESM-only) DESPUÉS del monkey-patch
   yf = (await import('yahoo-finance2')).default;
   try { yf.suppressNotices(['yahooSurvey', 'ripHistorical']); } catch(e) {}
-  console.log('▸ FMP_KEY presente:', !!FMP_KEY);
   console.log('▸ yahoo-finance2 cargado');
 
   console.log('▸ Source: live/index.html');

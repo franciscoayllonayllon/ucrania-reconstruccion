@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <!-- STATIC_DATA: poblado por scripts/bake.js en la versión pública. Vacío en /live/. -->
-<script id="static-data" type="application/json">{"bakedAt":"2026-05-06T18:40:45.563Z","prices":{},"historical":{}}</script>
+<script id="static-data" type="application/json"></script>
 <style>
   :root {
     --bg:#0a0e1a; --bg2:#111827; --bg3:#1a2235; --bg4:#0f1629;
@@ -733,7 +733,7 @@
 </div>
 
 <footer>
-  <div><span style="color:#5b9cf6;">Versión pública · datos actualizados 2026-05-06 18:40 UTC · </span>Análisis de Inversión · Ucrania: Reconstrucción post-conflicto · <span class="js-current-date">—</span> · v2.0</div>
+  <div>Análisis de Inversión · Ucrania: Reconstrucción post-conflicto · <span class="js-current-date">—</span> · v2.0</div>
   <div style="margin-top:6px;opacity:.45;font-size:11px;">Fuentes: RDNA5 (World Bank / CE / ONU, Feb 2026) · Morgan Stanley · Goldman Sachs · Bank of America · Erste Group · ACS Group · Sacyr · Técnicas Reunidas · Alpha Spread · Simply Wall St · MarketScreener</div>
 </footer>
 
@@ -1324,12 +1324,11 @@ function makeFCard(c, isSpain=false) {
     </div>
     <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-style:italic;">${c.revEps}</div>
 
-    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">ANALISTAS WALL STREET <span style="opacity:.5;font-size:9px;">(Yahoo Finance)</span></div>
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">CONSENSO ANALISTAS <span style="opacity:.5;font-size:9px;">(MarketScreener · Investing · Yahoo)</span></div>
     <div class="metrics-grid">
       <div class="met"><div class="met-l">Nº analistas</div><div class="met-v live-numa">—</div></div>
-      <div class="met"><div class="met-l">Rating consenso</div><div class="met-v live-rec">—</div></div>
+      <div class="met"><div class="met-l">Rating</div><div class="met-v live-rec">—</div></div>
       <div class="met"><div class="met-l">Target medio</div><div class="met-v live-tgtmean">—</div></div>
-      <div class="met"><div class="met-l">Próx. earnings</div><div class="met-v live-earn">—</div></div>
     </div>
 
     <div class="upside-row"><span>Precio actual vs objetivo</span><span style="color:${uc};font-family:var(--font-m);font-weight:500;">${c.upside>0?'+':''}${c.upside}%</span></div>
@@ -1526,8 +1525,8 @@ const STATIC_DATA=(function(){
   if(!el||!el.textContent.trim())return null;
   try{return JSON.parse(el.textContent);}catch(e){return null;}
 })();
-const FMP_KEY='';
-const FH_KEY='';
+const FMP_KEY='inmiuLFBXl9g0ede2SWSH83mQgx0S4wf';
+const FH_KEY='d7of1k1r01qsb7bemmt0d7of1k1r01qsb7bemmtg';
 // ticker_archivo (saneado) → symbol FMP (Yahoo Finance format)
 const FMP_SYM={
   'VIE_WIE':'WIE.VI',        // Wienerberger · Viena
@@ -1560,6 +1559,43 @@ const FMP_SYM={
   'BME_OHLA':'OHLA.MC',      // OHLA · Madrid
   'BME_IDR':'IDR.MC'         // Indra · Madrid
 };
+
+// =============================================
+// ANALISTAS WALL STREET — datos manuales (fuente: MarketScreener + Investing + Yahoo)
+// Última actualización: May 2026 · refrescar trimestralmente tras earnings
+// =============================================
+const ANALYSTS = {
+  'VIE_WIE':    {numAnalysts:5,  recommendationKey:'buy',        recommendationMean:2.4, targetMean:31.5,   targetHigh:36.6,  targetLow:25},
+  'ETR_HEIG':   {numAnalysts:19, recommendationKey:'buy',        recommendationMean:2.0, targetMean:230,    targetHigh:285,   targetLow:140},
+  'EPA_DG':     {numAnalysts:33, recommendationKey:'strong_buy', recommendationMean:1.8, targetMean:146.69, targetHigh:160,   targetLow:130},
+  'AMS_MT':     {numAnalysts:13, recommendationKey:'hold',       recommendationMean:2.7, targetMean:43,     targetHigh:55,    targetLow:33},
+  'WAR_BDX':    {numAnalysts:8,  recommendationKey:'hold',       recommendationMean:3.0, targetMean:713.5,  targetHigh:895,   targetLow:625},
+  'SWX_HOLN':   {numAnalysts:21, recommendationKey:'buy',        recommendationMean:2.0, targetMean:78.36,  targetHigh:90,    targetLow:65},
+  'NYSE_CRH':   {numAnalysts:18, recommendationKey:'buy',        recommendationMean:2.1, targetMean:139.54, targetHigh:163,   targetLow:120},
+  'ETR_ENR':    {numAnalysts:25, recommendationKey:'buy',        recommendationMean:2.0, targetMean:169,    targetHigh:205,   targetLow:100},
+  'SWX_ABBN':   {numAnalysts:27, recommendationKey:'hold',       recommendationMean:2.9, targetMean:63.88,  targetHigh:78.62, targetLow:51.41},
+  'BIT_PRY':    {numAnalysts:19, recommendationKey:'buy',        recommendationMean:2.5, targetMean:118.37, targetHigh:148,   targetLow:90},
+  'OM_ASSA_B':  {numAnalysts:12, recommendationKey:'buy',        recommendationMean:2.2, targetMean:397.9,  targetHigh:500,   targetLow:291},
+  'SWX_SIKA':   {numAnalysts:22, recommendationKey:'buy',        recommendationMean:2.4, targetMean:178.82, targetHigh:255,   targetLow:143},
+  'ISE_KRX':    {numAnalysts:17, recommendationKey:'buy',        recommendationMean:2.1, targetMean:91.77,  targetHigh:130,   targetLow:70},
+  'CPH_ROCK_B': {numAnalysts:13, recommendationKey:'buy',        recommendationMean:2.3, targetMean:2700,   targetHigh:3100,  targetLow:2200},
+  'VIE_RBI':    {numAnalysts:18, recommendationKey:'buy',        recommendationMean:2.2, targetMean:42.22,  targetHigh:55,    targetLow:30},
+  'EPA_SU':     {numAnalysts:37, recommendationKey:'strong_buy', recommendationMean:1.7, targetMean:304.36, targetHigh:340,   targetLow:275},
+  'ETR_SIE':    {numAnalysts:23, recommendationKey:'buy',        recommendationMean:2.5, targetMean:274.85, targetHigh:335,   targetLow:225},
+  'BIT_BZU':    {numAnalysts:13, recommendationKey:'hold',       recommendationMean:2.6, targetMean:54.7,   targetHigh:65,    targetLow:45},
+  'EPA_SGO':    {numAnalysts:24, recommendationKey:'buy',        recommendationMean:2.0, targetMean:103.56, targetHigh:140,   targetLow:78},
+  'VIE_STR':    {numAnalysts:6,  recommendationKey:'buy',        recommendationMean:2.2, targetMean:112,    targetHigh:120,   targetLow:100},
+  'VIE_VOE':    {numAnalysts:11, recommendationKey:'hold',       recommendationMean:2.6, targetMean:45.84,  targetHigh:57,    targetLow:36.2},
+  'VIE_POS':    {numAnalysts:14, recommendationKey:'buy',        recommendationMean:2.1, targetMean:36,     targetHigh:41,    targetLow:32.5},
+  'EPA_VIE':    {numAnalysts:17, recommendationKey:'buy',        recommendationMean:2.2, targetMean:38.28,  targetHigh:45,    targetLow:32},
+  'BME_ACS':    {numAnalysts:12, recommendationKey:'hold',       recommendationMean:2.5, targetMean:95.43,  targetHigh:150,   targetLow:67.5},
+  'BME_SCYR':   {numAnalysts:11, recommendationKey:'buy',        recommendationMean:2.0, targetMean:4.5,    targetHigh:5.0,   targetLow:3.7},
+  'BME_TRE':    {numAnalysts:8,  recommendationKey:'buy',        recommendationMean:2.4, targetMean:31.27,  targetHigh:36,    targetLow:23},
+  'BME_ANE':    {numAnalysts:20, recommendationKey:'hold',       recommendationMean:2.7, targetMean:22.62,  targetHigh:26.7,  targetLow:17},
+  'BME_OHLA':   {numAnalysts:4,  recommendationKey:'hold',       recommendationMean:2.8, targetMean:0.515,  targetHigh:0.74,  targetLow:0.38},
+  'BME_IDR':    {numAnalysts:15, recommendationKey:'buy',        recommendationMean:2.3, targetMean:62.95,  targetHigh:75,    targetLow:53}
+};
+
 function fmpCcy(sym){
   if(!sym)return'';
   const e=sym.split('.').pop();
@@ -1692,6 +1728,21 @@ async function loadPrices(){
   });
 }
 loadPrices();
+
+// Datos de analistas (manual, ANALYSTS map) — independiente de APIs
+function loadAnalysts(){
+  Object.entries(ANALYSTS).forEach(([tid, a])=>{
+    const sym=FMP_SYM[tid];
+    if(!sym) return;
+    const sel=s=>document.querySelectorAll(`.fcard[data-tid="${tid}"] ${s}`);
+    const ccy=fmpCcy(sym);
+    if(a.numAnalysts) sel('.live-numa').forEach(el=>el.textContent=a.numAnalysts);
+    if(a.recommendationKey) sel('.live-rec').forEach(el=>{el.textContent=fmtRec(a.recommendationKey, a.recommendationMean); const rc=recColor(a.recommendationKey); if(rc)el.classList.add(rc);});
+    if(a.targetMean) sel('.live-tgtmean').forEach(el=>el.textContent=fmtTargetMean(a.targetMean, ccy));
+    // earningsDate no se rellena — pendiente investigación trimestral
+  });
+}
+loadAnalysts();
 
 // =============================================
 // COMPARATIVA RENDIMIENTO vs ÍNDICES — Chart 5
