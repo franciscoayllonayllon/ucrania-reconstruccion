@@ -1,0 +1,103 @@
+# Revisión quincenal del dashboard
+
+> Recordatorio automático generado el **{{TODAY}}**. Esta issue contiene el checklist de todas las secciones con contenido **manual** que conviene revisar y actualizar si ha habido cambios.
+>
+> **Cuando termines la revisión, marca las casillas relevantes y cierra esta issue.**
+
+---
+
+## 📍 Sección 00 — Situación geopolítica
+
+- [ ] **KPIs principales:** $588B coste reconstrucción · $195B daños · 60-70% red eléctrica · 500.000+ bajas — ¿siguen vigentes?
+- [ ] **Medidor de resolución:** ¿probabilidades de cese al fuego (55%) y paz formal (40%) siguen siendo razonables?
+- [ ] **Catalizadores positivos:** Trump · presión sobre Rusia · UE Ukraine Facility · elecciones Rusia
+- [ ] **Factores de incertidumbre:** Gap territorial · OTAN · financiación Corea Norte/Irán a Rusia · China
+- [ ] **Riesgos de escalada:** Colapso negociaciones · accidente nuclear Zaporiyia · conflicto congelado tipo Corea
+- [ ] **Actores clave:** Trump (Pragmático), Zelenski (Posición dura), Putin (Bloqueante), Von der Leyen (Facilitador) — ¿posiciones actuales?
+- [ ] **Próximo hito:** ¿Cumbre diplomática prevista T2-T3 2026 sigue en agenda?
+
+## 📍 Sección 01 — Empresas en cestas (17)
+
+Revisar `timingText`, `catalysts`, `risks`, `note` de cada una:
+
+- [ ] Wienerberger (VIE:WIE)
+- [ ] Heidelberg Materials (ETR:HEIG)
+- [ ] Vinci (EPA:DG)
+- [ ] Holcim (SWX:HOLN)
+- [ ] CRH (NYSE:CRH)
+- [ ] Siemens Energy (ETR:ENR)
+- [ ] Siemens AG (ETR:SIE)
+- [ ] Assa Abloy (OM:ASSA-B)
+- [ ] Sika AG (SWX:SIKA)
+- [ ] Kingspan Group (ISE:KRX)
+- [ ] Rockwool International (CPH:ROCK-B)
+- [ ] Raiffeisen Bank Intl. (VIE:RBI)
+- [ ] Schneider Electric (EPA:SU)
+- [ ] Buzzi Unicem (BIT:BZU)
+- [ ] Saint-Gobain (EPA:SGO)
+- [ ] Strabag SE (VIE:STR)
+- [ ] Veolia Environment (EPA:VIE)
+
+## 📍 Sección 03 — TOP 6 fuera de cestas
+
+- [ ] ArcelorMittal (AMS:MT)
+- [ ] Budimex (WAR:BDX)
+- [ ] ABB (SWX:ABBN)
+- [ ] Prysmian (BIT:PRY)
+- [ ] Voestalpine AG (VIE:VOE)
+- [ ] Porr AG (VIE:POS)
+
+## 📍 Sección 04 — Empresas españolas (6)
+
+- [ ] ACS Group (BME:ACS)
+- [ ] Sacyr (BME:SCYR)
+- [ ] Técnicas Reunidas (BME:TRE)
+- [ ] Acciona (BME:ANE)
+- [ ] OHLA (BME:OHLA)
+- [ ] Indra (BME:IDR)
+
+## 📍 Datos de analistas — `ANALYSTS` map
+
+- [ ] Refrescar ratings tras cierre trimestral (Q1/Q2/Q3/Q4)
+- [ ] Verificar `targetMean`, `targetHigh`, `targetLow`
+- [ ] Actualizar `numAnalysts` (nº de analistas que cubren cada acción)
+- [ ] Comprobar si algún consenso ha cambiado de BUY a HOLD/SELL o viceversa
+
+**Fuentes:** [MarketScreener](https://www.marketscreener.com), [Investing.com](https://www.investing.com), [Yahoo Finance](https://finance.yahoo.com)
+
+## 📍 Próximos catalizadores — `CATALYSTS` array
+
+- [ ] **Eliminar** eventos pasados (anteriores a hoy)
+- [ ] **Añadir** nuevos eventos confirmados de las páginas IR
+- [ ] Convertir eventos marcados `(est.)` a confirmados si ya tienes la fecha oficial
+- [ ] Cubrir las **próximas 12 semanas** desde hoy
+
+## 📍 Datos fundamentales (PE, EV/EBITDA, ROE, etc.)
+
+- [ ] Tras resultados trimestrales, actualizar números fundamentales si han cambiado materialmente
+- [ ] Revisar `upside` (target vs precio actual) y ajustar `timingType` si procede
+
+## 🔗 Recursos útiles
+
+- **Geopolítica:** [La Moncloa](https://www.lamoncloa.gob.es), [Reuters](https://reuters.com), [FT](https://ft.com), [Bloomberg](https://bloomberg.com)
+- **Catalizadores corporativos:** Páginas IR de cada empresa (ver enlaces en cards del dashboard)
+- **Analistas:** [MarketScreener](https://marketscreener.com), [Investing.com](https://investing.com)
+- **Cestas institucionales:** Notas de research de MS/GS/BofA/Erste/Jeff/JPM/Citi/DB/Barc
+
+---
+
+### Cómo actualizar
+
+Las modificaciones se hacen en `live/index.html` (source of truth). Tras cualquier edit:
+
+```bash
+git add live/index.html
+git commit -m "Update dashboard data {{TODAY}}"
+git push
+```
+
+El cron diario (`bake-daily.yml`) regenera `index.html` (versión pública) automáticamente a las 08:00 UTC.
+
+### Próximo recordatorio
+
+Esta issue se cerrará automáticamente o manualmente. La próxima revisión quincenal se generará en ~15 días.
