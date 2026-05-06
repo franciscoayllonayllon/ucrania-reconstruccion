@@ -1446,12 +1446,13 @@ function fmtMcap(v,ccy){
 }
 async function loadPrices(){
   // — Fundamentales FMP: localStorage 24h (persiste entre pestañas/sesiones)
+  // Solo se llama a la API para los símbolos que NO estén ya en cache (permite añadir empresas sin esperar al TTL)
   const FK='fmp_fund'; const FT=24*60*60*1000;
   let fundData={};
   try{const r=localStorage.getItem(FK);if(r){const{ts,data}=JSON.parse(r);if(Date.now()-ts<FT)fundData=data;}}catch(e){}
-  const needFund=Object.keys(fundData).length===0;
-  if(needFund){
-    await Promise.allSettled(Object.entries(FMP_SYM).map(async([tid,sym])=>{
+  const missingFund=Object.entries(FMP_SYM).filter(([tid])=>!fundData[tid]);
+  if(missingFund.length>0){
+    await Promise.allSettled(missingFund.map(async([tid,sym])=>{
       try{
         const r=await fetch(`https://financialmodelingprep.com/stable/profile?symbol=${sym}&apikey=${FMP_KEY}`);
         const d=await r.json();const q=Array.isArray(d)?d[0]:d;
@@ -1461,13 +1462,13 @@ async function loadPrices(){
     }));
     if(Object.keys(fundData).length>0)try{localStorage.setItem(FK,JSON.stringify({ts:Date.now(),data:fundData}));}catch(e){}
   }
-  // — Precios Finnhub: sessionStorage 30 min
+  // — Precios Finnhub: sessionStorage 30 min (solo símbolos nuevos)
   const PK='fh_px'; const PT=30*60*1000;
   let pxData={};
   try{const r=sessionStorage.getItem(PK);if(r){const{ts,data}=JSON.parse(r);if(Date.now()-ts<PT)pxData=data;}}catch(e){}
-  const needPx=Object.keys(pxData).length===0;
-  if(needPx){
-    await Promise.allSettled(Object.entries(FMP_SYM).map(async([tid,sym])=>{
+  const missingPx=Object.entries(FMP_SYM).filter(([tid])=>!pxData[tid]);
+  if(missingPx.length>0){
+    await Promise.allSettled(missingPx.map(async([tid,sym])=>{
       try{
         const r=await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${FH_KEY}`);
         const q=await r.json();
