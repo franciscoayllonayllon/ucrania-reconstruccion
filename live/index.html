@@ -264,7 +264,7 @@
 <!-- HERO -->
 <div class="hero">
   <div class="container">
-    <div class="hero-label">Análisis de Inversión · Versión 2.0 · Marzo 2026</div>
+    <div class="hero-label">Análisis de Inversión · Versión 2.0 · <span class="js-current-date">—</span></div>
     <h1>Ucrania: La mayor<br><em>Reconstrucción</em><br>del siglo XXI</h1>
     <p class="hero-sub">Análisis fundamental extendido · Cestas institucionales · Empresas españolas · Timing de entrada óptimo</p>
     <div class="hero-stats">
@@ -733,7 +733,7 @@
 </div>
 
 <footer>
-  <div>Análisis de Inversión · Ucrania: Reconstrucción post-conflicto · Marzo 2026 · v2.0</div>
+  <div>Análisis de Inversión · Ucrania: Reconstrucción post-conflicto · <span class="js-current-date">—</span> · v2.0</div>
   <div style="margin-top:6px;opacity:.45;font-size:11px;">Fuentes: RDNA5 (World Bank / CE / ONU, Feb 2026) · Morgan Stanley · Goldman Sachs · Bank of America · Erste Group · ACS Group · Sacyr · Técnicas Reunidas · Alpha Spread · Simply Wall St · MarketScreener</div>
 </footer>
 
@@ -1907,6 +1907,14 @@ if(document.getElementById('map1'))initMaps();
   if(c)c.textContent=companies.length+top6Section3.length+spanishCompanies.length;
   const s=document.getElementById('hs-spain');
   if(s)s.textContent=spanishCompanies.length;
+})();
+
+// Fecha actual dinámica (header + footer) — formato "Mes Año" en español
+(function(){
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const d=new Date();
+  const txt=meses[d.getMonth()]+' '+d.getFullYear();
+  document.querySelectorAll('.js-current-date').forEach(el=>el.textContent=txt);
 })();
 
 // RESPONSIVE
