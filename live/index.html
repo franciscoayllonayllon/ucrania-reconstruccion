@@ -757,11 +757,13 @@
           <div>
             <div style="color:var(--accent);font-family:var(--font-m);font-size:11px;letter-spacing:.05em;margin-bottom:6px;">DATOS DE MERCADO EN TIEMPO REAL</div>
             <ul style="margin:0;padding-left:18px;line-height:1.7;">
-              <li><strong style="color:var(--text);">Yahoo Finance API</strong> — históricos OHLC (chart endpoint), precio actual, rango 52 semanas. Vía proxy Cloudflare Worker para acceder desde IPs no bloqueadas. <a href="https://finance.yahoo.com" target="_blank" rel="noopener" style="color:#5b9cf6;">finance.yahoo.com</a></li>
-              <li><strong style="color:var(--text);">Financial Modeling Prep (FMP)</strong> — perfiles corporativos: precio, capitalización, empleados, rango 52 semanas, beta. Fallback cuando Yahoo no responde. <a href="https://financialmodelingprep.com" target="_blank" rel="noopener" style="color:#5b9cf6;">financialmodelingprep.com</a></li>
+              <li><strong style="color:var(--text);">Yahoo Finance API</strong> — históricos OHLC, precio actual, rango 52 semanas, noticias por ticker. Vía proxy Cloudflare Worker. <a href="https://finance.yahoo.com" target="_blank" rel="noopener" style="color:#5b9cf6;">finance.yahoo.com</a></li>
+              <li><strong style="color:var(--text);">Google News RSS</strong> — agregador multilingüe de noticias por nombre de empresa, cobertura más amplia para acciones europeas. <a href="https://news.google.com" target="_blank" rel="noopener" style="color:#5b9cf6;">news.google.com</a></li>
+              <li><strong style="color:var(--text);">Investing.com</strong> — fuente especializada en finanzas. Enlazada en el modal de noticias para profundizar (cobertura editorial). <a href="https://www.investing.com" target="_blank" rel="noopener" style="color:#5b9cf6;">investing.com</a></li>
+              <li><strong style="color:var(--text);">MarketScreener</strong> — análisis financiero y noticias por ticker, fuerte en empresas europeas. Enlazada en el modal. <a href="https://www.marketscreener.com" target="_blank" rel="noopener" style="color:#5b9cf6;">marketscreener.com</a></li>
+              <li><strong style="color:var(--text);">Financial Modeling Prep (FMP)</strong> — perfiles corporativos como fallback cuando Yahoo no responde. <a href="https://financialmodelingprep.com" target="_blank" rel="noopener" style="color:#5b9cf6;">financialmodelingprep.com</a></li>
               <li><strong style="color:var(--text);">Finnhub</strong> — cotización intradía y variación porcentual diaria (mercados US). <a href="https://finnhub.io" target="_blank" rel="noopener" style="color:#5b9cf6;">finnhub.io</a></li>
-              <li><strong style="color:var(--text);">Chart.js + date-fns</strong> — librerías open-source para visualización de gráficos.</li>
-              <li><strong style="color:var(--text);">Leaflet + Esri World Imagery</strong> — mapas satelitales interactivos.</li>
+              <li><strong style="color:var(--text);">Chart.js + date-fns + Leaflet + Esri World Imagery</strong> — librerías open-source para visualización (gráficos + mapas satelitales).</li>
             </ul>
           </div>
           <div>
@@ -1871,53 +1873,109 @@ loadAnalysts();
 // =============================================
 const YAHOO_PROXY_PUBLIC='https://yahoo-proxy.franciscoayllon-ayllon.workers.dev/';
 
-// Comprueba si una noticia es relevante para nuestro símbolo (evita ruido de Yahoo default feed)
-function isNewsRelevant(news, sym, companyName){
-  // 1. Match estricto por relatedTickers
-  const symPrefix=sym.split('.')[0];          // 'WIE.VI' → 'WIE'
-  const tickers=news.relatedTickers||[];
+// Filtro de relevancia (común a todas las fuentes)
+function isNewsRelevant(item, sym, companyName){
+  const symPrefix=sym.split('.')[0];
+  const tickers=item.relatedTickers||[];
   if(tickers.some(t=>t===sym || t===symPrefix || t.startsWith(symPrefix+'.'))) return true;
-  // 2. Match por nombre de empresa en el título (case-insensitive)
-  if(companyName && news.title){
+  if(companyName && item.title){
     const firstWord=companyName.split(' ')[0].toLowerCase();
-    if(firstWord.length>=4 && news.title.toLowerCase().includes(firstWord)) return true;
+    if(firstWord.length>=4 && item.title.toLowerCase().includes(firstWord)) return true;
   }
   return false;
 }
 
-async function fetchNews(sym, companyName){
-  const ck='news_v2_'+sym;
-  try{
-    const c=sessionStorage.getItem(ck);
-    if(c){const{ts,data}=JSON.parse(c); if(Date.now()-ts<30*60*1000) return data;}
-  }catch(e){}
-  // Intentar 2 queries: ticker primero (cobertura US), luego nombre de empresa (cobertura europea)
+// — Yahoo Finance news
+async function fetchYahooNews(sym, companyName){
+  const out=[];
   const queries=[sym, companyName].filter(Boolean);
-  const seen=new Set();
-  const filtered=[];
   for(const q of queries){
     try{
       const u=YAHOO_PROXY_PUBLIC+'?url='+encodeURIComponent('https://query2.finance.yahoo.com/v1/finance/search?q='+encodeURIComponent(q)+'&newsCount=10&quotesCount=0');
       const r=await fetch(u);
       const d=await r.json();
       (d.news||[]).forEach(n=>{
-        if(!n.uuid || seen.has(n.uuid)) return;
         if(isNewsRelevant(n, sym, companyName)){
-          seen.add(n.uuid);
-          filtered.push(n);
+          out.push({
+            id:'yh-'+(n.uuid||n.link),
+            title:n.title||'—',
+            link:n.link||'#',
+            source:n.publisher||'Yahoo',
+            ts:n.providerPublishTime ? n.providerPublishTime*1000 : 0,
+            origin:'yahoo'
+          });
         }
       });
-      if(filtered.length>=6) break;
     }catch(e){}
   }
-  const result=filtered.slice(0,6);
+  return out;
+}
+
+// — Google News RSS (vía CF Worker proxy)
+async function fetchGoogleNews(sym, companyName){
+  if(!companyName) return [];
+  const out=[];
+  try{
+    // Búsqueda en español (cobertura España + Latinoamérica)
+    const url='https://news.google.com/rss/search?q='+encodeURIComponent(companyName+' acciones')+'&hl=es&gl=ES&ceid=ES:es';
+    const u=YAHOO_PROXY_PUBLIC+'?url='+encodeURIComponent(url);
+    const r=await fetch(u);
+    const xml=await r.text();
+    // Parsear XML (DOMParser disponible en navegador)
+    const doc=new DOMParser().parseFromString(xml, 'text/xml');
+    const items=doc.querySelectorAll('item');
+    items.forEach(item=>{
+      const title=item.querySelector('title')?.textContent||'';
+      const link=item.querySelector('link')?.textContent||'';
+      const pubDate=item.querySelector('pubDate')?.textContent||'';
+      const source=item.querySelector('source')?.textContent||'';
+      const ts=pubDate ? new Date(pubDate).getTime() : 0;
+      // Filtro de relevancia: nombre de empresa en título
+      const firstWord=companyName.split(' ')[0].toLowerCase();
+      if(firstWord.length>=4 && title.toLowerCase().includes(firstWord)){
+        out.push({
+          id:'gn-'+link,
+          title,
+          link,
+          source:source||'Google News',
+          ts,
+          origin:'google'
+        });
+      }
+    });
+  }catch(e){}
+  return out;
+}
+
+async function fetchNews(sym, companyName){
+  const ck='news_v3_'+sym;
+  try{
+    const c=sessionStorage.getItem(ck);
+    if(c){const{ts,data}=JSON.parse(c); if(Date.now()-ts<30*60*1000) return data;}
+  }catch(e){}
+  // Fetch Yahoo + Google News en paralelo
+  const [yahoo, google] = await Promise.all([
+    fetchYahooNews(sym, companyName),
+    fetchGoogleNews(sym, companyName)
+  ]);
+  // Combinar, dedupe por título normalizado, sort por fecha desc
+  const seen=new Set();
+  const combined=[];
+  [...google, ...yahoo].forEach(n=>{
+    const key=(n.title||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,60);
+    if(seen.has(key)) return;
+    seen.add(key);
+    combined.push(n);
+  });
+  combined.sort((a,b)=>b.ts-a.ts);
+  const result=combined.slice(0, 8);
   try{sessionStorage.setItem(ck, JSON.stringify({ts:Date.now(), data:result}));}catch(e){}
   return result;
 }
 
-function timeAgo(seconds){
-  if(!seconds) return '';
-  const diff=Date.now()/1000-seconds;
+function timeAgo(ms){
+  if(!ms) return '';
+  const diff=(Date.now()-ms)/1000;
   if(diff<60) return 'hace unos segundos';
   if(diff<3600) return 'hace '+Math.floor(diff/60)+' min';
   if(diff<86400) return 'hace '+Math.floor(diff/3600)+' h';
@@ -1939,19 +1997,30 @@ async function openNewsModal(tid){
   bg.classList.add('open');
   document.body.style.overflow='hidden';
   const news=await fetchNews(sym, co.name);
+  // Footer con links a fuentes externas (siempre visibles)
+  const investingUrl='https://www.investing.com/search/?q='+encodeURIComponent(co.name)+'&tab=news';
+  const marketscreenerUrl='https://www.marketscreener.com/search/?q='+encodeURIComponent(co.name);
+  const externalLinks=`<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
+    <span style="opacity:.7;">Más noticias en:</span>
+    <a href="${investingUrl}" target="_blank" rel="noopener" style="color:#5b9cf6;margin:0 8px;">Investing.com →</a>
+    <a href="${marketscreenerUrl}" target="_blank" rel="noopener" style="color:#5b9cf6;margin:0 8px;">MarketScreener →</a>
+  </div>`;
   if(!news.length){
-    list.innerHTML='<div class="news-empty">No hay noticias recientes específicas de '+co.name+'.<br><span style="font-size:11px;opacity:.7;">Yahoo Finance tiene cobertura limitada para algunas acciones europeas. Consulta la página IR de la empresa o MarketScreener para más información.</span></div>';
+    list.innerHTML='<div class="news-empty">No hay noticias agregadas recientes de '+co.name+'.<br><span style="font-size:11px;opacity:.7;">Cobertura limitada en Yahoo / Google News para esta acción. Prueba con los enlaces externos abajo para fuentes especializadas.</span></div>'+externalLinks;
     return;
   }
+  const sourceColor={yahoo:'#a78bfa', google:'#4ade80'};
   list.innerHTML=news.map(n=>{
-    const time=timeAgo(n.providerPublishTime);
+    const time=timeAgo(n.ts);
     const title=(n.title||'—').replace(/</g,'&lt;');
-    const pub=(n.publisher||'').replace(/</g,'&lt;');
+    const src=(n.source||'').replace(/</g,'&lt;');
+    const tag=n.origin==='google'?'Google News':'Yahoo Finance';
+    const tagColor=sourceColor[n.origin]||'#5b9cf6';
     return `<a href="${n.link||'#'}" target="_blank" rel="noopener" class="news-item">
       <div class="news-item-title">${title}</div>
-      <div class="news-item-meta">${pub}${time?' · '+time:''}</div>
+      <div class="news-item-meta"><span style="color:${tagColor};">●</span> ${tag} · ${src}${time?' · '+time:''}</div>
     </a>`;
-  }).join('');
+  }).join('')+externalLinks;
 }
 
 (function initNewsModal(){
