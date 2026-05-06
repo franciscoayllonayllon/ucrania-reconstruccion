@@ -248,7 +248,7 @@
     <div class="hero-stats">
       <div class="hs"><span class="n">$588B</span><span class="l">Coste reconstrucción (RDNA5 · Feb 2026)</span></div>
       <div class="hs"><span class="n">$195B</span><span class="l">Daños directos confirmados</span></div>
-      <div class="hs"><span class="n">15</span><span class="l">Empresas análisis profundo</span></div>
+      <div class="hs"><span class="n" id="hs-count">—</span><span class="l">Empresas análisis profundo</span></div>
       <div class="hs"><span class="n">3</span><span class="l">Españolas destacadas</span></div>
       <div class="hs"><span class="n">9</span><span class="l">Cestas institucionales</span></div>
     </div>
@@ -1531,6 +1531,12 @@ function initMaps(){
   lg3.addTo(m3);
 }
 if(document.getElementById('map1'))initMaps();
+
+// Contador dinámico de empresas con análisis fundamental
+(function(){
+  const el=document.getElementById('hs-count');
+  if(el)el.textContent=companies.length+top6Section3.length+spanishCompanies.length;
+})();
 
 // RESPONSIVE
 function fixChartGrid(){
