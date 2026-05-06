@@ -231,6 +231,13 @@
     .metrics-grid{grid-template-columns:repeat(2,1fr);}
     .metrics-grid2{grid-template-columns:repeat(2,1fr);}
     .hero-stats{gap:20px;}
+    /* Medidor de resolución: scroll horizontal en móvil para mantener la timeline legible */
+    .meter-wrap{padding:18px;}
+    .meter-title{font-size:13px;}
+    .meter-track-wrap{overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;padding-bottom:64px;}
+    .meter-track,.meter-milestones{min-width:560px;}
+    .meter-ms-label{font-size:9px;}
+    .meter-ms-date{font-size:8.5px;}
   }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
