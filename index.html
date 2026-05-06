@@ -249,7 +249,7 @@
       <div class="hs"><span class="n">$588B</span><span class="l">Coste reconstrucción (RDNA5 · Feb 2026)</span></div>
       <div class="hs"><span class="n">$195B</span><span class="l">Daños directos confirmados</span></div>
       <div class="hs"><span class="n" id="hs-count">—</span><span class="l">Empresas análisis profundo</span></div>
-      <div class="hs"><span class="n">3</span><span class="l">Españolas destacadas</span></div>
+      <div class="hs"><span class="n" id="hs-spain">—</span><span class="l">Españolas destacadas</span></div>
       <div class="hs"><span class="n">9</span><span class="l">Cestas institucionales</span></div>
     </div>
   </div>
@@ -589,7 +589,7 @@
       <span class="spain-badge">Sección especial</span>
     </div>
     <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:32px;line-height:1.7;">
-      Tres compañías cotizadas españolas con posicionamiento directo o indirecto en la reconstrucción de Ucrania, analizadas en profundidad con sus catalizadores, riesgos y el mejor momento de entrada.
+      Seis compañías cotizadas españolas con posicionamiento directo o indirecto en la reconstrucción de Ucrania, analizadas en profundidad con sus catalizadores, riesgos y el mejor momento de entrada. Selección basada en contratos confirmados (Indra, radar Lanza LTR-25 €37M), exposición vía filiales (Acciona/Mostostal Kielce nuclear), y mención explícita en docs del gobierno español (ACS, Sacyr, OHLA, Técnicas Reunidas).
     </p>
     <div class="cards-grid" id="cards-spain"></div>
   </div>
@@ -1093,6 +1093,54 @@ const spanishCompanies = [
     catalysts:"Caja neta (empresa sin deuda). ROE 28.5% extraordinario para ingeniería EPC. Fase de modernización industrial ucraniana 2026-2032 ($64B en industria y comercio). Experiencia en más de 50 países. EPS revisiones muy positivas. P/E 14.4x barato.",
     risks:"Negocio depende de grandes contratos únicos — visibilidad limitada. Alta exposición a Oriente Medio y gas (transición energética es riesgo). Solo 7-8 analistas cubren el valor. Upside consenso limitado al 7%.",
     note:"La más técnica y menos conocida de las tres españolas. Caja neta + ROE 28% + P/E 14x es una combinación muy atractiva. El upside de Ucrania es enorme si consigue contratos EPC de infraestructura industrial."
+  },
+  {
+    name:"Acciona", ticker:"BME:ANE", sector:"infraestructura + renovables",
+    price:115, target:138,
+    pe:16.0, evEbitda:9.0, pfcf:13.5, pventas:0.4,
+    roe:8.5, roic:6.5, margenEbit:10.2, margenNeto:3.8,
+    deudaEbitda:4.0, cobertura:4.2, creditRating:"BBB-",
+    revenueGrowth:8, epsGrowth:14, revEps:"Revisiones al alza por exposición nuclear vía Mostostal",
+    div:4.5, upside:20, retBase:32, retPaz:58, risk:2, dep:"Media",
+    rating:"BUY", rc:"r-buy",
+    timingType:"now",
+    timingLabel:"Entrar gradualmente",
+    timingText:"Acciona tiene exposición directa y confirmada a la reconstrucción de Ucrania a través de su filial polaca Mostostal Kielce, que participa en proyectos nucleares de Westinghouse Electric en Ucrania. A esto se suma la división Acciona Energía (top mundial en renovables) que encaja con las prioridades del Acuerdo España-Ucrania de marzo 2026 (renovables como sector clave). El dividendo del 4.5% protege a la baja, y el upside de 20% en consenso es razonable. Acumular gradualmente en zona €110-118.",
+    catalysts:"Mostostal Kielce en proyectos nucleares Westinghouse en Ucrania (confirmado). Acciona Energía es líder global en renovables (sector prioritario del acuerdo bilateral). Desinversión de activos no estratégicos para reducir deuda. El plan UE Ukraine Facility (€50B) beneficia directamente a empresas con presencia en Polonia/Centroeuropa.",
+    risks:"Deuda 4.0x EBITDA es elevada (típico utilities pero requiere monitorización). Margen neto bajo (3.8%). Exposición divisa via filiales internacionales. Volatilidad por precios del pool eléctrico en España. Dependencia de regulación renovables.",
+    note:"La 4ª española y la única con exposición nuclear DIRECTA a Ucrania vía Mostostal Kielce. Combina infraestructura clásica + renovables + posicionamiento estratégico. Dividendo 4.5% atractivo."
+  },
+  {
+    name:"OHLA", ticker:"BME:OHLA", sector:"construcción / infraestructura",
+    price:0.42, target:0.55,
+    pe:18.0, evEbitda:7.5, pfcf:11.0, pventas:0.18,
+    roe:5.5, roic:4.2, margenEbit:3.2, margenNeto:1.0,
+    deudaEbitda:3.5, cobertura:2.8, creditRating:"B+ (en mejora)",
+    revenueGrowth:6, epsGrowth:30, revEps:"Recuperación post-reestructuración 2024-2025",
+    div:0, upside:30, retBase:38, retPaz:75, risk:4, dep:"Alta",
+    rating:"BUY", rc:"r-buy",
+    timingType:"watch",
+    timingLabel:"Esperar pullback — alto riesgo",
+    timingText:"OHLA es la apuesta más arriesgada y con mayor potencial asimétrico de las españolas. Tras una profunda reestructuración financiera completada en 2024-2025, la empresa ha vuelto a estabilizar su balance y aparece citada explícitamente por el gobierno español como contratista relevante para Ucrania. Como small-cap (€500M) con capacidad de crecer rápido en backlog ucraniano, el upside potencial es muy alto, pero la liquidez es reducida y la situación financiera todavía frágil. Solo apta para inversores con tolerancia a alta volatilidad. Esperar pullback al rango €0.32-0.38 para entrar.",
+    catalysts:"Citada por el gobierno español como contratista clave para Ucrania (docs Garrigues + Moncloa). Reestructuración financiera completada — la empresa vuelve a competir por contratos. Backlog en crecimiento. Posible ratio bajo de capitalización facilita revalorizaciones grandes. Beneficiaria del Acuerdo España-Ucrania para infraestructura.",
+    risks:"Small cap con liquidez reducida. Reestructuración reciente — sin track record de beneficios estables. Sin dividendo. Margen neto 1% mínimo. Alta volatilidad. Histórico de problemas de gobierno corporativo. Dependencia extrema de adjudicaciones internacionales.",
+    note:"La small-cap especulativa de la lista. Alto riesgo / alto potencial asimétrico. Si gana contratos en Ucrania, puede multiplicarse. Si fracasa, vuelve a problemas. NO para inversores conservadores."
+  },
+  {
+    name:"Indra", ticker:"BME:IDR", sector:"defensa / tecnología / ATM",
+    price:28, target:34,
+    pe:13.5, evEbitda:7.5, pfcf:11.5, pventas:0.85,
+    roe:14.2, roic:11.0, margenEbit:9.2, margenNeto:6.5,
+    deudaEbitda:0.5, cobertura:12.5, creditRating:"BBB",
+    revenueGrowth:12, epsGrowth:20, revEps:"Revisiones al alza por contratos defensa Europa + Ucrania",
+    div:1.5, upside:21, retBase:35, retPaz:55, risk:2, dep:"Media",
+    rating:"BUY", rc:"r-buy",
+    timingType:"now",
+    timingLabel:"Entrar ahora — contrato firmado",
+    timingText:"Indra es la española con el contrato más concreto y firmado con Ucrania: €37M para el suministro del radar táctico Lanza LTR-25, aprobado por el Ministerio de Defensa español en enero de 2026. A esto se suma el pacto España-Ucrania de marzo 2026 para coproducción de drones y radares, que amplía el pipeline. Indra también es líder europeo en gestión de tráfico aéreo (ATM, otro sector prioritario del acuerdo bilateral) y sistemas ferroviarios. Caja neta, P/E 13.5x razonable, ROE 14% — combinación muy atractiva. Entrar ahora.",
+    catalysts:"Contrato €37M radar Lanza LTR-25 para Ucrania YA en libros (firmado ene-2026, ejecución hasta dic-2026). Pacto bilateral para coproducción drones/radares (€1.000M comprometidos por Sánchez). Plan europeo de rearme €800B (ReArm Europe) — Indra es proveedor clave. Sistemas ATM para reconstrucción aeroportuaria. Sistemas ferroviarios para Ukrzaliznytsia.",
+    risks:"Sector defensa cíclico y dependiente de presupuestos públicos. Riesgo de cancelación o demora de contratos por evolución del conflicto. Competencia internacional fuerte (Thales, Leonardo, BAE). Margen neto 6.5% moderado para el sector tech.",
+    note:"La española con el contrato MÁS CONCRETO y firmado para Ucrania (€37M radar). Cobertura: defensa + drones + ATM + ferrocarril — los 4 sectores prioritarios del acuerdo bilateral. La menos cíclica de las 6."
   }
 ];
 
@@ -1374,7 +1422,10 @@ const FMP_SYM={
   'EPA_VIE':'VIE.PA',        // Veolia · París
   'BME_ACS':'ACS.MC',        // ACS · Madrid
   'BME_SCYR':'SCYR.MC',      // Sacyr · Madrid
-  'BME_TRE':'TRE.MC'         // Técnicas Reunidas · Madrid
+  'BME_TRE':'TRE.MC',        // Técnicas Reunidas · Madrid
+  'BME_ANE':'ANE.MC',        // Acciona · Madrid
+  'BME_OHLA':'OHLA.MC',      // OHLA · Madrid
+  'BME_IDR':'IDR.MC'         // Indra · Madrid
 };
 function fmpCcy(sym){
   if(!sym)return'';
@@ -1532,10 +1583,12 @@ function initMaps(){
 }
 if(document.getElementById('map1'))initMaps();
 
-// Contador dinámico de empresas con análisis fundamental
+// Contadores dinámicos del header
 (function(){
-  const el=document.getElementById('hs-count');
-  if(el)el.textContent=companies.length+top6Section3.length+spanishCompanies.length;
+  const c=document.getElementById('hs-count');
+  if(c)c.textContent=companies.length+top6Section3.length+spanishCompanies.length;
+  const s=document.getElementById('hs-spain');
+  if(s)s.textContent=spanishCompanies.length;
 })();
 
 // RESPONSIVE
