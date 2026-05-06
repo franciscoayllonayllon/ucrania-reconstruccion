@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ucrania: Análisis de Inversión en Reconstrucción v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<style>
+  :root {
+    --bg:#0a0e1a; --bg2:#111827; --bg3:#1a2235; --bg4:#0f1629;
+    --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.14);
+    --text:#f0f2f8; --muted:#8b93a8; --accent:#e8c97d; --accent2:#4ecdc4;
+    --blue:#5b9cf6; --green:#4ade80; --amber:#fbbf24; --red:#f87171;
+    --spain:#e74c3c; --spain-light:rgba(231,76,60,0.15);
+    --font-d:'Playfair Display',Georgia,serif;
+    --font-b:'DM Sans',sans-serif;
+    --font-m:'DM Mono',monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:15px;line-height:1.7;}
+
+  .hero{position:relative;padding:80px 0 56px;text-align:center;border-bottom:1px solid var(--border);}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(232,201,125,0.07) 0%,transparent 70%);pointer-events:none;}
+  .hero-label{display:inline-block;font-family:var(--font-m);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(232,201,125,0.3);padding:5px 14px;border-radius:20px;margin-bottom:24px;}
+  .hero h1{font-family:var(--font-d);font-size:clamp(30px,6vw,68px);font-weight:900;line-height:1.05;letter-spacing:-0.02em;margin-bottom:16px;}
+  .hero h1 em{color:var(--accent);font-style:normal;}
+  .hero-sub{font-size:15px;color:var(--muted);max-width:580px;margin:0 auto 40px;line-height:1.6;}
+  .hero-stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;}
+  .hs{text-align:center;} .hs .n{font-family:var(--font-d);font-size:34px;font-weight:700;color:var(--accent);display:block;} .hs .l{font-size:11px;color:var(--muted);letter-spacing:.05em;}
+
+  .container{max-width:1400px;margin:0 auto;padding:0 24px;}
+  .section{padding:64px 0;border-bottom:1px solid var(--border);}
+  .section.spain-section{background:linear-gradient(180deg,rgba(231,76,60,0.04) 0%,transparent 100%);}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:36px;}
+  .sec-num{font-family:var(--font-m);font-size:11px;color:var(--accent);letter-spacing:.1em;border:1px solid rgba(232,201,125,0.25);padding:3px 9px;border-radius:4px;flex-shrink:0;}
+  .sec-title{font-family:var(--font-d);font-size:clamp(20px,3vw,28px);font-weight:700;letter-spacing:-0.01em;}
+  .spain-badge{background:var(--spain-light);color:var(--spain);border:1px solid rgba(231,76,60,0.3);border-radius:4px;padding:3px 10px;font-size:11px;font-family:var(--font-m);}
+
+  nav{position:sticky;top:0;z-index:100;background:rgba(10,14,26,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 0;}
+  .nav-inner{display:flex;gap:6px;overflow-x:auto;padding:0 24px;max-width:1400px;margin:0 auto;}
+  .nav-inner::-webkit-scrollbar{display:none;}
+  .nb{padding:5px 14px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:var(--font-b);font-size:12px;cursor:pointer;white-space:nowrap;transition:all .2s;}
+  .nb:hover,.nb.active{background:rgba(232,201,125,0.1);color:var(--accent);border-color:rgba(232,201,125,0.3);}
+  .nb.spain-nav{border-color:rgba(231,76,60,0.3);color:var(--spain);}
+  .nb.spain-nav:hover,.nb.spain-nav.active{background:var(--spain-light);}
+
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px;}
+  .tab{padding:5px 14px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:all .2s;}
+  .tab.active,.tab:hover{background:rgba(91,156,246,0.15);color:var(--blue);border-color:rgba(91,156,246,0.4);}
+
+  /* FUNDAMENTAL CARDS — extended */
+  .fcard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px 22px;transition:border-color .2s,transform .15s;}
+  .fcard:hover{border-color:var(--border2);transform:translateY(-2px);}
+  .fcard.top{border:1.5px solid rgba(232,201,125,0.4);background:rgba(232,201,125,0.03);}
+  .fcard.spain{border:1px solid rgba(231,76,60,0.3);background:rgba(231,76,60,0.03);}
+  .fcard-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .fcard-name{font-weight:500;font-size:16px;} .fcard-ticker{font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:2px;}
+  .rating{font-size:11px;font-family:var(--font-m);padding:3px 9px;border-radius:20px;flex-shrink:0;font-weight:500;}
+  .r-buy{background:rgba(74,222,128,0.12);color:#4ade80;} .r-hold{background:rgba(251,191,36,0.12);color:#fbbf24;} .r-watch{background:rgba(248,113,113,0.12);color:#f87171;}
+  .top-badge{display:inline-block;font-size:10px;font-family:var(--font-m);background:rgba(232,201,125,0.12);color:var(--accent);padding:2px 8px;border-radius:20px;margin-bottom:6px;}
+  .spain-flag-badge{display:inline-block;font-size:10px;font-family:var(--font-m);background:var(--spain-light);color:var(--spain);padding:2px 8px;border-radius:20px;margin-bottom:6px;}
+  .fcard-sector{font-size:11px;color:var(--muted);margin-bottom:12px;}
+
+  /* Metrics grid */
+  .metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
+  .met{background:var(--bg3);border-radius:6px;padding:8px;}
+  .met-l{font-size:10px;color:var(--muted);margin-bottom:3px;line-height:1.3;}
+  .met-v{font-size:13px;font-weight:500;font-family:var(--font-m);color:var(--text);}
+  .met-v.pos{color:var(--green);} .met-v.neg{color:var(--red);} .met-v.warn{color:var(--amber);}
+  .metrics-grid2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;}
+
+  /* Thesis sections */
+  .thesis-block{background:var(--bg3);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
+  .thesis-title{font-size:10px;font-family:var(--font-m);color:var(--accent);letter-spacing:.08em;margin-bottom:6px;}
+  .thesis-text{font-size:12px;color:var(--muted);line-height:1.6;}
+
+  /* Upside bar */
+  .upside-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;}
+  .bar-bg{height:5px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-bottom:12px;}
+  .bar-fill{height:100%;border-radius:3px;}
+
+  /* Timing block */
+  .timing-block{border:1px solid var(--border2);border-radius:8px;padding:12px 14px;margin-top:12px;}
+  .timing-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .timing-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .timing-label{font-size:11px;font-family:var(--font-m);font-weight:500;}
+  .timing-text{font-size:11px;color:var(--muted);line-height:1.6;}
+  .timing-now{border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.04);}
+  .timing-wait{border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.04);}
+  .timing-watch{border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.04);}
+
+  /* Cards grid */
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+
+  /* Charts */
+  .chart-wrap{position:relative;width:100%;}
+  .leg{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px;font-size:12px;color:var(--muted);}
+  .leg span{display:flex;align-items:center;gap:5px;}
+  .leg-sq{width:10px;height:10px;border-radius:2px;display:inline-block;}
+
+  /* Comparativa rendimiento */
+  .cmp-block{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;}
+  .cmp-controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:16px;}
+  .cmp-controls select{background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:var(--font-b);font-size:13px;min-width:240px;cursor:pointer;}
+  .cmp-controls select:focus{outline:none;border-color:rgba(91,156,246,0.5);}
+  .cmp-periods{display:flex;gap:6px;flex-wrap:wrap;}
+  .cmp-p{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-family:var(--font-m);font-size:11px;letter-spacing:.05em;cursor:pointer;transition:all .15s;}
+  .cmp-p:hover{color:var(--text);border-color:rgba(91,156,246,0.4);}
+  .cmp-p.active{background:rgba(91,156,246,0.15);color:var(--blue);border-color:rgba(91,156,246,0.5);}
+  .cmp-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;font-family:var(--font-m);background:rgba(15,18,33,0.6);border-radius:10px;pointer-events:none;}
+  .cmp-empty{color:var(--muted);font-size:12px;text-align:center;padding:40px 20px;}
+
+  /* Table */
+  .ftable{width:100%;border-collapse:collapse;font-size:13px;}
+  .ftable th{text-align:left;padding:10px 12px;font-size:10px;font-family:var(--font-m);letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border2);white-space:nowrap;}
+  .ftable td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .ftable tr:last-child td{border-bottom:none;}
+  .ftable tr:hover td{background:rgba(255,255,255,0.02);}
+  .ftable td.mono{font-family:var(--font-m);}
+  .ftable td.pos{color:var(--green);font-family:var(--font-m);font-weight:500;}
+  .ftable td.neg{color:var(--red);font-family:var(--font-m);}
+  .ftable td.warn{color:var(--amber);font-family:var(--font-m);}
+  .ftable td.spain-col{color:var(--spain);font-family:var(--font-m);font-weight:500;}
+
+  /* Overlap */
+  .ov-item{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .ov-name{font-size:12px;width:150px;flex-shrink:0;} .ov-ticker{font-family:var(--font-m);font-size:10px;color:var(--muted);display:block;}
+  .ov-track{flex:1;display:flex;height:20px;border-radius:5px;overflow:hidden;}
+  .ov-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-family:var(--font-m);color:rgba(255,255,255,.85);font-weight:500;}
+  .ov-n{font-family:var(--font-m);font-size:12px;color:var(--accent);min-width:22px;text-align:right;}
+
+  /* Risk grid */
+  .risk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
+  .rc{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+  .rc-n{font-weight:500;font-size:14px;margin-bottom:2px;} .rc-t{font-family:var(--font-m);font-size:10px;color:var(--muted);margin-bottom:8px;}
+  .rm{display:flex;gap:3px;} .rdot{flex:1;height:5px;border-radius:3px;}
+
+  /* Disclaimer */
+  .disclaimer{padding:22px;background:rgba(248,113,113,0.05);border:1px solid rgba(248,113,113,0.18);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.65;margin-top:48px;}
+  footer{text-align:center;padding:40px 24px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);}
+  .live-px{display:block;min-height:16px;margin-top:3px;font-size:11px;font-family:var(--font-m);color:var(--amber);}
+  .live-px.ok{color:inherit;}
+
+  /* GEOPOLITICAL SECTION */
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+  @keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.4)}70%{box-shadow:0 0 0 8px rgba(248,113,113,0)}}
+  @keyframes pulse-amber{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.4)}70%{box-shadow:0 0 0 8px rgba(251,191,36,0)}}
+  @keyframes borderGlow{0%,100%{border-color:rgba(232,201,125,.2)}50%{border-color:rgba(232,201,125,.6)}}
+  .geo-section{padding:64px 0;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(248,113,113,0.03) 0%,rgba(10,14,26,0) 40%);}
+  .geo-live-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.4);color:#fca5a5;font-size:10px;font-weight:700;letter-spacing:.12em;padding:5px 14px;border-radius:20px;margin-bottom:28px;text-transform:uppercase;font-family:var(--font-m);}
+  .geo-live-dot{width:7px;height:7px;border-radius:50%;background:#f87171;animation:blink 1.2s infinite;flex-shrink:0;}
+  .geo-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:40px;}
+  .geo-kpi{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:center;transition:border-color .2s,transform .15s;}
+  .geo-kpi:hover{border-color:var(--border2);transform:translateY(-2px);}
+  .geo-kpi-label{font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;text-transform:uppercase;}
+  .geo-kpi-val{font-size:20px;font-weight:700;font-family:var(--font-d);}
+  .geo-kpi-sub{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4;}
+  .geo-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:36px;}
+  .geo-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .geo-card h4{font-size:10px;color:var(--accent);font-family:var(--font-m);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;}
+  .geo-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;gap:12px;}
+  .geo-row:last-child{border-bottom:none;}
+  .geo-key{color:var(--muted);flex-shrink:0;max-width:45%;}
+  .geo-val{font-weight:500;text-align:right;line-height:1.4;}
+  .geo-val.pos{color:var(--green);}
+  .geo-val.warn{color:var(--amber);}
+  .geo-val.neg{color:var(--red);}
+  /* RESOLUTION METER */
+  .meter-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:36px;animation:borderGlow 4s ease-in-out infinite;}
+  .meter-title{font-size:12px;color:var(--accent);font-family:var(--font-m);letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;}
+  .meter-track-wrap{position:relative;padding:0 0 48px;}
+  .meter-track{height:8px;background:var(--bg3);border-radius:4px;position:relative;overflow:visible;}
+  .meter-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#f87171,#fbbf24,#4ade80);width:38%;}
+  .meter-now{position:absolute;top:-6px;width:20px;height:20px;border-radius:50%;background:var(--accent);border:3px solid var(--bg);box-shadow:0 0 12px rgba(232,201,125,.6);left:38%;transform:translateX(-50%);}
+  .meter-now-label{position:absolute;top:-32px;left:38%;transform:translateX(-50%);font-size:10px;font-family:var(--font-m);color:var(--accent);white-space:nowrap;background:var(--bg2);padding:2px 8px;border-radius:4px;border:1px solid rgba(232,201,125,.3);}
+  .meter-milestones{display:flex;justify-content:space-between;position:relative;margin-top:14px;}
+  .meter-ms{text-align:center;flex:1;position:relative;}
+  .meter-ms-dot{width:10px;height:10px;border-radius:50%;margin:0 auto 6px;position:relative;z-index:2;}
+  .meter-ms-label{font-size:9.5px;font-family:var(--font-m);color:var(--muted);line-height:1.4;}
+  .meter-ms-date{font-size:9px;color:var(--muted);opacity:.65;margin-top:2px;}
+  .meter-ms.done .meter-ms-dot{background:var(--green);}
+  .meter-ms.done .meter-ms-label{color:var(--green);}
+  .meter-ms.current .meter-ms-dot{background:var(--accent);box-shadow:0 0 8px rgba(232,201,125,.5);animation:pulse-amber 2s infinite;}
+  .meter-ms.current .meter-ms-label{color:var(--accent);}
+  .meter-ms.soon .meter-ms-dot{background:var(--amber);animation:pulse-amber 2.5s infinite;}
+  .meter-ms.future .meter-ms-dot{background:var(--bg3);border:2px solid var(--border2);}
+  .meter-prob{font-size:9px;color:var(--blue);font-family:var(--font-m);margin-top:2px;}
+  /* SCENARIO CARDS */
+  .scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px;}
+  .sc-card{border-radius:12px;padding:20px;border:1px solid;transition:transform .2s;}
+  .sc-card:hover{transform:translateY(-3px);}
+  .sc-card.bull{background:linear-gradient(135deg,rgba(74,222,128,.08),rgba(74,222,128,.02));border-color:rgba(74,222,128,.25);}
+  .sc-card.base{background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(251,191,36,.02));border-color:rgba(251,191,36,.25);}
+  .sc-card.bear{background:linear-gradient(135deg,rgba(248,113,113,.08),rgba(248,113,113,.02));border-color:rgba(248,113,113,.2);}
+  .sc-label{font-size:10px;font-weight:700;font-family:var(--font-m);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+  .sc-card.bull .sc-label{color:var(--green);}
+  .sc-card.base .sc-label{color:var(--amber);}
+  .sc-card.bear .sc-label{color:var(--red);}
+  .sc-prob{font-family:var(--font-d);font-size:38px;font-weight:700;margin:8px 0;}
+  .sc-card.bull .sc-prob{color:var(--green);}
+  .sc-card.base .sc-prob{color:var(--amber);}
+  .sc-card.bear .sc-prob{color:var(--red);}
+  .sc-title{font-size:13px;font-weight:600;margin-bottom:10px;}
+  .sc-text{font-size:11.5px;color:var(--muted);line-height:1.65;}
+  .sc-impact{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07);}
+  .sc-impact-label{font-size:10px;font-family:var(--font-m);color:var(--muted);letter-spacing:.07em;margin-bottom:6px;}
+  .sc-impact-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+  .sc-impact-key{color:var(--muted);}
+  /* ACTORS TABLE */
+  .actors-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:36px;}
+  .actor-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;transition:border-color .2s;}
+  .actor-card:hover{border-color:var(--border2);}
+  .actor-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+  .actor-role{font-size:10px;color:var(--muted);font-family:var(--font-m);margin-bottom:10px;}
+  .actor-pos{font-size:11.5px;color:var(--muted);line-height:1.55;}
+  .actor-stance{display:inline-block;font-size:9px;font-family:var(--font-m);padding:2px 8px;border-radius:20px;margin-bottom:8px;}
+  .stance-neg{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.25);}
+  .stance-warn{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.25);}
+  .stance-pos{background:rgba(74,222,128,.12);color:#4ade80;border:1px solid rgba(74,222,128,.25);}
+  @media(max-width:700px){
+    .geo-kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .geo-grid{grid-template-columns:1fr;}
+    .scenario-grid{grid-template-columns:1fr;}
+    .actors-grid{grid-template-columns:repeat(2,1fr);}
+    .cards-grid{grid-template-columns:1fr;}
+    .metrics-grid{grid-template-columns:repeat(2,1fr);}
+    .metrics-grid2{grid-template-columns:repeat(2,1fr);}
+    .hero-stats{gap:20px;}
+  }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+.leaflet-container{background:#0d0f1a;}
+.leaflet-popup-content-wrapper{background:#0f1221;color:#e2e8f0;border:1px solid rgba(255,255,255,0.12);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.6);}
+.leaflet-popup-tip{background:#0f1221;}
+.leaflet-popup-content{font-family:system-ui,sans-serif;font-size:13px;line-height:1.6;}
+.leaflet-popup-content b{color:#4ade80;}
+.leaflet-popup-content hr{border-color:rgba(255,255,255,0.12);margin:6px 0;}
+.leaflet-control-attribution{background:rgba(10,12,24,0.7)!important;color:#4b5563!important;font-size:9px!important;}
+.leaflet-control-zoom a{background:#0f1221!important;color:#e2e8f0!important;border-color:rgba(255,255,255,0.15)!important;}
+.leaflet-control-zoom a:hover{background:#1a1f3a!important;}
+.map-block{margin-top:40px;}
+.map-label{font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:.05em;margin-bottom:16px;}
+.map-pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.map-title{font-size:12px;font-family:var(--font-m);color:var(--fg);margin-bottom:8px;letter-spacing:.03em;}
+.map-div{border-radius:10px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;}
+@media(max-width:700px){.map-pair{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-label">Análisis de Inversión · Versión 2.0 · Marzo 2026</div>
+    <h1>Ucrania: La mayor<br><em>Reconstrucción</em><br>del siglo XXI</h1>
+    <p class="hero-sub">Análisis fundamental extendido · Cestas institucionales · Empresas españolas · Timing de entrada óptimo</p>
+    <div class="hero-stats">
+      <div class="hs"><span class="n">$588B</span><span class="l">Coste reconstrucción (RDNA5 · Feb 2026)</span></div>
+      <div class="hs"><span class="n">$195B</span><span class="l">Daños directos confirmados</span></div>
+      <div class="hs"><span class="n" id="hs-count">—</span><span class="l">Empresas análisis profundo</span></div>
+      <div class="hs"><span class="n" id="hs-spain">—</span><span class="l">Españolas destacadas</span></div>
+      <div class="hs"><span class="n">9</span><span class="l">Cestas institucionales</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <button class="nb active" onclick="goTo('#geopolitica')" style="border-color:rgba(248,113,113,.3);color:#f87171;">Situación geopolítica</button>
+    <button class="nb" onclick="goTo('#fundamental')">Análisis fundamental</button>
+    <button class="nb" onclick="goTo('#graficos')">Gráficos</button>
+    <button class="nb" onclick="goTo('#cestas')">TOP 6 fuera de Cestas</button>
+    <button class="nb spain-nav" onclick="goTo('#espanolas')">Empresas españolas</button>
+    <button class="nb" onclick="goTo('#timing')">Timing de entrada</button>
+    <button class="nb" onclick="goTo('#ranking')">Ranking final</button>
+  </div>
+</nav>
+
+<!-- SECTION 0: GEOPOLÍTICA -->
+<div class="geo-section" id="geopolitica">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num" style="border-color:rgba(248,113,113,.35);color:#f87171;">00</span>
+      <h2 class="sec-title">Situación geopolítica — Estado del conflicto</h2>
+    </div>
+    <div class="geo-live-badge"><span class="geo-live-dot"></span>Actualizado · Abril 2026 · Día 791 de guerra</div>
+
+    <!-- KPIs -->
+    <div class="geo-kpi-grid">
+      <div class="geo-kpi">
+        <div class="geo-kpi-label">Duración conflicto</div>
+        <div class="geo-kpi-val" style="color:#f87171;">791 días</div>
+        <div class="geo-kpi-sub">Desde 24 Feb 2022</div>
+      </div>
+      <div class="geo-kpi">
+        <div class="geo-kpi-label">Estado negociaciones</div>
+        <div class="geo-kpi-val" style="color:#fbbf24;">Activas</div>
+        <div class="geo-kpi-sub">Marco Trump · Abr 2026</div>
+      </div>
+      <div class="geo-kpi">
+        <div class="geo-kpi-label">Prob. cese el fuego 2026</div>
+        <div class="geo-kpi-val" style="color:#4ade80;">55%</div>
+        <div class="geo-kpi-sub">Consenso analistas geopolíticos</div>
+      </div>
+      <div class="geo-kpi">
+        <div class="geo-kpi-label">Capital UE comprometido</div>
+        <div class="geo-kpi-val" style="color:var(--accent);">€50B</div>
+        <div class="geo-kpi-sub">Fondo reconstrucción Ukraine Facility</div>
+      </div>
+      <div class="geo-kpi">
+        <div class="geo-kpi-label">Inicio reconstrucción est.</div>
+        <div class="geo-kpi-val" style="color:var(--blue);">2027</div>
+        <div class="geo-kpi-sub">Escenario base con paz en 2026</div>
+      </div>
+    </div>
+
+    <!-- Estado diplomático y militar -->
+    <div class="geo-grid">
+      <div class="geo-card">
+        <h4>Estado diplomático — Abril 2026</h4>
+        <div class="geo-row"><span class="geo-key">Marco negociador activo</span><span class="geo-val warn">Administración Trump como mediador principal</span></div>
+        <div class="geo-row"><span class="geo-key">Posición Ucrania</span><span class="geo-val warn">Cese el fuego sí, pero exige garantías de seguridad OTAN o equivalente</span></div>
+        <div class="geo-row"><span class="geo-key">Posición Rusia</span><span class="geo-val neg">Reconocimiento de territorios ocupados como condición previa</span></div>
+        <div class="geo-row"><span class="geo-key">Unión Europea</span><span class="geo-val pos">Financiación lista. €50B Ukraine Facility activo. Presiona por solución negociada</span></div>
+        <div class="geo-row"><span class="geo-key">OTAN</span><span class="geo-val warn">Garantías de seguridad sobre la mesa. Sin consenso pleno sobre adhesión</span></div>
+        <div class="geo-row"><span class="geo-key">China</span><span class="geo-val warn">Postura neutral-constructiva. Apoya solución diplomática. No apoya sanciones</span></div>
+        <div class="geo-row"><span class="geo-key">Próximo hito clave</span><span class="geo-val pos">Cumbre diplomática prevista T2-T3 2026</span></div>
+      </div>
+      <div class="geo-card">
+        <h4>Situación sobre el terreno — Frentes activos</h4>
+        <div class="geo-row"><span class="geo-key">Línea de frente</span><span class="geo-val warn">~1.000 km estabilizados desde mediados 2023</span></div>
+        <div class="geo-row"><span class="geo-key">Territorios ocupados por Rusia</span><span class="geo-val neg">~18% territorio ucraniano (Crimea + Donbás + franjas sur/este)</span></div>
+        <div class="geo-row"><span class="geo-key">Actividad bélica actual</span><span class="geo-val warn">Baja-media. Ataques drone e infantería localizados. Sin grandes ofensivas</span></div>
+        <div class="geo-row"><span class="geo-key">Infraestructura energética</span><span class="geo-val neg">60-70% red eléctrica dañada. Suministro intermitente en zonas de conflicto</span></div>
+        <div class="geo-row"><span class="geo-key">Apoyo militar occidental</span><span class="geo-val warn">Continúa pero reducido vs 2023-24. Trump congela parte de ayudas</span></div>
+        <div class="geo-row"><span class="geo-key">Zonas ya en reconstrucción</span><span class="geo-val pos">Áreas liberadas (Jersón, Járkov ciudad) con proyectos UE en curso</span></div>
+        <div class="geo-row"><span class="geo-key">Bajas estimadas totales</span><span class="geo-val neg">>500.000 entre ambos bandos (IISS, Ucrania Media)</span></div>
+      </div>
+    </div>
+
+    <!-- MEDIDOR TEMPORAL DE RESOLUCIÓN -->
+    <div class="meter-wrap">
+      <div class="meter-title">Medidor de resolución del conflicto — Hoja de ruta hacia la reconstrucción</div>
+      <div class="meter-track-wrap">
+        <div style="position:absolute;top:-22px;left:38%;transform:translateX(-50%);font-size:9px;font-family:var(--font-m);color:var(--accent);white-space:nowrap;background:rgba(232,201,125,0.15);padding:2px 8px;border-radius:4px;border:1px solid rgba(232,201,125,.35);">▼ ESTAMOS AQUÍ · Abr 2026</div>
+        <div class="meter-track">
+          <div class="meter-fill"></div>
+          <div class="meter-now"></div>
+        </div>
+        <div class="meter-milestones">
+          <div class="meter-ms done">
+            <div class="meter-ms-dot"></div>
+            <div class="meter-ms-label">Inicio<br>guerra</div>
+            <div class="meter-ms-date">Feb 2022</div>
+          </div>
+          <div class="meter-ms done">
+            <div class="meter-ms-dot"></div>
+            <div class="meter-ms-label">Frente<br>estabilizado</div>
+            <div class="meter-ms-date">Mid 2023</div>
+          </div>
+          <div class="meter-ms done">
+            <div class="meter-ms-dot"></div>
+            <div class="meter-ms-label">Primeras<br>negociaciones</div>
+            <div class="meter-ms-date">2025</div>
+          </div>
+          <div class="meter-ms current">
+            <div class="meter-ms-dot"></div>
+            <div class="meter-ms-label">Marco Trump<br>activo</div>
+            <div class="meter-ms-date">Abr 2026</div>
+            <div class="meter-prob">HOY</div>
+          </div>
+          <div class="meter-ms soon">
+            <div class="meter-ms-dot"></div>
+            <div class="meter-ms-label">Cese el<br>fuego</div>
+            <div class="meter-ms-date">T3-T4 2026</div>
+            <div class="meter-prob">55% prob.</div>
+          </div>
+          <div class="meter-ms future">
+            <div class="meter-ms-dot"></div>
+            <div class="meter-ms-label">Paz formal<br>firmada</div>
+            <div class="meter-ms-date">2027</div>
+            <div class="meter-prob">40% prob.</div>
+          </div>
+          <div class="meter-ms future">
+            <div class="meter-ms-dot"></div>
+            <div class="meter-ms-label">Reconstrucción<br>plena</div>
+            <div class="meter-ms-date">2028–2030</div>
+            <div class="meter-prob">Escenario base</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px;">
+        <div style="background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:12px;">
+          <div style="font-size:10px;font-family:var(--font-m);color:var(--green);letter-spacing:.07em;margin-bottom:6px;">CATALIZADORES POSITIVOS</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">Mediación Trump · Presión económica sobre Rusia · Fatiga de guerra en ambos bandos · Promesa UE de financiación condicionada a paz · Elecciones en Rusia como ventana de oportunidad</div>
+        </div>
+        <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:12px;">
+          <div style="font-size:10px;font-family:var(--font-m);color:var(--amber);letter-spacing:.07em;margin-bottom:6px;">FACTORES DE INCERTIDUMBRE</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">Gap territorial (Ucrania no reconoce fronteras 2022) · Garantías OTAN sin consenso · Financiación militar Corea del Norte / Irán a Rusia · Posición China en negociaciones</div>
+        </div>
+        <div style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.18);border-radius:8px;padding:12px;">
+          <div style="font-size:10px;font-family:var(--font-m);color:var(--red);letter-spacing:.07em;margin-bottom:6px;">RIESGOS DE ESCALADA</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">Colapso negociaciones → vuelta a ofensivas · Ruptura apoyos occidentales · Accidente nuclear (planta Zaporiyia) · Conflicto congelado tipo Corea sin acceso a zonas sur/este</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTORES CLAVE -->
+    <div style="font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:.05em;margin-bottom:14px;">ACTORES CLAVE EN LAS NEGOCIACIONES</div>
+    <div class="actors-grid" style="margin-bottom:36px;">
+      <div class="actor-card">
+        <div class="actor-name">Donald Trump</div>
+        <div class="actor-role">Mediador principal · EEUU</div>
+        <span class="actor-stance stance-warn">Pragmático</span>
+        <div class="actor-pos">Presiona por acuerdo rápido. Dispuesto a reconocer territorios ocupados a cambio de fin de conflicto. Ha congelado parte de la ayuda militar a Ucrania como palanca negociadora.</div>
+      </div>
+      <div class="actor-card">
+        <div class="actor-name">Volodímir Zelenski</div>
+        <div class="actor-role">Presidente · Ucrania</div>
+        <span class="actor-stance stance-neg">Posición dura</span>
+        <div class="actor-pos">Acepta negociar cese el fuego pero exige garantías de seguridad vinculantes (OTAN o equivalente). No reconocerá territorios ocupados como condición previa a la paz.</div>
+      </div>
+      <div class="actor-card">
+        <div class="actor-name">Vladímir Putin</div>
+        <div class="actor-role">Presidente · Rusia</div>
+        <span class="actor-stance stance-neg">Bloqueante</span>
+        <div class="actor-pos">Exige reconocimiento formal de Crimea, Donbás y franjas ocupadas. Opone veto a cualquier integración OTAN de Ucrania. Posición menos flexible que en 2022.</div>
+      </div>
+      <div class="actor-card">
+        <div class="actor-name">Ursula von der Leyen</div>
+        <div class="actor-role">Presidenta · Comisión Europea</div>
+        <span class="actor-stance stance-pos">Facilitador</span>
+        <div class="actor-pos">€50B Ukraine Facility activo. Vincula plena financiación a paz o cese el fuego estable. Proceso adhesión UE de Ucrania en marcha como incentivo estructural.</div>
+      </div>
+      <div class="actor-card">
+        <div class="actor-name">Xi Jinping</div>
+        <div class="actor-role">Presidente · China</div>
+        <span class="actor-stance stance-warn">Neutral activo</span>
+        <div class="actor-pos">Ha presentado plan de paz propio (12 puntos). Interés en estabilidad. No apoya sanciones a Rusia pero presiona discretamente por solución diplomática para proteger imagen internacional.</div>
+      </div>
+      <div class="actor-card">
+        <div class="actor-name">Recep Erdoğan</div>
+        <div class="actor-role">Presidente · Turquía</div>
+        <span class="actor-stance stance-pos">Mediador activo</span>
+        <div class="actor-pos">Canal de comunicación clave entre Moscú y Kyiv. Ya facilitó el acuerdo de grano del Mar Negro (2022). Posición geopolítica de Turquía le da influencia única en ambas partes.</div>
+      </div>
+      <div class="actor-card">
+        <div class="actor-name">Olaf Scholz / Friedrich Merz</div>
+        <div class="actor-role">Canciller · Alemania</div>
+        <span class="actor-stance stance-pos">Apoyo firme</span>
+        <div class="actor-pos">Alemania es el mayor contribuidor europeo de ayuda militar. Plan de infraestructura alemán €500B incluye componente de reconstrucción regional. Merz (ganó elecciones feb 2026) más pro-Ucrania.</div>
+      </div>
+      <div class="actor-card">
+        <div class="actor-name">Banco Mundial / FMI / BERD</div>
+        <div class="actor-role">Instituciones financieras</div>
+        <span class="actor-stance stance-pos">Listos para actuar</span>
+        <div class="actor-pos">RDNA5 (Feb 2026): $588B coste reconstrucción. World Bank coordina financiación multilateral. BERD tiene mandato específico para Europa del Este. FMI con programa activo en Ucrania.</div>
+      </div>
+    </div>
+
+    <!-- ESCENARIOS -->
+    <div style="font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:.05em;margin-bottom:14px;">ESCENARIOS DE RESOLUCIÓN — IMPACTO EN INVERSIÓN</div>
+    <div class="scenario-grid">
+      <div class="sc-card bull">
+        <div class="sc-label">Escenario A · Paz rápida</div>
+        <div class="sc-prob">35%</div>
+        <div class="sc-title">Cese el fuego antes de fin de 2026</div>
+        <div class="sc-text">Trump cierra acuerdo marco en T2-T3 2026. Ucrania acepta congelación territorial temporal a cambio de garantías de seguridad y financiación masiva UE. Rusia levanta bloqueo Mar Negro. Inicio reconstrucción formal en 2027.</div>
+        <div class="sc-impact">
+          <div class="sc-impact-label">IMPACTO EN CARTERA</div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Materiales (WIE, HEIG, Holcim)</span><span style="color:var(--green);">+60–90%</span></div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Infraestructura (Vinci, Budimex)</span><span style="color:var(--green);">+50–75%</span></div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Banca CEE (RBI)</span><span style="color:var(--green);">+80–120%</span></div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Timing de entrada</span><span style="color:var(--green);">Acumular YA</span></div>
+        </div>
+      </div>
+      <div class="sc-card base">
+        <div class="sc-label">Escenario B · Paz lenta</div>
+        <div class="sc-prob">45%</div>
+        <div class="sc-title">Negociaciones prolongadas 2027–2028</div>
+        <div class="sc-text">Negociaciones avanzan pero con múltiples interrupciones. Cese el fuego informal en 2026-27 pero paz formal en 2027-28. Reconstrucción comienza en zonas no conflictivas ya en 2026. Escenario más probable según consenso analistas.</div>
+        <div class="sc-impact">
+          <div class="sc-impact-label">IMPACTO EN CARTERA</div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Materiales / Infraestructura</span><span style="color:var(--amber);">+30–50%</span></div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Españolas (ACS, TRE)</span><span style="color:var(--amber);">+25–40%</span></div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Banca CEE</span><span style="color:var(--amber);">+40–70%</span></div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Timing de entrada</span><span style="color:var(--amber);">Acumular gradual</span></div>
+        </div>
+      </div>
+      <div class="sc-card bear">
+        <div class="sc-label">Escenario C · Conflicto congelado</div>
+        <div class="sc-prob">20%</div>
+        <div class="sc-title">Estancamiento tipo Korea 2028+</div>
+        <div class="sc-text">Negociaciones colapsan. Conflicto se congela sin acuerdo formal (similar a Corea 1953). Reconstrucción muy parcial limitada a zonas oeste/centro de Ucrania. $588B se reduce a $150–200B ejecutables. Acceso a sur/este bloqueado indefinidamente.</div>
+        <div class="sc-impact">
+          <div class="sc-impact-label">IMPACTO EN CARTERA</div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Materiales / Infraestructura</span><span style="color:var(--red);">+10–20%</span></div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Banca CEE (RBI)</span><span style="color:var(--red);">–20 a 0%</span></div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Vinci / Budimex</span><span style="color:var(--amber);">+15–30% (independiente)</span></div>
+          <div class="sc-impact-row"><span class="sc-impact-key">Timing de entrada</span><span style="color:var(--red);">Reducir exposición CEE</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAPAS SATELITALES -->
+    <div class="map-block">
+      <div class="map-label">MAPAS SATELITALES INTERACTIVOS — ZOOM LIBRE · CLICK EN ZONAS PARA VER DATOS</div>
+      <div class="map-pair">
+        <div>
+          <div class="map-title">📍 MAPA 1 · Daños por región — $588B total estimado</div>
+          <div id="map1" class="map-div" style="height:440px;"></div>
+        </div>
+        <div>
+          <div class="map-title">📍 MAPA 2 · Territorios ocupados y frente de guerra</div>
+          <div id="map2" class="map-div" style="height:440px;"></div>
+        </div>
+      </div>
+      <div>
+        <div class="map-title">📍 MAPA 3 · Infraestructura destruida y zonas de reconstrucción urgente</div>
+        <div id="map3" class="map-div" style="height:480px;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECTION 1: FUNDAMENTAL -->
+<div class="section" id="fundamental">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">Análisis Fundamental — Empresas en Cestas Institucionales (2+)</h2>
+    </div>
+    <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:28px;line-height:1.7;">
+      Las 17 empresas presentes en 2 o más cestas de grandes bancos de inversión (Morgan Stanley, Goldman Sachs, BofA, Erste, Jefferies, JPMorgan, Citi, Deutsche Bank, Barclays). Análisis fundamental completo: valoración, calidad, solidez financiera, momentum y tesis de inversión.
+    </p>
+    <div style="margin-bottom:40px;">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--font-m);letter-spacing:.05em;">EMPRESAS EN 2+ CESTAS INSTITUCIONALES — SOLAPAMIENTO</div>
+      <div id="ov-list"></div>
+    </div>
+    <div class="tabs" id="tabs1">
+      <button class="tab active" data-f="all">Todas (17)</button>
+      <button class="tab" data-f="top">Top picks</button>
+      <button class="tab" data-f="materiales">Materiales</button>
+      <button class="tab" data-f="energia">Energía & Utilities</button>
+      <button class="tab" data-f="infraestructura">Infraestructura</button>
+      <button class="tab" data-f="industrial">Industrial</button>
+    </div>
+    <div class="cards-grid" id="cards1"></div>
+  </div>
+</div>
+
+<!-- SECTION 2: GRAFICOS -->
+<div class="section" id="graficos">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Comparativa visual</h2></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-bottom:48px;" id="chart-grid">
+      <div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Upside consenso vs P/E forward</div>
+        <div class="leg"><span><span class="leg-sq" style="background:#5b9cf6;"></span>Upside (%)</span><span><span class="leg-sq" style="background:#4ade80;"></span>P/E (x)</span></div>
+        <div class="chart-wrap" style="height:300px;"><canvas id="c1"></canvas></div>
+      </div>
+      <div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Retorno estimado a 3 años</div>
+        <div class="leg"><span><span class="leg-sq" style="background:#5b9cf6;"></span>Escenario base</span><span><span class="leg-sq" style="background:#4ade80;"></span>Escenario paz</span></div>
+        <div class="chart-wrap" style="height:300px;"><canvas id="c2"></canvas></div>
+      </div>
+    </div>
+    <div style="margin-bottom:48px;">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">ROE vs ROIC — calidad del negocio (%) · burbuja = capitalización relativa</div>
+      <div class="chart-wrap" style="height:340px;"><canvas id="c3"></canvas></div>
+    </div>
+    <div style="margin-bottom:48px;">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Deuda Neta / EBITDA — solidez financiera (menor = mejor)</div>
+      <div class="chart-wrap" style="height:300px;"><canvas id="c4"></canvas></div>
+    </div>
+
+    <!-- Gráfico 5: Comparativa rendimiento vs índices -->
+    <div class="cmp-block">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Comparativa de rendimiento vs índices bursátiles</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5;">
+        Selecciona una empresa y un periodo. La línea principal es la empresa, comparada con el <strong style="color:#5b9cf6;">índice de su país</strong> y el <strong style="color:#4ade80;">Stoxx Europe 600</strong>. Todas las series están normalizadas a base 100 al inicio del periodo.
+      </div>
+      <div class="cmp-controls">
+        <select id="cmp-company"></select>
+        <div class="cmp-periods">
+          <button class="cmp-p" data-p="1M">1M</button>
+          <button class="cmp-p" data-p="3M">3M</button>
+          <button class="cmp-p" data-p="6M">6M</button>
+          <button class="cmp-p" data-p="YTD">YTD</button>
+          <button class="cmp-p active" data-p="1Y">1Y</button>
+          <button class="cmp-p" data-p="5Y">5Y</button>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:380px;position:relative;">
+        <canvas id="c5"></canvas>
+        <div id="cmp-status" class="cmp-loading" style="display:none;">Cargando datos…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: TOP 6 FUERA DE CESTAS -->
+<div class="section" id="cestas">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">TOP 6 — Mejores Oportunidades Fuera de Cestas</h2></div>
+    <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:32px;line-height:1.7;">
+      Las 6 mejores empresas no españolas con 0 ó 1 aparición en cestas institucionales, seleccionadas por su posicionamiento directo para beneficiarse de la reconstrucción de Ucrania. Análisis fundamental completo.
+    </p>
+    <div class="cards-grid" id="cards2"></div>
+  </div>
+</div>
+
+<!-- SECTION 4: ESPAÑOLAS -->
+<div class="section spain-section" id="espanolas">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">Empresas españolas</h2>
+      <span class="spain-badge">Sección especial</span>
+    </div>
+    <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:32px;line-height:1.7;">
+      Seis compañías cotizadas españolas con posicionamiento directo o indirecto en la reconstrucción de Ucrania, analizadas en profundidad con sus catalizadores, riesgos y el mejor momento de entrada. Selección basada en contratos confirmados (Indra, radar Lanza LTR-25 €37M), exposición vía filiales (Acciona/Mostostal Kielce nuclear), y mención explícita en docs del gobierno español (ACS, Sacyr, OHLA, Técnicas Reunidas).
+    </p>
+    <div class="cards-grid" id="cards-spain"></div>
+  </div>
+</div>
+
+<!-- SECTION 5: TIMING -->
+<div class="section" id="timing">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">Timing de entrada recomendado</h2></div>
+    <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:32px;line-height:1.7;">
+      El timing en esta tesis tiene tres fases: <strong style="color:var(--green);">Entrar ahora</strong> (acumulación silenciosa antes de que el mercado cotice la paz), <strong style="color:var(--amber);">Esperar corrección</strong> (empresas ya revalorizadas donde hay que buscar el pull-back), y <strong style="color:var(--red);">Comprar al anuncio de la paz</strong> (empresas cuyo catalizador principal es el evento puntual). El mapa completo por empresa está en las fichas. Aquí el resumen:
+    </p>
+    <div id="timing-table-wrap" style="overflow-x:auto;">
+      <table class="ftable" id="timing-table"></table>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: RANKING -->
+<div class="section" id="ranking">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title">Ranking final por potencial de inversión</h2></div>
+
+    <!-- CRITERIOS DE RANKING -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:20px;">
+      <div style="font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:10px;">CRITERIOS DE ORDENACIÓN</div>
+      <p style="color:var(--text);font-size:13px;line-height:1.6;margin-bottom:10px;">
+        Las empresas están ordenadas de mayor a menor por una <strong>puntuación compuesta</strong> que combina los tres principales generadores de retorno total para el inversor:
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px;">
+        <div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.25);border-radius:8px;padding:12px 14px;">
+          <div style="font-family:var(--font-m);font-size:12px;color:#4ade80;margin-bottom:4px;">RETORNO BASE</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Retorno % esperado a 2-3 años en el escenario base (acuerdo congelado tipo Corea, sin paz formal). Ya descuenta el contexto actual.</div>
+        </div>
+        <div style="background:rgba(91,156,246,0.06);border:1px solid rgba(91,156,246,0.25);border-radius:8px;padding:12px 14px;">
+          <div style="font-family:var(--font-m);font-size:12px;color:#5b9cf6;margin-bottom:4px;">UPSIDE CONSENSO</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Distancia % del precio actual al precio objetivo medio de los analistas. Mide si la empresa ya está cara o tiene recorrido inmediato.</div>
+        </div>
+        <div style="background:rgba(232,201,125,0.06);border:1px solid rgba(232,201,125,0.25);border-radius:8px;padding:12px 14px;">
+          <div style="font-family:var(--font-m);font-size:12px;color:var(--accent);margin-bottom:4px;">DIVIDENDO</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Rentabilidad por dividendo anual (yield %). Aporta retorno tangible mientras esperas la materialización de la tesis.</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;font-size:12px;color:var(--muted);font-family:var(--font-m);background:rgba(255,255,255,0.03);border-radius:6px;padding:10px 14px;">
+        Puntuación = <span style="color:#4ade80;">retorno base</span> + <span style="color:#5b9cf6;">upside</span> + <span style="color:var(--accent);">dividendo</span> &nbsp;·&nbsp; ordenado descendente.
+      </div>
+      <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-top:12px;">
+        El <strong style="color:var(--text);">retorno paz</strong> y el <strong style="color:var(--text);">riesgo</strong> se muestran como información complementaria pero <strong>no se usan para ordenar</strong>: el primero es opcionalidad asimétrica que no se debe sobreponderar; el segundo es subjetivo y depende del perfil de cada inversor.
+      </p>
+    </div>
+
+    <div style="overflow-x:auto;"><table class="ftable" id="ranking-table"></table></div>
+
+    <!-- LEYENDA -->
+    <div style="margin-top:18px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 22px;">
+      <div style="font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:10px;">LEYENDA</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;font-size:13px;line-height:1.5;">
+        <div><span style="color:var(--accent);font-size:16px;margin-right:4px;">★</span> <strong>Top pick:</strong> empresa con tesis más sólida según el análisis fundamental — combinación destacada de valoración, calidad del negocio, exposición directa a Ucrania y catalizadores claros. Marcadas con <code style="font-family:var(--font-m);font-size:11px;background:rgba(232,201,125,0.1);padding:2px 6px;border-radius:4px;">top:true</code> en los datos.</div>
+        <div><span style="color:#4ade80;">Verde</span> en upside o ROE: valor positivo / por encima del umbral favorable. <span style="color:#fbbf24;">Ámbar</span>: zona neutra. <span style="color:#f87171;">Rojo</span>: valor negativo o por debajo del umbral.</div>
+        <div><strong>Riesgo:</strong> <span style="color:#4ade80;">Bajo</span> = perfil defensivo; <span style="color:#fbbf24;">Medio</span> = riesgo moderado; <span style="color:#f87171;">Medio-Alto / Alto</span> = mayor volatilidad o ciclicidad.</div>
+        <div><strong>Dependencia paz:</strong> qué tanto necesita la empresa un acuerdo formal para materializar el retorno. <span style="color:#4ade80;">Baja</span> = retorno mayoritariamente independiente; <span style="color:#f87171;">Alta</span> = la mayoría del retorno se desbloquea solo con paz.</div>
+      </div>
+    </div>
+    <div class="disclaimer">
+      <strong style="color:var(--red);">Aviso importante:</strong> Este documento es un análisis informativo elaborado con datos públicos de consenso de analistas y publicaciones institucionales. No constituye asesoramiento financiero ni recomendación de inversión. Las proyecciones de retorno son estimaciones basadas en supuestos sobre la evolución del conflicto y la reconstrucción de Ucrania, y pueden no materializarse. El daño total estimado fue actualizado por el World Bank, la CE y la ONU al 23 de febrero de 2026 ($588B, RDNA5). Consulta siempre con un asesor financiero autorizado antes de tomar cualquier decisión de inversión. Toda inversión conlleva riesgo de pérdida parcial o total del capital.
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>Análisis de Inversión · Ucrania: Reconstrucción post-conflicto · Marzo 2026 · v2.0</div>
+  <div style="margin-top:6px;opacity:.45;font-size:11px;">Fuentes: RDNA5 (World Bank / CE / ONU, Feb 2026) · Morgan Stanley · Goldman Sachs · Bank of America · Erste Group · ACS Group · Sacyr · Técnicas Reunidas · Alpha Spread · Simply Wall St · MarketScreener</div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// =============================================
+// DATA
+// =============================================
+const companies = [
+  // ── SECCIÓN 01: Empresas en 2+ Cestas Institucionales ──────────────────────
+  {
+    name:"Wienerberger", ticker:"VIE:WIE", sector:"materiales",
+    price:15.2, target:21.3,
+    pe:11.3, evEbitda:6.0, pfcf:8.5, pventas:0.6,
+    roe:5.9, roic:7.2, margenEbit:8.1, margenNeto:4.2,
+    deudaEbitda:2.1, cobertura:4.8, creditRating:"BBB",
+    revenueGrowth:8, epsGrowth:12, revEps:"+ revisiones al alza",
+    div:3.7, upside:35, retBase:55, retPaz:90, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:1, erste:1, prev:true,
+    mktCap:"2.8B€", employees:17800,
+    timingType:"now",
+    timingLabel:"Entrar ahora",
+    timingText:"Cotiza un 32% por debajo de su media histórica. Múltiplos en mínimos de 8 años. El punto de entrada es excepcional ahora mismo — antes de que el mercado anticipe un acuerdo de paz. Acumulación gradual recomendada.",
+    catalysts:"Sector residencial ucraniano valorado en $84B. Mayor fabricante europeo de ladrillos y tejas. Ya tiene infraestructura en Europa del Este.",
+    risks:"Alta dependencia de la paz para máximo rendimiento. Negocio cíclico muy sensible a tipos de interés. Deuda neta de €2.1x EBITDA es manejable pero no despreciable.",
+    note:"La más infravalorada de la lista. P/E 11x + dividendo 3.7% crean un suelo de valoración. Upside asimétrico enorme si hay paz."
+  },
+  {
+    name:"Heidelberg Materials", ticker:"ETR:HEIG", sector:"materiales",
+    price:175, target:233,
+    pe:10.1, evEbitda:5.8, pfcf:9.2, pventas:0.7,
+    roe:14.2, roic:9.8, margenEbit:14.5, margenNeto:6.8,
+    deudaEbitda:1.8, cobertura:6.2, creditRating:"BBB",
+    revenueGrowth:5, epsGrowth:14, revEps:"+ 13 analistas en Buy",
+    div:2.8, upside:33, retBase:50, retPaz:85, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:1, gs:0, bofa:1, erste:1, prev:true,
+    mktCap:"15B€", employees:51000,
+    timingType:"now",
+    timingLabel:"Entrar ahora",
+    timingText:"P/E de 10x es históricamente barato para una empresa de este tamaño y calidad. Cesta Morgan Stanley da visibilidad institucional. Acumulación antes del verano 2026.",
+    catalysts:"Cemento masivo para reconstrucción. Cesta MS + BofA + Erste. Negocios low-carbon alineados con estándares UE.",
+    risks:"Alta ciclicidad del sector cemento. Costes energéticos pueden presionar márgenes. Regulación medioambiental creciente.",
+    note:"Valor profundo con catalizador claro. 13 analistas en Buy, solo 4 en Sell. Upside del 33% solo al consenso."
+  },
+  {
+    name:"Vinci", ticker:"EPA:DG", sector:"infraestructura",
+    price:105, target:118,
+    pe:15.0, evEbitda:6.9, pfcf:8.2, pventas:0.7,
+    roe:16.3, roic:11.4, margenEbit:8.8, margenNeto:6.1,
+    deudaEbitda:3.1, cobertura:5.5, creditRating:"A-",
+    revenueGrowth:6, epsGrowth:9, revEps:"Estable",
+    div:3.9, upside:12, retBase:35, retPaz:60, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:1, gs:1, bofa:1, erste:0, prev:true,
+    mktCap:"38B€", employees:280000,
+    timingType:"now",
+    timingLabel:"Entrar ahora",
+    timingText:"La más defensiva de la lista. FCF yield 12.1%, dividendo 3.9%, rating A-. No depende de la paz para dar retornos. Punto de entrada razonable ahora mismo con margen de seguridad.",
+    catalysts:"Concesiones estables independientes de Ucrania. Presencia directa en Europa del Este. Precedente de Chernóbil ($1.5B) como carta de presentación.",
+    risks:"Deuda 3.1x EBITDA es la más alta del grupo. Concesiones reguladas limitan el upside. Múltiple 15x ya refleja parte de la calidad.",
+    note:"Super Stock en Stockopedia. La opción más inteligente para el inversor conservador. Combina calidad + dividendo + exposición Ucrania."
+  },
+  {
+    name:"Holcim", ticker:"SWX:HOLN", sector:"materiales",
+    price:92, target:108,
+    pe:18.2, evEbitda:8.4, pfcf:14.5, pventas:1.1,
+    roe:12.1, roic:9.5, margenEbit:14.8, margenNeto:8.2,
+    deudaEbitda:1.5, cobertura:7.0, creditRating:"BBB+",
+    revenueGrowth:5, epsGrowth:8, revEps:"Neutral",
+    div:2.5, upside:17, retBase:30, retPaz:55, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:1, gs:0, bofa:1, erste:1, prev:true,
+    mktCap:"30B€", employees:63000,
+    timingType:"now",
+    timingLabel:"Entrar ahora",
+    timingText:"Mejor calidad que Heidelberg Materials con rating BBB+. Múltiplo 18x es razonable para este nivel de calidad. El solapamiento en tres cestas institucionales (MS + BofA + Erste) da confianza.",
+    catalysts:"Cemento sostenible bajo-carbono para estándares UE. 3 cestas institucionales. Fuerte en Europa del Este.",
+    risks:"Múltiplo más exigente que Heidelberg. Exposición a América Latina puede ser lastres en FX.",
+    note:"La versión premium y más diversificada de Heidelberg. Menor upside pero mayor seguridad."
+  },
+  {
+    name:"CRH", ticker:"NYSE:CRH", sector:"materiales",
+    price:82, target:94,
+    pe:19.3, evEbitda:11.6, pfcf:16.2, pventas:1.6,
+    roe:15.7, roic:12.3, margenEbit:14.2, margenNeto:9.1,
+    deudaEbitda:1.3, cobertura:8.5, creditRating:"BBB+",
+    revenueGrowth:7, epsGrowth:10, revEps:"Neutral-positivo",
+    div:1.2, upside:14, retBase:25, retPaz:45, risk:2, dep:"Alta",
+    rating:"HOLD", rc:"r-hold", top:false,
+    ms:1, gs:0, bofa:1, erste:1, prev:true,
+    mktCap:"50B€", employees:78500,
+    timingType:"wait",
+    timingLabel:"Esperar corrección",
+    timingText:"Monopolio 46% cemento ucraniano pero cotiza cerca de valor justo. Esperar corrección al rango $75-78 para entrar con margen. Upside 14% desde precio actual es insuficiente dado el riesgo.",
+    catalysts:"46% mercado cemento ucraniano. Planta local = ventaja de velocidad. CEO comprometido explícitamente con Ucrania.",
+    risks:"Posibles disputas antimonopolio. Cotiza a premium vs peers. Dividendo escaso (1.2%).",
+    note:"La apuesta más obvia pero no la más barata. Mejor esperar."
+  },
+  {
+    name:"Siemens Energy", ticker:"ETR:ENR", sector:"energia",
+    price:58, target:35,
+    pe:44, evEbitda:22, pfcf:38, pventas:1.1,
+    roe:8.2, roic:6.1, margenEbit:4.5, margenNeto:2.8,
+    deudaEbitda:0.8, cobertura:6.0, creditRating:"BB+",
+    revenueGrowth:13, epsGrowth:25, revEps:"Revisiones muy positivas pero ya en precio",
+    div:0.4, upside:-41, retBase:15, retPaz:40, risk:2, dep:"Baja",
+    rating:"WATCH", rc:"r-watch", top:false,
+    ms:0, gs:0, bofa:1, erste:1, prev:true,
+    mktCap:"52B€", employees:98000,
+    timingType:"watch",
+    timingLabel:"Esperar gran corrección",
+    timingText:"Ha subido +300% desde mínimos. Alpha Spread estima downside del 41% vs valor intrínseco. Cartera de €138B da visibilidad pero el precio actual ya descuenta todo el optimismo. Esperar corrección al rango €35-38.",
+    catalysts:"Transformadores y equipos eléctricos para reconstrucción de red ucraniana. Cartera €138B. Crecimiento ingresos 11-13%.",
+    risks:"Múltiplo P/E 44x injustificado. Muy lejos de valor justo. Alta volatilidad.",
+    note:"Gran empresa, precio incorrecto. No entrar ahora."
+  },
+  // ── 7 Siemens AG (GS + BofA) ───────────────────────────────────────────────
+  {
+    name:"Siemens AG", ticker:"ETR:SIE", sector:"industrial diversificado",
+    price:195, target:234,
+    pe:24, evEbitda:15, pfcf:20, pventas:1.5,
+    roe:20, roic:13, margenEbit:13, margenNeto:11,
+    deudaEbitda:1.0, cobertura:12, creditRating:"A+",
+    revenueGrowth:4, epsGrowth:8, revEps:"Neutral. Beneficia de infraestructura UE y contratos defensa",
+    div:2.5, upside:20, retBase:30, retPaz:55, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:1, bofa:1, erste:0,
+    mktCap:"€118B", employees:320000,
+    timingType:"wait", timingLabel:"Esperar corrección 10%",
+    timingText:"Excelente calidad (A+, ROE 20%) pero cotiza a múltiplo justo. Esperar pullback al rango €170-180 para entrar con margen de seguridad.",
+    catalysts:"Automatización, redes inteligentes y ferroviario. Backlog récord. La modernización ferroviaria ucraniana (ancho de vía europeo) es su mercado natural.",
+    risks:"P/E 24x no deja margen de error. Ciclo industrial puede enfriar márgenes. Muy grande para moverse mucho.",
+    note:"La calidad industrial de referencia. Backlog récord. Rating A+."
+  },
+  // ── 8 Assa Abloy (MS + GS + BofA) ─────────────────────────────────────────
+  {
+    name:"Assa Abloy", ticker:"OM:ASSA-B", sector:"seguridad & acceso",
+    price:290, target:345,
+    pe:24.9, evEbitda:14.5, pfcf:20, pventas:2.6,
+    roe:17, roic:13, margenEbit:15, margenNeto:10.5,
+    deudaEbitda:2.0, cobertura:7.5, creditRating:"BBB+",
+    revenueGrowth:7, epsGrowth:10, revEps:"Revisiones neutras-positivas. Integración adquisiciones en curso",
+    div:1.8, upside:18, retBase:28, retPaz:52, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:1, gs:1, bofa:1, erste:0,
+    mktCap:"€34B", employees:62000,
+    timingType:"wait", timingLabel:"Esperar pullback 10-15%",
+    timingText:"Cotiza cerca de máximos históricos. Esperar retroceso al rango 240-260 SEK para entrar con margen de seguridad. La tesis es excelente pero el precio ya descuenta mucho.",
+    catalysts:"Líder mundial en sistemas de acceso y seguridad. Cada edificio reconstruido en Ucrania necesita cerraduras, controles de acceso electrónico y puertas de seguridad. Exposición directa a oleada de nueva construcción.",
+    risks:"P/E 24.9x exigente para sector maduro. Crecimiento mayormente adquisitivo. Integración ASSA-ABLOY + HID pendiente.",
+    note:"Mayor fabricante mundial de sistemas de cierre. Millones de puertas/ventanas a reponer en Ucrania."
+  },
+  // ── 9 Sika AG (GS + BofA + Erste) ─────────────────────────────────────────
+  {
+    name:"Sika AG", ticker:"SWX:SIKA", sector:"química construcción",
+    price:230, target:280,
+    pe:30, evEbitda:19, pfcf:25, pventas:3.5,
+    roe:24, roic:16, margenEbit:17, margenNeto:11.5,
+    deudaEbitda:1.8, cobertura:9, creditRating:"A-",
+    revenueGrowth:8, epsGrowth:12, revEps:"Revisiones positivas tras integración MBCC. Márgenes en expansión",
+    div:1.3, upside:22, retBase:32, retPaz:58, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:1, bofa:1, erste:1,
+    mktCap:"CHF 40B", employees:33000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"Valoración razonable para un negocio de esta calidad. La integración de MBCC añade CHF 3B de revenue incremental. Pricing power excepcional — puede repercutir inflación de costes.",
+    catalysts:"Líder mundial en adhesivos, sellantes e impermeabilizantes para construcción. Absolutamente indispensable en cualquier proceso constructivo: cada m² de Ucrania que se reconstruya requiere productos Sika.",
+    risks:"P/E 30x exige ejecución perfecta. La integración MBCC añade complejidad. Exposición CHF puede penalizar en FX.",
+    note:"Líder global aditivos hormigón. Márgenes altos diferenciados. 3 cestas institucionales."
+  },
+  // ── 10 Kingspan Group (GS + BofA) ─────────────────────────────────────────
+  {
+    name:"Kingspan Group", ticker:"ISE:KRX", sector:"aislamiento & envolvente",
+    price:68, target:84,
+    pe:23, evEbitda:15, pfcf:22, pventas:1.6,
+    roe:19, roic:13, margenEbit:9, margenNeto:7,
+    deudaEbitda:1.5, cobertura:8, creditRating:"BBB+",
+    revenueGrowth:9, epsGrowth:14, revEps:"Revisiones positivas 2026. Fábrica Ucrania anunciada",
+    div:0.4, upside:24, retBase:38, retPaz:68, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:1, bofa:1, erste:0,
+    mktCap:"€13B", employees:21000,
+    timingType:"now", timingLabel:"Entrar ahora — first mover",
+    timingText:"Primera empresa occidental en comprometer inversión física en Ucrania: fábrica de paneles €280M anunciada en 2024. First mover advantage real. Entrada razonable al precio actual.",
+    catalysts:"Líder europeo en paneles aislantes de alto rendimiento. Normativas energéticas UE obligan a usar sus soluciones en toda nueva construcción ucraniana. Fábrica propia en Ucrania = ventaja logística única.",
+    risks:"Margen EBIT 9% moderado vs sector. Fábrica Ucrania implica riesgo de ejecución. Exposición EUR/GBP.",
+    note:"Primera empresa en invertir físicamente en Ucrania: fábrica €280M anunciada."
+  },
+  // ── 11 Rockwool International (GS + Erste) ────────────────────────────────
+  {
+    name:"Rockwool International", ticker:"CPH:ROCK-B", sector:"aislamiento mineral",
+    price:2800, target:3360,
+    pe:20, evEbitda:10, pfcf:15, pventas:1.5,
+    roe:20, roic:15, margenEbit:15, margenNeto:10,
+    deudaEbitda:1.2, cobertura:10, creditRating:"BBB+",
+    revenueGrowth:6, epsGrowth:10, revEps:"Estable con revisiones leves al alza. Demanda estructural en Europa",
+    div:1.5, upside:20, retBase:30, retPaz:55, risk:2, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:1, bofa:0, erste:1,
+    mktCap:"€9B", employees:12000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"Valoración razonable con dividendo estable. Posición de monopolio efectivo en lana mineral — barreras de entrada altísimas. Demanda estructural por normativas Net Zero independiente de Ucrania.",
+    catalysts:"Productor dominante de lana de roca para aislamiento térmico y acústico. Exigencias UE para reconstrucción Ucrania generan demanda estructural. Barreras de entrada altísimas por proximidad a canteras y escala.",
+    risks:"Cotiza en DKK — riesgo divisa para inversor europeo. Crecimiento moderado en escenario sin paz. Capacidad limitada para expansión rápida.",
+    note:"Lana de roca para eficiencia energética. Estándares UE Ucrania. Monopolio efectivo."
+  },
+  // ── 12 Raiffeisen Bank Intl. (BofA + Erste) ───────────────────────────────
+  {
+    name:"Raiffeisen Bank Intl.", ticker:"VIE:RBI", sector:"banca CEE",
+    price:18, target:30,
+    pe:7, evEbitda:6.0, pfcf:6.5, pventas:0.9,
+    roe:16, roic:14.5, margenEbit:48.0, margenNeto:14,
+    deudaEbitda:0, cobertura:6.0, creditRating:"BBB",
+    revenueGrowth:5, epsGrowth:8, revEps:"Revisiones al alza. Reducción exposición rusa es catalizador positivo",
+    div:5.5, upside:62, retBase:65, retPaz:110, risk:4, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:1, erste:1,
+    mktCap:"€6B", employees:43000,
+    timingType:"now", timingLabel:"Entrar ahora — alta convicción",
+    timingText:"P/E 7x y dividendo 5.5% es la combinación más barata de toda la lista. El mercado descuenta el peor escenario ruso. Cada paso hacia la resolución de su filial rusa es un catalizador masivo. Mayor banco en Europa del Este = infraestructura clave para fondos UE.",
+    catalysts:"Mayor banco austriaco con mayor red en Europa Central y del Este. Infraestructura bancaria esencial para canalizar los €588B de fondos UE/WB/EBRD hacia Ucrania. P/B 0.6x implica descuento masivo.",
+    risks:"Exposición residual filial rusa (en proceso de reducción). Regulación bancaria europea cambiante. Alta dependencia del ciclo CEE.",
+    note:"Banco más barato de Europa por P/E. Paz = resolución filial rusa = catalizador masivo."
+  },
+  // ── 13 Schneider Electric (GS + Erste) ────────────────────────────────────
+  {
+    name:"Schneider Electric", ticker:"EPA:SU", sector:"gestión energía & automatización",
+    price:188, target:216,
+    pe:30, evEbitda:19, pfcf:26, pventas:4.5,
+    roe:16, roic:13, margenEbit:18, margenNeto:12,
+    deudaEbitda:1.5, cobertura:10, creditRating:"A-",
+    revenueGrowth:9, epsGrowth:12, revEps:"Revisiones muy positivas. Backlog AI/energía récord. Doble digit guidance",
+    div:1.3, upside:15, retBase:25, retPaz:48, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:1, bofa:0, erste:1,
+    mktCap:"€108B", employees:153000,
+    timingType:"wait", timingLabel:"Esperar corrección 10%",
+    timingText:"Excelente empresa pero cotiza caro (P/E 30x). Esperar pullback al rango €160-170 para entrar con mayor margen. El upside de 15% desde precio actual es insuficiente para el riesgo de valoración.",
+    catalysts:"Líder mundial en gestión energética. La reconstrucción del sistema eléctrico ucraniano (redes, subestaciones, distribución inteligente) es el núcleo de su negocio. Contratos directos con EBRD y UE.",
+    risks:"P/E 30x exige perfección. Muy grande para crecer rápido. Dependencia de ciclo de inversión en infraestructura.",
+    note:"Redes eléctricas inteligentes para modernización ucraniana."
+  },
+  // ── 14 Buzzi Unicem (MS + Erste) ──────────────────────────────────────────
+  {
+    name:"Buzzi Unicem", ticker:"BIT:BZU", sector:"cemento & materiales",
+    price:26, target:35,
+    pe:8, evEbitda:5.5, pfcf:8, pventas:1.5,
+    roe:20, roic:13, margenEbit:23, margenNeto:17,
+    deudaEbitda:0.5, cobertura:25, creditRating:"BBB",
+    revenueGrowth:5, epsGrowth:12, revEps:"Revisiones al alza por márgenes récord en USA y caja neta casi alcanzada",
+    div:2.5, upside:35, retBase:48, retPaz:82, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:1, gs:0, bofa:0, erste:1,
+    mktCap:"€6.5B", employees:11000,
+    timingType:"now", timingLabel:"Entrar ahora — muy barata",
+    timingText:"P/E 8x con margen EBITDA ~30% y prácticamente sin deuda es una combinación excepcional. Muy similar a Heidelberg Materials pero un 40% más barata en múltiplos. Upside asimétrico enorme.",
+    catalysts:"Cementera italiana con fuerte posición en Europa del Este (Polonia, Rep. Checa, Ucrania histórica). El cemento es el insumo más básico de cualquier reconstrucción masiva. Márgenes EBITDA superiores al sector (~30%).",
+    risks:"Alta ciclicidad del sector cemento. Menos diversificada que Heidelberg o CRH. Liquidez moderada en Bolsa italiana.",
+    note:"3er cementero europeo. Cotiza muy barato. Cesta MS + Erste."
+  },
+  // ── 15 Saint-Gobain (Jefferies + JPMorgan + Citi) ─────────────────────────
+  {
+    name:"Saint-Gobain", ticker:"EPA:SGO", sector:"materiales construcción",
+    price:72, target:92,
+    pe:13, evEbitda:7.5, pfcf:12, pventas:0.5,
+    roe:17, roic:11, margenEbit:9.5, margenNeto:6.5,
+    deudaEbitda:1.6, cobertura:7, creditRating:"BBB+",
+    revenueGrowth:4, epsGrowth:10, revEps:"Positivo. Programa de recompras en curso. Márgenes en expansión",
+    div:2.5, upside:26, retBase:38, retPaz:68, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:0, bofa:0, erste:0, jeff:1, jpm:1, citi:1,
+    mktCap:"€23B", employees:160000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"P/E 13x razonable para la calidad del negocio. Triple cobertura institucional (Jefferies + JPMorgan + Citi). Complementario a Wienerberger y Holcim en reconstrucción residencial ucraniana.",
+    catalysts:"Fabricante mundial de materiales de construcción (vidrio, aislamiento, morteros, tuberías). Presente en 70+ países con capacidad logística para suministrar a Ucrania a escala. División High Performance Solutions aplicable a edificios eficientes.",
+    risks:"Margen neto 6.5% moderado para el tamaño. Alta ciclicidad de construcción. Competencia intensa en materiales básicos.",
+    note:"3 cestas institucionales (Jefferies + JPMorgan + Citi). Líder mundial vidrio, aislamiento y tuberías."
+  },
+  // ── 16 Strabag SE (Erste + Barclays) ──────────────────────────────────────
+  {
+    name:"Strabag SE", ticker:"VIE:STR", sector:"construcción & ingeniería civil",
+    price:38, target:50,
+    pe:9, evEbitda:3.5, pfcf:8, pventas:0.2,
+    roe:12, roic:10, margenEbit:4.5, margenNeto:3,
+    deudaEbitda:1.0, cobertura:8, creditRating:"BBB",
+    revenueGrowth:6, epsGrowth:10, revEps:"Revisiones al alza. Backlog €26B récord histórico",
+    div:4.0, upside:30, retBase:42, retPaz:78, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:0, erste:1, jeff:0, jpm:0, citi:0, db:0, barc:1,
+    mktCap:"€3.5B", employees:86000,
+    timingType:"now", timingLabel:"Entrar ahora — pure play Ucrania",
+    timingText:"Mayor constructora austriaca con la presencia histórica más profunda en Europa del Este. Ya participando activamente en contratos de reconstrucción temprana en Ucrania. Backlog €26B récord. P/E 9x con dividendo 4% es muy barato.",
+    catalysts:"Mayor constructora austriaca con presencia en CEE. Ya ejecutando contratos en Ucrania. Conocimiento del mercado, relaciones con autoridades ucranianas y capacidad técnica son ventajas competitivas únicas. Valoración muy barata.",
+    risks:"Márgenes de construcción siempre bajos (3%). Alta dependencia de obra pública. Riesgo de ejecución en mercados emergentes.",
+    note:"2ª constructora europea. Backlog €26B. Muy posicionada para contratos en Ucrania."
+  },
+  // ── 17 Veolia Environment (JPMorgan + Citi) ───────────────────────────────
+  {
+    name:"Veolia Environment", ticker:"EPA:VIE", sector:"agua & gestión ambiental",
+    price:26, target:32,
+    pe:15, evEbitda:7.5, pfcf:14, pventas:0.3,
+    roe:12, roic:9, margenEbit:7.5, margenNeto:3.5,
+    deudaEbitda:3.2, cobertura:4.5, creditRating:"BBB",
+    revenueGrowth:5, epsGrowth:8, revEps:"Estable con dividendo creciente. Contratos agua a largo plazo",
+    div:4.5, upside:22, retBase:32, retPaz:55, risk:1, dep:"Media",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:0, bofa:0, erste:0, jeff:0, jpm:1, citi:1,
+    mktCap:"€15B", employees:213000,
+    timingType:"now", timingLabel:"Entrar ahora — defensivo",
+    timingText:"La más defensiva de las nuevas incorporaciones. Dividendo 4.5% + tesis agua/saneamiento independiente de los frentes militares. Contratos de largo plazo = ingresos predecibles. Acumulación válida ya.",
+    catalysts:"Líder mundial en servicios de agua, residuos y energía. La reconstrucción de Ucrania requiere: sistemas de agua potable, tratamiento aguas residuales, gestión de escombros de guerra y redes de calefacción urbana a escala masiva.",
+    risks:"Deuda 3.2x EBITDA elevada (característica del sector utilities). Margen neto 3.5% bajo. Regulación tarifaria puede limitar upside.",
+    note:"JPMorgan + Citi coinciden. Ucrania necesita reconstruir toda su infraestructura de agua y saneamiento (>$30B en daños)."
+  }
+];
+
+// ── SECCIÓN 03: TOP 6 — Mejores Oportunidades Fuera de Cestas ─────────────
+const top6Section3 = [
+  {
+    name:"ArcelorMittal", ticker:"AMS:MT", sector:"acero",
+    price:22.5, target:29.0,
+    pe:16.0, evEbitda:5.9, pfcf:6.5, pventas:0.3,
+    roe:6.1, roic:5.8, margenEbit:5.2, margenNeto:2.8,
+    deudaEbitda:0.9, cobertura:8.1, creditRating:"BBB",
+    revenueGrowth:3, epsGrowth:18, revEps:"Revisiones al alza por acero",
+    div:1.9, upside:25, retBase:40, retPaz:70, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:0, erste:0,
+    mktCap:"€20B", employees:155000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"EV/EBITDA 5.9x es ridículamente barato para el mayor productor de acero del mundo. Deuda muy baja (0.9x). Planta histórica en Kryvyi Rih lista para la reconstrucción.",
+    catalysts:"Acero esencial para puentes, ferrocarriles, estructuras. Presencia física en Ucrania. Ciclo de commodities favorable. EV/EBITDA 5.9x muy barato.",
+    risks:"Cíclico. Sensible a precio del acero. Competencia china con dumping. Geopolítica de su planta ucraniana.",
+    note:"La más directa sobre el acero ucraniano. Deuda casi cero. EV/EBITDA baratísimo."
+  },
+  {
+    name:"Budimex", ticker:"WAR:BDX", sector:"infraestructura",
+    price:395, target:475,
+    pe:29.6, evEbitda:14.2, pfcf:22.0, pventas:0.5,
+    roe:31.5, roic:24.8, margenEbit:6.2, margenNeto:4.1,
+    deudaEbitda:0.2, cobertura:35, creditRating:"ND (small cap)",
+    revenueGrowth:12, epsGrowth:15, revEps:"Positivo, pocos analistas — ineficiencia de mercado",
+    div:4.2, upside:18, retBase:45, retPaz:80, risk:2, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:true,
+    ms:0, gs:0, bofa:0, erste:0,
+    mktCap:"€2.1B", employees:13000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"Poca cobertura de analistas = ineficiencia de mercado = oportunidad. ROE 31%, caja neta, dividendo 4.2%. La joya menos conocida. Acumular antes de que la paz ponga el foco en Polonia.",
+    catalysts:"Polonia es el hub logístico de Ucrania. Backlog récord. ROE estructuralmente alto por modelo de concesiones. Mayor constructora polaca con acceso privilegiado a contratos frontera.",
+    risks:"Liquidez limitada (small cap). Poca cobertura analítica. Sensible a obra pública polaca.",
+    note:"La joya oculta de la lista. Solo cotiza en Varsovia. ROE del 31% con deuda casi cero."
+  },
+  {
+    name:"ABB", ticker:"SWX:ABBN", sector:"electrificación industrial",
+    price:52, target:53,
+    pe:35.8, evEbitda:24, pfcf:28, pventas:3.5,
+    roe:29.4, roic:21.5, margenEbit:18.5, margenNeto:12.1,
+    deudaEbitda:0.1, cobertura:45, creditRating:"A",
+    revenueGrowth:5, epsGrowth:8, revEps:"Neutral. Backlog robotics e infraestructura fuerte",
+    div:1.4, upside:0, retBase:20, retPaz:38, risk:1, dep:"Baja",
+    rating:"HOLD", rc:"r-hold", top:false,
+    ms:0, gs:1, bofa:0, erste:0,
+    mktCap:"€105B", employees:105000,
+    timingType:"watch", timingLabel:"Esperar corrección 15-20%",
+    timingText:"ROE 29% y deuda casi nula (0.1x) hacen de ABB una empresa de calidad excepcional. El problema es el precio: cotiza en máximos históricos sin upside. Esperar corrección del 15-20% para una entrada interesante.",
+    catalysts:"Subestaciones eléctricas y automatización industrial para Ucrania. ROE estructural del 29%. Rating A. Líder en electrificación y robótica industrial.",
+    risks:"P/E 35.8x con upside 0% = perfección ya cotizada. Ciclo industrial puede enfriar márgenes. Cotiza en máximos históricos.",
+    note:"La mejor calidad de negocio de toda la lista. El precio no acompaña ahora mismo."
+  },
+  {
+    name:"Prysmian", ticker:"BIT:PRY", sector:"cables & redes eléctricas",
+    price:62, target:62,
+    pe:19.5, evEbitda:12.1, pfcf:14.8, pventas:0.8,
+    roe:18.5, roic:13.2, margenEbit:8.5, margenNeto:4.2,
+    deudaEbitda:2.2, cobertura:5.8, creditRating:"BBB",
+    revenueGrowth:8, epsGrowth:12, revEps:"Positivo, momentum fuerte. Offshore wind + AI datacenters + Ucrania",
+    div:1.8, upside:-2, retBase:22, retPaz:42, risk:2, dep:"Baja",
+    rating:"HOLD", rc:"r-hold", top:false,
+    ms:0, gs:0, bofa:1, erste:0,
+    mktCap:"€13B", employees:30000,
+    timingType:"wait", timingLabel:"Esperar pullback €52-55",
+    timingText:"Excelente empresa pero subió 76% en un año. Esperar pullback al rango €52-55 para entrar. El catalizador de cables offshore y Ucrania es real pero el mercado ya lo ha cotizado.",
+    catalysts:"Líder mundial cables. Offshore wind + cables red eléctrica + data centers + reconstrucción ucraniana. Múltiples catalizadores simultáneos e independientes.",
+    risks:"Múltiplo exigente con upside casi nulo en consenso. Volatilidad por ciclo de materias primas. Muy lejos del mínimo del año.",
+    note:"Negocio excelente, timing correcto pendiente. Watchlist."
+  },
+  {
+    name:"Voestalpine AG", ticker:"VIE:VOE", sector:"acero especial & ferroviario",
+    price:22, target:31,
+    pe:10, evEbitda:5, pfcf:8, pventas:0.25,
+    roe:9, roic:8, margenEbit:6, margenNeto:4,
+    deudaEbitda:2.0, cobertura:5, creditRating:"BBB-",
+    revenueGrowth:4, epsGrowth:8, revEps:"Revisiones al alza por demanda ferroviaria europea y Green Deal",
+    div:3.5, upside:40, retBase:48, retPaz:80, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:0, bofa:0, erste:0, jeff:0, jpm:0, citi:0, db:1,
+    mktCap:"€3.8B", employees:51000,
+    timingType:"now", timingLabel:"Entrar ahora",
+    timingText:"Deutsche Bank la incluye como top pick de reconstrucción. P/E 10x con dividendo 3.5% es muy barato. La modernización ferroviaria ucraniana (21.700 km de red) requiere raíles UIC que Voestalpine fabrica en exclusiva para gran parte de Europa.",
+    catalysts:"Fabricante austríaco de acero de alta calidad y perfiles de precisión. Suministrador clave de raíles ferroviarios, vigas estructurales y acero para construcción pesada. La modernización ferroviaria ucraniana al estándar europeo es su mercado natural.",
+    risks:"Acero especial sigue siendo cíclico. Competencia de acerías asiáticas. Transición energética puede reducir demanda acero industrial a largo plazo.",
+    note:"Deutsche Bank top pick. Especialista en acero para ferrocarriles y infraestructura de transporte. Ucrania tiene 21.700 km de red ferroviaria."
+  },
+  {
+    name:"Porr AG", ticker:"VIE:POS", sector:"construcción & obra civil",
+    price:14, target:20,
+    pe:9, evEbitda:3.5, pfcf:9, pventas:0.11,
+    roe:11, roic:8, margenEbit:2.5, margenNeto:1.8,
+    deudaEbitda:1.2, cobertura:6, creditRating:"BB+",
+    revenueGrowth:8, epsGrowth:15, revEps:"Revisiones positivas 2025-2026. Contratos CEE en alza",
+    div:4.0, upside:45, retBase:52, retPaz:90, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy", top:false,
+    ms:0, gs:0, bofa:0, erste:0, jeff:0, jpm:0, citi:0, db:0, barc:1,
+    mktCap:"€650M", employees:20000,
+    timingType:"now", timingLabel:"Entrar ahora — máximo upside",
+    timingText:"Barclays la incluye como su nombre más puro en reconstrucción ucraniana. Small cap con expertise exacto para infraestructura de transporte y obras civiles. Cualquier contrato ucraniano de escala media tendría impacto material en resultados.",
+    catalysts:"Constructora austriaca mediana con presencia operativa en Europa del Este (Polonia, Rep. Checa, Eslovaquia, Rumanía). Especialista en infraestructura de transporte (autopistas, túneles, puentes) y edificación pública.",
+    risks:"Márgenes de construcción bajos (1.8% neto). Liquidez reducida en Viena. Alta dependencia de obra pública. Riesgo de ejecución en mercados emergentes.",
+    note:"Barclays top pick para reconstrucción. Small cap con expertise en obras civiles complejas."
+  }
+];
+
+const spanishCompanies = [
+  {
+    name:"ACS Group", ticker:"BME:ACS", sector:"infraestructura global",
+    price:107, target:96,
+    pe:15.2, evEbitda:8.5, pfcf:11.0, pventas:0.5,
+    roe:22.5, roic:14.8, margenEbit:3.8, margenNeto:1.9,
+    deudaEbitda:2.1, cobertura:6.5, creditRating:"BBB",
+    revenueGrowth:20, epsGrowth:25, revEps:"Barclays y Jefferies compradores, Deutsche Bank nuevo coverage",
+    div:3.8, upside:-11, retBase:20, retPaz:45, risk:2, dep:"Baja-Media",
+    rating:"HOLD", rc:"r-hold",
+    timingType:"wait",
+    timingLabel:"Esperar corrección al rango €88-95",
+    timingText:"ACS ha subido un 160% en dos años, alcanzando máximos históricos de €111. El consenso de analistas tiene un precio objetivo de €93 — un downside del 13% desde precio actual. La tesis de fondo es excelente (backlog €92.9B, crecimiento 25%, profit guidance €1.03B-1.07B para 2026) pero el precio ya descuenta mucho optimismo. Esperar la inevitable corrección al rango €88-95 para entrar con margen de seguridad del 15-20%.",
+    catalysts:"Backlog €92.9B (2 años de trabajo). Turner creció 45% en 2025. Hochtief dominante en Alemania (plan infraestructura €500B). Defensa + data centers + renovables = tres motores simultáneos. Inversión de €1B en defensa. Beneficia del plan europeo de rearme y de Ucrania como gestor EPC.",
+    risks:"Cotiza a máximos históricos sin upside en consenso. Alta diversificación diluye el upside específico de Ucrania. Margen neto bajo (1.9%) típico de construcción. Riesgo divisa por exposición a USA/Australia.",
+    note:"La mayor constructora española y 4ª del mundo. Resulados 2025 espectaculares (+25% beneficio). No es la mejor entrada ahora, pero es el nombre más sólido a largo plazo si se espera el precio adecuado."
+  },
+  {
+    name:"Sacyr", ticker:"BME:SCYR", sector:"concesiones / infraestructura",
+    price:4.26, target:4.53,
+    pe:20.3, evEbitda:12.5, pfcf:14.0, pventas:0.7,
+    roe:8.5, roic:6.8, margenEbit:5.1, margenNeto:3.5,
+    deudaEbitda:1.8, cobertura:5.2, creditRating:"BBB (low) — DBRS",
+    revenueGrowth:8, epsGrowth:46, revEps:"Primeros ratings investment grade DBRS 2025 — muy positivo",
+    div:0, upside:6, retBase:25, retPaz:55, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy",
+    timingType:"now",
+    timingLabel:"Entrar ahora — precio atractivo",
+    timingText:"Sacyr cotiza muy cerca de sus máximos anuales pero la transformación estructural justifica el precio actual. La obtención del primer rating investment grade de su historia (DBRS BBB low, Feb 2026) es un catalizador muy relevante que abre nuevas fuentes de financiación. Con deuda recourse en mínimos históricos (0.18x), caja libre de €2.14B para nuevas inversiones, y un portfolio de concesiones que generará €19B a lo largo de su vida, la valoración actual es razonable. La tesis ucraniana añade un upside potencial del 30-50% adicional en un escenario de paz.",
+    catalysts:"93% del EBITDA ya proviene de concesiones (visibilidad altísima). Rating investment grade recién obtenido. Backlog de obra €12.47B. Divisiones de Agua en máximos. PPP model es el ideal para contratos de reconstrucción. Presente en más de 20 países — experiencia en mercados emergentes.",
+    risks:"Sin dividendo actualmente. Margen neto bajo (3.5%). Alta dependencia de Latinoamérica (exposición FX). Upside consenso solo 6% — mercado no lo está valorando como apuesta Ucrania.",
+    note:"La menos seguida institucionalmente como apuesta Ucrania pero con el modelo de concesiones PPP ideal para contratos post-guerra. El rating investment grade es un game-changer que baja el coste de capital estructuralmente."
+  },
+  {
+    name:"Técnicas Reunidas", ticker:"BME:TRE", sector:"ingeniería industrial / EPC",
+    price:28.5, target:30.4,
+    pe:14.4, evEbitda:7.8, pfcf:9.5, pventas:0.3,
+    roe:28.5, roic:19.2, margenEbit:3.8, margenNeto:2.1,
+    deudaEbitda:-0.5, cobertura:99, creditRating:"Caja neta positiva",
+    revenueGrowth:12, epsGrowth:22, revEps:"Revisiones EPS muy positivas últimos 4 meses",
+    div:2.2, upside:7, retBase:30, retPaz:65, risk:3, dep:"Alta",
+    rating:"BUY", rc:"r-buy",
+    timingType:"now",
+    timingLabel:"Entrar ahora — infravalorada estructuralmente",
+    timingText:"Simply Wall St estima que TRE cotiza un 26% por debajo de su valor intrínseco. Caja neta positiva (deuda/EBITDA negativo = sin deuda neta) + ROE 28.5% + P/E 14.4x es una combinación difícil de encontrar. Las revisiones EPS de los últimos 4 meses han sido 'significativamente al alza' según MarketScreener. El ángulo ucraniano es potente: TRE construye refinerías, plantas de gas, infraestructura industrial — exactamente lo que Ucrania necesita para la fase de modernización industrial 2026-2032.",
+    catalysts:"Caja neta (empresa sin deuda). ROE 28.5% extraordinario para ingeniería EPC. Fase de modernización industrial ucraniana 2026-2032 ($64B en industria y comercio). Experiencia en más de 50 países. EPS revisiones muy positivas. P/E 14.4x barato.",
+    risks:"Negocio depende de grandes contratos únicos — visibilidad limitada. Alta exposición a Oriente Medio y gas (transición energética es riesgo). Solo 7-8 analistas cubren el valor. Upside consenso limitado al 7%.",
+    note:"La más técnica y menos conocida de las tres españolas. Caja neta + ROE 28% + P/E 14x es una combinación muy atractiva. El upside de Ucrania es enorme si consigue contratos EPC de infraestructura industrial."
+  },
+  {
+    name:"Acciona", ticker:"BME:ANE", sector:"infraestructura + renovables",
+    price:115, target:138,
+    pe:16.0, evEbitda:9.0, pfcf:13.5, pventas:0.4,
+    roe:8.5, roic:6.5, margenEbit:10.2, margenNeto:3.8,
+    deudaEbitda:4.0, cobertura:4.2, creditRating:"BBB-",
+    revenueGrowth:8, epsGrowth:14, revEps:"Revisiones al alza por exposición nuclear vía Mostostal",
+    div:4.5, upside:20, retBase:32, retPaz:58, risk:2, dep:"Media",
+    rating:"BUY", rc:"r-buy",
+    timingType:"now",
+    timingLabel:"Entrar gradualmente",
+    timingText:"Acciona tiene exposición directa y confirmada a la reconstrucción de Ucrania a través de su filial polaca Mostostal Kielce, que participa en proyectos nucleares de Westinghouse Electric en Ucrania. A esto se suma la división Acciona Energía (top mundial en renovables) que encaja con las prioridades del Acuerdo España-Ucrania de marzo 2026 (renovables como sector clave). El dividendo del 4.5% protege a la baja, y el upside de 20% en consenso es razonable. Acumular gradualmente en zona €110-118.",
+    catalysts:"Mostostal Kielce en proyectos nucleares Westinghouse en Ucrania (confirmado). Acciona Energía es líder global en renovables (sector prioritario del acuerdo bilateral). Desinversión de activos no estratégicos para reducir deuda. El plan UE Ukraine Facility (€50B) beneficia directamente a empresas con presencia en Polonia/Centroeuropa.",
+    risks:"Deuda 4.0x EBITDA es elevada (típico utilities pero requiere monitorización). Margen neto bajo (3.8%). Exposición divisa via filiales internacionales. Volatilidad por precios del pool eléctrico en España. Dependencia de regulación renovables.",
+    note:"La 4ª española y la única con exposición nuclear DIRECTA a Ucrania vía Mostostal Kielce. Combina infraestructura clásica + renovables + posicionamiento estratégico. Dividendo 4.5% atractivo."
+  },
+  {
+    name:"OHLA", ticker:"BME:OHLA", sector:"construcción / infraestructura",
+    price:0.42, target:0.55,
+    pe:18.0, evEbitda:7.5, pfcf:11.0, pventas:0.18,
+    roe:5.5, roic:4.2, margenEbit:3.2, margenNeto:1.0,
+    deudaEbitda:3.5, cobertura:2.8, creditRating:"B+ (en mejora)",
+    revenueGrowth:6, epsGrowth:30, revEps:"Recuperación post-reestructuración 2024-2025",
+    div:0, upside:30, retBase:38, retPaz:75, risk:4, dep:"Alta",
+    rating:"BUY", rc:"r-buy",
+    timingType:"watch",
+    timingLabel:"Esperar pullback — alto riesgo",
+    timingText:"OHLA es la apuesta más arriesgada y con mayor potencial asimétrico de las españolas. Tras una profunda reestructuración financiera completada en 2024-2025, la empresa ha vuelto a estabilizar su balance y aparece citada explícitamente por el gobierno español como contratista relevante para Ucrania. Como small-cap (€500M) con capacidad de crecer rápido en backlog ucraniano, el upside potencial es muy alto, pero la liquidez es reducida y la situación financiera todavía frágil. Solo apta para inversores con tolerancia a alta volatilidad. Esperar pullback al rango €0.32-0.38 para entrar.",
+    catalysts:"Citada por el gobierno español como contratista clave para Ucrania (docs Garrigues + Moncloa). Reestructuración financiera completada — la empresa vuelve a competir por contratos. Backlog en crecimiento. Posible ratio bajo de capitalización facilita revalorizaciones grandes. Beneficiaria del Acuerdo España-Ucrania para infraestructura.",
+    risks:"Small cap con liquidez reducida. Reestructuración reciente — sin track record de beneficios estables. Sin dividendo. Margen neto 1% mínimo. Alta volatilidad. Histórico de problemas de gobierno corporativo. Dependencia extrema de adjudicaciones internacionales.",
+    note:"La small-cap especulativa de la lista. Alto riesgo / alto potencial asimétrico. Si gana contratos en Ucrania, puede multiplicarse. Si fracasa, vuelve a problemas. NO para inversores conservadores."
+  },
+  {
+    name:"Indra", ticker:"BME:IDR", sector:"defensa / tecnología / ATM",
+    price:28, target:34,
+    pe:13.5, evEbitda:7.5, pfcf:11.5, pventas:0.85,
+    roe:14.2, roic:11.0, margenEbit:9.2, margenNeto:6.5,
+    deudaEbitda:0.5, cobertura:12.5, creditRating:"BBB",
+    revenueGrowth:12, epsGrowth:20, revEps:"Revisiones al alza por contratos defensa Europa + Ucrania",
+    div:1.5, upside:21, retBase:35, retPaz:55, risk:2, dep:"Media",
+    rating:"BUY", rc:"r-buy",
+    timingType:"now",
+    timingLabel:"Entrar ahora — contrato firmado",
+    timingText:"Indra es la española con el contrato más concreto y firmado con Ucrania: €37M para el suministro del radar táctico Lanza LTR-25, aprobado por el Ministerio de Defensa español en enero de 2026. A esto se suma el pacto España-Ucrania de marzo 2026 para coproducción de drones y radares, que amplía el pipeline. Indra también es líder europeo en gestión de tráfico aéreo (ATM, otro sector prioritario del acuerdo bilateral) y sistemas ferroviarios. Caja neta, P/E 13.5x razonable, ROE 14% — combinación muy atractiva. Entrar ahora.",
+    catalysts:"Contrato €37M radar Lanza LTR-25 para Ucrania YA en libros (firmado ene-2026, ejecución hasta dic-2026). Pacto bilateral para coproducción drones/radares (€1.000M comprometidos por Sánchez). Plan europeo de rearme €800B (ReArm Europe) — Indra es proveedor clave. Sistemas ATM para reconstrucción aeroportuaria. Sistemas ferroviarios para Ukrzaliznytsia.",
+    risks:"Sector defensa cíclico y dependiente de presupuestos públicos. Riesgo de cancelación o demora de contratos por evolución del conflicto. Competencia internacional fuerte (Thales, Leonardo, BAE). Margen neto 6.5% moderado para el sector tech.",
+    note:"La española con el contrato MÁS CONCRETO y firmado para Ucrania (€37M radar). Cobertura: defensa + drones + ATM + ferrocarril — los 4 sectores prioritarios del acuerdo bilateral. La menos cíclica de las 6."
+  }
+];
+
+// allBasket: todas las empresas con al menos 1 cesta (para overlap y filtros)
+// Incluye companies (17) + empresas de 1 sola cesta no incluidas en secciones principales
+const allBasket = [
+  ...companies,
+  // ── 1 sola cesta ──────────────────────────────────────────────────────────
+  {name:"MOL Group",ticker:"BSE:MOL",sector:"energía CEE",pe:8,evEbitda:4.5,upside:35,div:9,roe:12,retBase:40,retPaz:65,risk:3,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:1,jeff:0,jpm:0,citi:0,db:0,barc:0,prev:false,note:"P/E 8x, dividendo 9%. Energética húngara infravalorada.",timingType:"now",timingLabel:"Entrar ahora",timingText:"P/E 8x y dividendo 9% es una combinación irresistible."},
+  {name:"Iberdrola",ticker:"BME:IBE",sector:"utilities / renovables",pe:18.5,evEbitda:10.2,upside:12,div:4.5,roe:11,retBase:22,retPaz:38,risk:1,dep:"Baja",rating:"HOLD",rc:"r-hold",ms:0,gs:1,bofa:0,erste:0,jeff:0,jpm:0,citi:0,db:0,barc:0,prev:false,note:"Líder mundial renovables. Beneficia de reconstrucción eléctrica.",timingType:"now",timingLabel:"Entrar ahora — defensivo",timingText:"Defensiva con dividendo 4.5%. Válida como anchor de cartera."},
+  {name:"Samsung C&T",ticker:"KRX:028260",sector:"construcción Corea",pe:18,evEbitda:9.5,upside:15,div:1.2,roe:8.5,retBase:25,retPaz:48,risk:2,dep:"Alta",rating:"BUY",rc:"r-buy",ms:1,gs:0,bofa:0,erste:0,jeff:0,jpm:0,citi:0,db:0,barc:0,prev:false,note:"Cesta MS Rebuild Ukraine. Conglomerado coreano de construcción.",timingType:"wait",timingLabel:"Esperar — ángulo geopolítico",timingText:"Complejidad adicional de ser acción coreana. Para el inversor avanzado."},
+  {name:"Thyssenkrupp",ticker:"ETR:TKA",sector:"acero / industrial",pe:9.2,evEbitda:4.8,upside:38,div:0,roe:7.1,retBase:35,retPaz:65,risk:4,dep:"Alta",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:0,jeff:0,jpm:0,citi:0,db:1,barc:0,prev:false,note:"Deutsche Bank incluye por exposición a acero estructural. Reestructuración interna en curso.",timingType:"watch",timingLabel:"Esperar gran corrección",timingText:"Alto potencial pero reestructuración interna añade riesgo de ejecución."},
+  {name:"Imerys",ticker:"EPA:NK",sector:"minerales industriales",pe:14.2,evEbitda:8.8,upside:22,div:3.2,roe:10.5,retBase:28,retPaz:52,risk:2,dep:"Media",rating:"BUY",rc:"r-buy",ms:0,gs:0,bofa:0,erste:0,jeff:1,jpm:0,citi:0,db:0,barc:0,prev:false,note:"Jefferies incluye por minerales especiales para construcción. Dividendo 3.2%.",timingType:"now",timingLabel:"Entrar ahora",timingText:"Perfil defensivo dentro de la tesis de reconstrucción."},
+];
+
+// ============================================
+// RENDER FUNCTIONS
+// ============================================
+function uColor(u){if(u>20)return '#4ade80';if(u>8)return '#fbbf24';return '#f87171';}
+function tClass(t){if(t==='now')return 'timing-now';if(t==='wait')return 'timing-wait';return 'timing-watch';}
+function tDot(t){if(t==='now')return '#4ade80';if(t==='wait')return '#fbbf24';return '#f87171';}
+function riskLabel(r){return['','Bajo','Medio','Medio-Alto','Alto'][r]||'';}
+function riskClass(r){if(r<=1)return'pos';if(r<=2)return'warn';return'neg';}
+
+function makeFCard(c, isSpain=false) {
+  const uc = uColor(c.upside);
+  const bw = Math.max(0, Math.min(100, c.upside+5));
+  const topB = c.top ? '<div class="top-badge">Top pick</div>' : '';
+  const spainB = isSpain ? '<div class="spain-flag-badge">Empresa española</div>' : '';
+  const tid=c.ticker.replace(/[^a-z0-9]/gi,'_');
+  return `<div class="fcard${c.top?' top':''}${isSpain?' spain':''}" data-tid="${tid}">
+    ${topB}${spainB}
+    <div class="fcard-head">
+      <div><div class="fcard-name">${c.name}</div><div class="fcard-ticker">${c.ticker}</div></div>
+      <div style="text-align:right;flex-shrink:0"><span class="rating ${c.rc}">${c.rating}</span><span class="live-px">${c.price?'~'+c.price:'—'}</span></div>
+    </div>
+    <div class="fcard-sector">${c.sector.charAt(0).toUpperCase()+c.sector.slice(1)} · Cap: <span class="live-mcap">${c.mktCap||'—'}</span> · Emp: <span class="live-emp">${c.employees?c.employees.toLocaleString('es'):'-'}</span></div>
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);margin-bottom:8px;">52s: <span class="live-range">—</span> · Beta: <span class="live-beta">—</span></div>
+
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">VALORACIÓN</div>
+    <div class="metrics-grid">
+      <div class="met"><div class="met-l">P/E forward</div><div class="met-v ${c.pe>30?'warn':c.pe<13?'pos':''}">${c.pe}x</div></div>
+      <div class="met"><div class="met-l">EV/EBITDA</div><div class="met-v ${c.evEbitda>18?'warn':c.evEbitda<8?'pos':''}">${c.evEbitda||'—'}x</div></div>
+      <div class="met"><div class="met-l">P/FCF</div><div class="met-v">${c.pfcf||'—'}x</div></div>
+      <div class="met"><div class="met-l">P/Ventas</div><div class="met-v">${c.pventas||'—'}x</div></div>
+    </div>
+
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">CALIDAD DEL NEGOCIO</div>
+    <div class="metrics-grid">
+      <div class="met"><div class="met-l">ROE</div><div class="met-v ${c.roe>20?'pos':c.roe<8?'warn':''}">${c.roe}%</div></div>
+      <div class="met"><div class="met-l">ROIC</div><div class="met-v ${c.roic>15?'pos':''}">${c.roic||'—'}%</div></div>
+      <div class="met"><div class="met-l">Margen EBIT</div><div class="met-v">${c.margenEbit||'—'}%</div></div>
+      <div class="met"><div class="met-l">Margen neto</div><div class="met-v">${c.margenNeto||'—'}%</div></div>
+    </div>
+
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">SOLIDEZ FINANCIERA</div>
+    <div class="metrics-grid2">
+      <div class="met"><div class="met-l">Deuda/EBITDA</div><div class="met-v ${c.deudaEbitda>3.5?'neg':c.deudaEbitda<1?'pos':''}">${c.deudaEbitda<0?'Caja neta':c.deudaEbitda+'x'}</div></div>
+      <div class="met"><div class="met-l">Cobertura int.</div><div class="met-v ${c.cobertura>10?'pos':c.cobertura<4?'warn':''}">${c.cobertura>50?'>50':c.cobertura+'x'}</div></div>
+      <div class="met"><div class="met-l">Credit rating</div><div class="met-v">${c.creditRating||'—'}</div></div>
+    </div>
+
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">MOMENTUM Y DIVIDENDO</div>
+    <div class="metrics-grid2">
+      <div class="met"><div class="met-l">Rev. Ingresos</div><div class="met-v pos">+${c.revenueGrowth}%</div></div>
+      <div class="met"><div class="met-l">Crecim. EPS</div><div class="met-v pos">+${c.epsGrowth}%</div></div>
+      <div class="met"><div class="met-l">Dividendo</div><div class="met-v ${c.div>3?'pos':''}">${c.div}%</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-style:italic;">${c.revEps}</div>
+
+    <div class="upside-row"><span>Precio actual vs objetivo</span><span style="color:${uc};font-family:var(--font-m);font-weight:500;">${c.upside>0?'+':''}${c.upside}%</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${bw}%;background:${uc};"></div></div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:12px;">Retorno base +${c.retBase}% · Escenario paz +${c.retPaz}% · Riesgo: ${riskLabel(c.risk)} · Dep. paz: ${c.dep}</div>
+
+    <div class="thesis-block">
+      <div class="thesis-title">CATALIZADORES</div>
+      <div class="thesis-text">${c.catalysts||c.note}</div>
+    </div>
+    <div class="thesis-block">
+      <div class="thesis-title">RIESGOS PRINCIPALES</div>
+      <div class="thesis-text">${c.risks||'Ver análisis completo.'}</div>
+    </div>
+    <div class="timing-block ${tClass(c.timingType)}">
+      <div class="timing-head">
+        <div class="timing-dot" style="background:${tDot(c.timingType)};"></div>
+        <span class="timing-label" style="color:${tDot(c.timingType)};">TIMING: ${c.timingLabel}</span>
+      </div>
+      <div class="timing-text">${c.timingText}</div>
+    </div>
+  </div>`;
+}
+
+function renderGrid(id, data, isSpain=false) {
+  document.getElementById(id).innerHTML = data.map(c=>makeFCard(c,isSpain)).join('');
+}
+
+document.querySelectorAll('#tabs1 .tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#tabs1 .tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  const f=b.dataset.f;
+  const sectorMap={
+    'energia':c=>['energia & utilities','gestión energía & automatización','industrial diversificado','agua & gestión ambiental'].some(s=>c.sector.toLowerCase().includes(s.split(' ')[0])),
+    'industrial':c=>['industrial','automatización','seguridad'].some(s=>c.sector.toLowerCase().includes(s))
+  };
+  let filtered;
+  if(f==='all') filtered=companies;
+  else if(f==='top') filtered=companies.filter(c=>c.top);
+  else if(sectorMap[f]) filtered=companies.filter(sectorMap[f]);
+  else filtered=companies.filter(c=>c.sector.toLowerCase().includes(f));
+  renderGrid('cards1', filtered);
+}));
+renderGrid('cards1', companies);
+renderGrid('cards-spain', spanishCompanies, true);
+// TOP 6 SECCIÓN 03
+document.getElementById('cards2').innerHTML=top6Section3.map(c=>makeFCard(c)).join('');
+
+// CESTAS (makeBasketCard aún usada para overlap/visualización interna)
+function makeBasketCard(c) {
+  const allBanks = ['ms','gs','bofa','erste','jeff','jpm','citi','db','barc'];
+  const bankColors = {ms:'#5b9cf6',gs:'#4ade80',bofa:'#fbbf24',erste:'#f87171',jeff:'#4ecdc4',jpm:'#a78bfa',citi:'#fb7185',db:'#e8c97d',barc:'#60a5fa'};
+  const bankBg = {ms:'rgba(91,156,246,0.15)',gs:'rgba(74,222,128,0.12)',bofa:'rgba(251,191,36,0.12)',erste:'rgba(248,113,113,0.12)',jeff:'rgba(78,205,196,0.12)',jpm:'rgba(167,139,250,0.12)',citi:'rgba(251,113,133,0.12)',db:'rgba(232,201,125,0.12)',barc:'rgba(96,165,250,0.12)'};
+  const labels = {ms:'Morgan Stanley',gs:'Goldman Sachs',bofa:'BofA',erste:'Erste',jeff:'Jefferies',jpm:'JPMorgan',citi:'Citi',db:'Deutsche Bank',barc:'Barclays'};
+  const badgeHtml = allBanks.filter(k=>c[k]).map(k=>`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:${bankBg[k]};color:${bankColors[k]};">${labels[k]}</span>`).join('');
+  const newBadge = !c.prev ? '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(78,205,196,0.12);color:#4ecdc4;">Nueva</span>' : '';
+  const uc = uColor(c.upside||0);
+  const bw = Math.max(0,Math.min(100,(c.upside||0)+5));
+  const btid=c.ticker.replace(/[^a-z0-9]/gi,'_');
+  return `<div class="fcard" style="padding:16px 18px;" data-tid="${btid}">
+    <div class="fcard-head">
+      <div><div class="fcard-name">${c.name}</div><div class="fcard-ticker">${c.ticker}</div></div>
+      <div style="text-align:right;flex-shrink:0"><span class="rating ${c.rc}">${c.rating}</span><span class="live-px">${c.price?'~'+c.price:'—'}</span></div>
+    </div>
+    <div class="fcard-sector">${c.sector} · Cap: <span class="live-mcap">—</span></div>
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);margin-bottom:6px;">52s: <span class="live-range">—</span> · Beta: <span class="live-beta">—</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">${badgeHtml}${newBadge}</div>
+    <div class="metrics-grid2">
+      <div class="met"><div class="met-l">P/E</div><div class="met-v">${c.pe}x</div></div>
+      <div class="met"><div class="met-l">Dividendo</div><div class="met-v">${c.div}%</div></div>
+      <div class="met"><div class="met-l">ROE</div><div class="met-v">${c.roe}%</div></div>
+    </div>
+    <div class="upside-row"><span>Upside</span><span style="color:${uc};font-family:var(--font-m);">${(c.upside||0)>0?'+':''}${c.upside||0}%</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${bw}%;background:${uc};"></div></div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.55;">${c.note}</div>
+    <div class="timing-block ${tClass(c.timingType||'wait')}" style="margin-top:10px;">
+      <div class="timing-head"><div class="timing-dot" style="background:${tDot(c.timingType||'wait')};"></div><span class="timing-label" style="color:${tDot(c.timingType||'wait')};">${c.timingLabel||'Ver análisis'}</span></div>
+      <div class="timing-text">${c.timingText||''}</div>
+    </div>
+  </div>`;
+}
+
+// OVERLAP
+const allBankKeys=['ms','gs','bofa','erste','jeff','jpm','citi','db','barc'];
+const bankOvColors={ms:'#185FA5',gs:'#3B6D11',bofa:'#BA7517',erste:'#993556',jeff:'#0e7490',jpm:'#6d28d9',citi:'#be123c',db:'#92400e',barc:'#1e40af'};
+const bankOvLabels={ms:'MS',gs:'GS',bofa:'BofA',erste:'Erste',jeff:'Jeff',jpm:'JPM',citi:'Citi',db:'DB',barc:'Barc'};
+function countBanks(c){return allBankKeys.reduce((s,k)=>s+(c[k]||0),0);}
+const ovData=allBasket.filter(c=>countBanks(c)>=2).sort((a,b)=>countBanks(b)-countBanks(a));
+const ovEl=document.getElementById('ov-list');
+ovData.forEach(c=>{
+  const w=Math.round(100/allBankKeys.length)+'%';
+  const segs=allBankKeys.map(k=>c[k]?`<div class="ov-seg" style="width:${w};background:${bankOvColors[k]};">${bankOvLabels[k]}</div>`:`<div style="width:${w};background:rgba(255,255,255,0.04);"></div>`).join('');
+  ovEl.innerHTML+=`<div class="ov-item">
+    <div class="ov-name">${c.name}<span class="ov-ticker">${c.ticker}</span></div>
+    <div class="ov-track">${segs}</div>
+    <span class="ov-n">${countBanks(c)}/9</span>
+  </div>`;
+});
+
+// TIMING TABLE
+const allForTiming=[...companies,...top6Section3,...spanishCompanies];
+const timingTbl=document.getElementById('timing-table');
+timingTbl.innerHTML=`<thead><tr>
+  <th>#</th><th>Empresa</th><th>Ticker</th><th>Timing</th><th>Precio actual</th><th>Target</th><th>Entrada ideal</th><th>Retorno base</th><th>Retorno paz</th>
+</tr></thead><tbody>${allForTiming.sort((a,b)=>{const o={now:0,wait:1,watch:2};return o[a.timingType]-o[b.timingType];}).map((c,i)=>{
+  const dot=tDot(c.timingType);
+  return `<tr>
+    <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
+    <td style="font-weight:500;">${c.name}${c.top?'<span style="color:var(--accent);margin-left:6px;">★</span>':''}</td>
+    <td class="mono" style="font-size:11px;">${c.ticker}</td>
+    <td><span style="font-size:11px;padding:3px 9px;border-radius:20px;background:${dot==='#4ade80'?'rgba(74,222,128,0.12)':dot==='#fbbf24'?'rgba(251,191,36,0.12)':'rgba(248,113,113,0.12)'};color:${dot};font-family:var(--font-m);">${c.timingLabel}</span></td>
+    <td class="mono">${c.price?c.price+'€':'-'}</td>
+    <td class="mono pos">${c.target?c.target+'€':'-'}</td>
+    <td style="font-size:11px;color:var(--muted);max-width:200px;">${c.timingText.substring(0,80)}…</td>
+    <td class="pos">+${c.retBase}%</td>
+    <td style="color:#4ade80;font-family:var(--font-m);font-weight:500;">+${c.retPaz}%</td>
+  </tr>`;}).join('')}</tbody>`;
+
+// RANKING TABLE
+const sortedR=[...companies,...top6Section3,...spanishCompanies].sort((a,b)=>(b.retBase+b.upside+b.div)-(a.retBase+a.upside+a.div));
+document.getElementById('ranking-table').innerHTML=`<thead><tr>
+  <th>#</th><th>Empresa</th><th>Ticker</th><th>P/E</th><th>EV/EBITDA</th><th>ROE</th><th>Div.</th><th>Upside</th><th>Ret. base</th><th>Ret. paz</th><th>Riesgo</th><th>Dep. paz</th>
+</tr></thead><tbody>${sortedR.map((c,i)=>`<tr>
+  <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
+  <td style="font-weight:500;">${c.top?'<span style="color:var(--accent);margin-right:5px;">★</span>':''}${c.name}</td>
+  <td class="mono" style="font-size:11px;color:var(--muted);">${c.ticker}</td>
+  <td class="mono">${c.pe}x</td>
+  <td class="mono">${c.evEbitda||'—'}x</td>
+  <td class="mono ${c.roe>20?'pos':c.roe>12?'':'warn'}">${c.roe}%</td>
+  <td class="mono">${c.div}%</td>
+  <td class="mono" style="color:${uColor(c.upside)}">${c.upside>0?'+':''}${c.upside}%</td>
+  <td class="pos">+${c.retBase}%</td>
+  <td style="color:#4ade80;font-family:var(--font-m);font-weight:500;">+${c.retPaz}%</td>
+  <td class="${riskClass(c.risk)}">${riskLabel(c.risk)}</td>
+  <td style="color:var(--muted);font-size:12px;">${c.dep}</td>
+</tr>`).join('')}</tbody>`;
+
+// CHARTS
+// Etiquetas: primera palabra; si hay colisión (e.g. Siemens Energy + Siemens AG), usa 2 palabras
+const labels=companies.map(c=>{
+  const first=c.name.split(' ')[0];
+  const dups=companies.filter(x=>x.name.split(' ')[0]===first).length;
+  return dups>1?c.name.split(' ').slice(0,2).join(' '):first;
+});
+new Chart(document.getElementById('c1'),{
+  type:'bar',data:{labels,datasets:[
+    {label:'Upside (%)',data:companies.map(c=>c.upside),backgroundColor:companies.map(c=>uColor(c.upside)),yAxisID:'y'},
+    {label:'P/E',data:companies.map(c=>c.pe),backgroundColor:'rgba(74,222,128,0.6)',yAxisID:'y2'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#8b93a8',font:{size:10},autoSkip:false,maxRotation:45},grid:{color:'rgba(255,255,255,0.05)'}},
+      y:{position:'left',ticks:{color:'#5b9cf6',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.05)'}},
+      y2:{position:'right',ticks:{color:'#4ade80',callback:v=>v+'x'},grid:{display:false}}}}
+});
+new Chart(document.getElementById('c2'),{
+  type:'bar',data:{labels,datasets:[
+    {label:'Base',data:companies.map(c=>c.retBase),backgroundColor:'#185FA5'},
+    {label:'Paz',data:companies.map(c=>c.retPaz),backgroundColor:'#1D9E75'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#8b93a8',font:{size:10},autoSkip:false,maxRotation:45},grid:{color:'rgba(255,255,255,0.05)'}},
+      y:{ticks:{color:'#8b93a8',callback:v=>'+'+v+'%'},grid:{color:'rgba(255,255,255,0.05)'}}}}
+});
+const bubbleColors=['#5b9cf6','#4ade80','#fbbf24','#f87171','#4ecdc4','#e8c97d','#a78bfa','#fb7185','#34d399','#60a5fa','#f59e0b','#ef4444'];
+new Chart(document.getElementById('c3'),{
+  type:'bubble',
+  data:{datasets:companies.map((c,i)=>({label:c.name.split(' ')[0],data:[{x:c.roe,y:c.roic||c.roe*0.7,r:Math.max(6,c.retBase/7)}],backgroundColor:bubbleColors[i]+'99',borderColor:bubbleColors[i]}))},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ROE ${ctx.raw.x}% · ROIC ${ctx.raw.y.toFixed(1)}%`}}},
+    scales:{x:{title:{display:true,text:'ROE (%)',color:'#8b93a8'},ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.05)'},min:3,max:58},
+      y:{title:{display:true,text:'ROIC (%)',color:'#8b93a8'},ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.05)'},min:3,max:28}}}
+});
+new Chart(document.getElementById('c4'),{
+  type:'bar',data:{labels,datasets:[{
+    label:'Deuda/EBITDA',
+    data:companies.map(c=>c.deudaEbitda),
+    backgroundColor:companies.map(c=>c.deudaEbitda<0?'#4ade80':c.deudaEbitda>3.5?'#f87171':c.deudaEbitda>2.5?'#fbbf24':'#5b9cf6')
+  }]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#8b93a8',font:{size:10},autoSkip:false,maxRotation:45},grid:{color:'rgba(255,255,255,0.05)'}},
+      y:{ticks:{color:'#8b93a8',callback:v=>v+'x'},grid:{color:'rgba(255,255,255,0.05)'}}}}
+});
+
+// =============================================
+// PRECIOS EN TIEMPO REAL — Híbrido Finnhub + FMP
+// Finnhub: precio live (sin límite diario) · sessionStorage 30 min
+// FMP: fundamentales (mcap, empleados, rango, beta) · localStorage 24h
+// =============================================
+const FMP_KEY='inmiuLFBXl9g0ede2SWSH83mQgx0S4wf';
+const FH_KEY='d7of1k1r01qsb7bemmt0d7of1k1r01qsb7bemmtg';
+// ticker_archivo (saneado) → symbol FMP (Yahoo Finance format)
+const FMP_SYM={
+  'VIE_WIE':'WIE.VI',        // Wienerberger · Viena
+  'ETR_HEIG':'HEI.DE',       // Heidelberg Materials · Frankfurt
+  'EPA_DG':'DG.PA',          // Vinci · París
+  'AMS_MT':'MT',             // ArcelorMittal · NYSE
+  'WAR_BDX':'BDX.WA',        // Budimex · Varsovia
+  'SWX_HOLN':'HOLN.SW',      // Holcim · Zúrich
+  'NYSE_CRH':'CRH',          // CRH · NYSE
+  'ETR_ENR':'ENR.DE',        // Siemens Energy · Frankfurt
+  'SWX_ABBN':'ABBN.SW',      // ABB · Zúrich
+  'BIT_PRY':'PRY.MI',        // Prysmian · Milán
+  'OM_ASSA_B':'ASSA-B.ST',   // Assa Abloy · Estocolmo
+  'SWX_SIKA':'SIKA.SW',      // Sika · Zúrich
+  'ISE_KRX':'KRX.IR',        // Kingspan · Dublín
+  'CPH_ROCK_B':'ROCK-B.CO',  // Rockwool · Copenhague
+  'VIE_RBI':'RBI.VI',        // Raiffeisen · Viena
+  'EPA_SU':'SU.PA',          // Schneider Electric · París
+  'ETR_SIE':'SIE.DE',        // Siemens AG · Frankfurt
+  'BIT_BZU':'BZU.MI',        // Buzzi Unicem · Milán
+  'EPA_SGO':'SGO.PA',        // Saint-Gobain · París
+  'VIE_STR':'STR.VI',        // Strabag · Viena
+  'VIE_VOE':'VOE.VI',        // Voestalpine · Viena
+  'VIE_POS':'POS.VI',        // Porr · Viena
+  'EPA_VIE':'VIE.PA',        // Veolia · París
+  'BME_ACS':'ACS.MC',        // ACS · Madrid
+  'BME_SCYR':'SCYR.MC',      // Sacyr · Madrid
+  'BME_TRE':'TRE.MC',        // Técnicas Reunidas · Madrid
+  'BME_ANE':'ANE.MC',        // Acciona · Madrid
+  'BME_OHLA':'OHLA.MC',      // OHLA · Madrid
+  'BME_IDR':'IDR.MC'         // Indra · Madrid
+};
+function fmpCcy(sym){
+  if(!sym)return'';
+  const e=sym.split('.').pop();
+  if(['MC','PA','DE','VI','MI','IR','BE'].includes(e))return'€';
+  if(e==='SW')return'Fr';
+  if(['ST','CO','OL'].includes(e))return'kr';
+  if(e==='WA')return'PLN';
+  if(e==='BD')return'HUF';
+  if(e==='KS')return'₩';
+  return'$';
+}
+function fmtMcap(v,ccy){
+  if(!v)return'—';
+  if(v>=1e12)return(v/1e12).toFixed(2)+'T '+ccy;
+  if(v>=1e9)return(v/1e9).toFixed(1)+'B '+ccy;
+  return(v/1e6).toFixed(0)+'M '+ccy;
+}
+async function loadPrices(){
+  // — Fundamentales FMP: localStorage 24h (persiste entre pestañas/sesiones)
+  // Solo se llama a la API para los símbolos que NO estén ya en cache (permite añadir empresas sin esperar al TTL)
+  const FK='fmp_fund'; const FT=24*60*60*1000;
+  let fundData={};
+  try{const r=localStorage.getItem(FK);if(r){const{ts,data}=JSON.parse(r);if(Date.now()-ts<FT)fundData=data;}}catch(e){}
+  const missingFund=Object.entries(FMP_SYM).filter(([tid])=>!fundData[tid]);
+  if(missingFund.length>0){
+    await Promise.allSettled(missingFund.map(async([tid,sym])=>{
+      try{
+        const r=await fetch(`https://financialmodelingprep.com/stable/profile?symbol=${sym}&apikey=${FMP_KEY}`);
+        const d=await r.json();const q=Array.isArray(d)?d[0]:d;
+        if(!q||!q.price)return;
+        fundData[tid]=q;
+      }catch(e){}
+    }));
+    if(Object.keys(fundData).length>0)try{localStorage.setItem(FK,JSON.stringify({ts:Date.now(),data:fundData}));}catch(e){}
+  }
+  // — Precios Finnhub: sessionStorage 30 min (solo símbolos nuevos)
+  const PK='fh_px'; const PT=30*60*1000;
+  let pxData={};
+  try{const r=sessionStorage.getItem(PK);if(r){const{ts,data}=JSON.parse(r);if(Date.now()-ts<PT)pxData=data;}}catch(e){}
+  const missingPx=Object.entries(FMP_SYM).filter(([tid])=>!pxData[tid]);
+  if(missingPx.length>0){
+    await Promise.allSettled(missingPx.map(async([tid,sym])=>{
+      try{
+        const r=await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${FH_KEY}`);
+        const q=await r.json();
+        if(!q||!q.c||q.c===0)return; // 0 = símbolo no soportado por Finnhub
+        pxData[tid]={price:q.c,chgPct:q.dp};
+      }catch(e){}
+    }));
+    if(Object.keys(pxData).length>0)try{sessionStorage.setItem(PK,JSON.stringify({ts:Date.now(),data:pxData}));}catch(e){}
+  }
+  // — Pintar DOM
+  Object.keys(FMP_SYM).forEach(tid=>{
+    const sym=FMP_SYM[tid];
+    const fund=fundData[tid];
+    const px=pxData[tid];
+    if(!fund&&!px)return;
+    const sel=s=>document.querySelectorAll(`.fcard[data-tid="${tid}"] ${s}`);
+    const ccy=fmpCcy(sym);
+    // Precio: Finnhub preferido, FMP como fallback
+    const price=px?.price??fund?.price;
+    const chg=px!=null?parseFloat(px.chgPct??0):parseFloat(fund?.changesPercentage??fund?.changePercentage??0);
+    if(price){
+      const clr=chg>=0?'#4ade80':'#f87171';
+      const chgStr=` <span style="opacity:.7;font-size:10px">${chg>0?'+':''}${parseFloat(chg).toFixed(1)}%</span>`;
+      sel('.live-px').forEach(el=>{el.innerHTML=`<span style="color:${clr}">${ccy}${parseFloat(price).toFixed(2)}${chgStr}</span>`;el.classList.add('ok');});
+    }
+    if(fund){
+      if(fund.marketCap)sel('.live-mcap').forEach(el=>el.textContent=fmtMcap(fund.marketCap,ccy));
+      if(fund.fullTimeEmployees)sel('.live-emp').forEach(el=>el.textContent=parseInt(fund.fullTimeEmployees).toLocaleString('es'));
+      if(fund.range)sel('.live-range').forEach(el=>el.textContent=ccy+fund.range.replace('-',' – '+ccy));
+      if(fund.beta)sel('.live-beta').forEach(el=>el.textContent=parseFloat(fund.beta).toFixed(2));
+    }
+  });
+}
+loadPrices();
+
+// =============================================
+// COMPARATIVA RENDIMIENTO vs ÍNDICES — Chart 5
+// FMP /stable/historical-price-eod/light · cache localStorage 24h por (símbolo, periodo)
+// =============================================
+const COUNTRY_IDX={
+  VI:{sym:'^ATX',      name:'ATX (Austria)'},
+  DE:{sym:'^GDAXI',    name:'DAX (Alemania)'},
+  PA:{sym:'^FCHI',     name:'CAC 40 (Francia)'},
+  SW:{sym:'^SSMI',     name:'SMI (Suiza)'},
+  MI:{sym:'FTSEMIB.MI', name:'FTSE MIB (Italia)'},
+  MC:{sym:'^IBEX',     name:'IBEX 35 (España)'},
+  ST:{sym:'^OMX',      name:'OMX Stockholm 30'},
+  CO:{sym:'^OMXC25',   name:'OMXC 25 (Dinamarca)'},
+  IR:{sym:'^ISEQ',     name:'ISEQ (Irlanda)'},
+  WA:{sym:'WIG20.WA',  name:'WIG 20 (Polonia)'},
+  AMS:{sym:'^AEX',     name:'AEX (Países Bajos)'},
+  US:{sym:'^GSPC',     name:'S&P 500 (USA)'}
+};
+const EU_IDX={sym:'^STOXX', name:'Stoxx Europe 600'};
+
+// Mapeo prefijo del ticker original → código de país
+const TICKER_PREFIX={VIE:'VI',ETR:'DE',XETRA:'DE',EPA:'PA',SWX:'SW',BIT:'MI',BME:'MC',OM:'ST',CPH:'CO',ISE:'IR',WAR:'WA',AMS:'AMS',NYSE:'US',NASDAQ:'US'};
+
+function pickCountryIdx(originalTicker, fmpSym){
+  // Prefijo del ticker original (ej. "AMS:MT" → AMS → Países Bajos · AEX)
+  if(originalTicker && originalTicker.includes(':')){
+    const code=TICKER_PREFIX[originalTicker.split(':')[0]];
+    if(code && COUNTRY_IDX[code]) return COUNTRY_IDX[code];
+  }
+  // Fallback: sufijo del símbolo FMP
+  if(fmpSym && fmpSym.includes('.')){
+    const ext=fmpSym.split('.').pop();
+    if(COUNTRY_IDX[ext]) return COUNTRY_IDX[ext];
+  }
+  return COUNTRY_IDX.US;
+}
+
+function periodRange(p){
+  const now=new Date();
+  const to=now.toISOString().slice(0,10);
+  let from;
+  if(p==='1M') from=new Date(now.getTime()-31*86400e3);
+  else if(p==='3M') from=new Date(now.getTime()-93*86400e3);
+  else if(p==='6M') from=new Date(now.getTime()-186*86400e3);
+  else if(p==='YTD') from=new Date(now.getFullYear(),0,1);
+  else if(p==='5Y') from=new Date(now.getTime()-1830*86400e3);
+  else from=new Date(now.getTime()-370*86400e3); // 1Y default
+  return {from:from.toISOString().slice(0,10), to};
+}
+
+window.__cmpErrors=[];
+async function fetchHist(sym, period){
+  const {from, to}=periodRange(period);
+  // Cache v3: namespace fresco para invalidar entradas anteriores
+  const ck='hist3_'+sym+'_'+period;
+  try{
+    const c=localStorage.getItem(ck);
+    if(c){const{ts,data}=JSON.parse(c); if(Date.now()-ts<24*60*60*1000) return data;}
+  }catch(e){}
+  try{
+    const u='https://financialmodelingprep.com/stable/historical-price-eod/light?symbol='+encodeURIComponent(sym)+'&from='+from+'&to='+to+'&apikey='+FMP_KEY;
+    const r=await fetch(u);
+    const d=await r.json();
+    if(d && d['Error Message']){window.__cmpErrors.push({sym, err:d['Error Message']}); return null;}
+    let arr=Array.isArray(d) ? d : (d.historical||d.data||[]);
+    if(!arr.length){window.__cmpErrors.push({sym, err:'empty response'}); return null;}
+    arr=arr.map(x=>({date:x.date, price:parseFloat(x.price??x.close??x.adjClose)})).filter(x=>x.date && !isNaN(x.price));
+    arr.sort((a,b)=>a.date.localeCompare(b.date));
+    if(!arr.length){window.__cmpErrors.push({sym, err:'no valid prices'}); return null;}
+    try{localStorage.setItem(ck, JSON.stringify({ts:Date.now(), data:arr}));}catch(e){}
+    return arr;
+  }catch(e){window.__cmpErrors.push({sym, err:String(e)}); return null;}
+}
+
+let cmpChart=null;
+async function renderCmp(){
+  const sel=document.getElementById('cmp-company');
+  if(!sel) return;
+  const tid=sel.value;
+  const periodBtn=document.querySelector('.cmp-p.active');
+  const period=periodBtn?periodBtn.dataset.p:'1Y';
+  const sym=FMP_SYM[tid];
+  const all=[...companies, ...top6Section3, ...spanishCompanies];
+  const co=all.find(c=>c.ticker.replace(/[^a-z0-9]/gi,'_')===tid);
+  if(!sym||!co) return;
+  const status=document.getElementById('cmp-status');
+  if(status){status.textContent='Cargando datos…'; status.style.display='flex';}
+  const cIdx=pickCountryIdx(co.ticker, sym);
+  const [coData, idxData, euData]=await Promise.all([
+    fetchHist(sym, period),
+    fetchHist(cIdx.sym, period),
+    fetchHist(EU_IDX.sym, period)
+  ]);
+  function norm(arr){
+    if(!arr||!arr.length) return null;
+    const start=arr[0].price;
+    if(!start) return null;
+    return arr.map(p=>({x:p.date, y:(p.price/start)*100}));
+  }
+  const datasets=[];
+  if(coData) datasets.push({label:co.name, data:norm(coData), borderColor:'#e8c97d', backgroundColor:'rgba(232,201,125,0.08)', borderWidth:2.5, pointRadius:0, tension:0.15, fill:true});
+  if(idxData) datasets.push({label:cIdx.name, data:norm(idxData), borderColor:'#5b9cf6', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.15});
+  if(euData) datasets.push({label:EU_IDX.name, data:norm(euData), borderColor:'#4ade80', backgroundColor:'transparent', borderWidth:1.5, borderDash:[5,5], pointRadius:0, tension:0.15});
+  if(status){
+    if(datasets.length===0){
+      const errs=window.__cmpErrors||[];
+      const limitHit=errs.some(e=>/limit|reach/i.test(e.err||''));
+      if(limitHit) status.innerHTML='⚠ Límite diario de la API agotado.<br><span style="opacity:.7;font-size:11px;">Vuelve a probar mañana cuando se resetee, o avísame para cambiar a otra API.</span>';
+      else status.textContent='Sin datos disponibles para este símbolo o periodo.';
+      status.style.display='flex';
+    }
+    else status.style.display='none';
+  }
+  window.__cmpErrors=[];
+  if(cmpChart) cmpChart.destroy();
+  if(datasets.length===0){const c=document.getElementById('c5'); if(c){const ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height);} return;}
+  const ctx=document.getElementById('c5');
+  const tu = period==='5Y'?'year' : (period==='1Y'||period==='YTD'?'month' : 'week');
+  cmpChart=new Chart(ctx,{
+    type:'line',
+    data:{datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index', intersect:false},
+      plugins:{
+        legend:{labels:{color:'#e2e8f0', font:{size:11}, usePointStyle:true, padding:14}},
+        tooltip:{
+          backgroundColor:'rgba(15,18,33,0.95)', titleColor:'#e2e8f0', bodyColor:'#e2e8f0',
+          borderColor:'rgba(255,255,255,0.12)', borderWidth:1,
+          callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y.toFixed(1)} (${(c.parsed.y-100>=0?'+':'')}${(c.parsed.y-100).toFixed(1)}%)`}
+        }
+      },
+      scales:{
+        x:{type:'time', time:{unit:tu, tooltipFormat:'dd MMM yyyy'}, ticks:{color:'#8b93a8', font:{size:10}, maxRotation:0}, grid:{color:'rgba(255,255,255,0.05)'}},
+        y:{title:{display:true, text:'Base 100', color:'#8b93a8', font:{size:11}}, ticks:{color:'#8b93a8', callback:v=>v.toFixed(0)}, grid:{color:'rgba(255,255,255,0.05)'}}
+      }
+    }
+  });
+}
+
+(function initCmp(){
+  const sel=document.getElementById('cmp-company');
+  if(!sel) return;
+  // Solo empresas con FMP_SYM (con datos disponibles)
+  const all=[...companies, ...top6Section3, ...spanishCompanies];
+  const opts=all.filter(c=>FMP_SYM[c.ticker.replace(/[^a-z0-9]/gi,'_')]).map(c=>{
+    const tid=c.ticker.replace(/[^a-z0-9]/gi,'_');
+    return `<option value="${tid}">${c.name} · ${c.ticker}</option>`;
+  });
+  sel.innerHTML=opts.join('');
+  sel.addEventListener('change', renderCmp);
+  document.querySelectorAll('.cmp-p').forEach(b=>{
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.cmp-p').forEach(x=>x.classList.remove('active'));
+      this.classList.add('active');
+      renderCmp();
+    });
+  });
+  renderCmp();
+})();
+
+// =============================================
+// MAPAS SATELITALES LEAFLET
+// Esri World Imagery — sin API key
+// =============================================
+function initMaps(){
+  function sat(){return L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'© Esri'});}
+  function lbl(){return L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,opacity:0.75});}
+  function legBox(html){const d=L.DomUtil.create('div');d.style.cssText='background:rgba(10,12,24,0.93);padding:10px 14px;border-radius:8px;font-size:11px;font-family:system-ui;color:#e2e8f0;border:1px solid rgba(255,255,255,0.12);line-height:1.7;';d.innerHTML=html;return d;}
+  function lbl2(lat,lng,txt,col){return L.marker([lat,lng],{icon:L.divIcon({className:'',html:`<div style="color:${col};font-size:11px;font-weight:700;text-shadow:0 0 4px #000,0 0 8px #000;white-space:nowrap;margin-left:13px;margin-top:-5px;">${txt}</div>`,iconAnchor:[0,16]})});}
+
+  // ── MAP 1: Daños por región ─────────────────────────────────
+  const m1=L.map('map1',{center:[49.0,33.0],zoom:6,maxBounds:[[43,20],[53,42]]});
+  sat().addTo(m1);lbl().addTo(m1);
+  const regions=[
+    {n:'Donetsk',la:48.0,ln:37.8,r:85000,c:'#f87171',d:'$118B',b:'~150.000 edificios destruidos',rd:'3.200 km carreteras',t:'Industria pesada + residencial'},
+    {n:'Luhansk',la:48.9,ln:38.8,r:70000,c:'#f87171',d:'$57B',b:'~70.000 edificios',rd:'1.800 km carreteras',t:'Residencial + energía'},
+    {n:'Kharkiv',la:49.9,ln:36.2,r:58000,c:'#fb923c',d:'$42B',b:'~50.000 edificios',rd:'900 km carreteras',t:'Residencial + infraestructura urbana'},
+    {n:'Zaporizhzhia',la:47.8,ln:35.5,r:52000,c:'#fbbf24',d:'$28B',b:'~30.000 edificios',rd:'800 km carreteras',t:'Energía (central nuclear) + industria'},
+    {n:'Kherson',la:46.7,ln:32.8,r:46000,c:'#fbbf24',d:'$14B',b:'~20.000 edificios',rd:'600 km carreteras',t:'Residencial + infraestructura agrícola'},
+    {n:'Mykolaiv',la:46.9,ln:32.0,r:40000,c:'#fde68a',d:'$8B',b:'~12.000 edificios',rd:'400 km carreteras',t:'Portuario + residencial'},
+    {n:'Kyiv región',la:50.4,ln:30.5,r:40000,c:'#fde68a',d:'$7B',b:'~15.000 edificios (Bucha, Irpin)',rd:'200 km carreteras',t:'Residencial suburbano'},
+    {n:'Dnipropetrovsk',la:48.4,ln:35.0,r:36000,c:'#fde68a',d:'$5B',b:'~8.000 edificios',rd:'300 km carreteras',t:'Industrial + logística'},
+    {n:'Chernihiv',la:51.5,ln:31.3,r:33000,c:'#bbf7d0',d:'$4B',b:'~6.000 edificios',rd:'250 km carreteras',t:'Residencial + industrial'},
+    {n:'Sumy',la:50.9,ln:34.8,r:31000,c:'#bbf7d0',d:'$3B',b:'~5.000 edificios',rd:'200 km carreteras',t:'Residencial + agrícola'},
+  ];
+  regions.forEach(r=>{
+    L.circle([r.la,r.ln],{color:r.c,fillColor:r.c,fillOpacity:0.28,weight:1.5,radius:r.r})
+    .bindPopup(`<b>${r.n} Oblast</b><hr/>💰 Daño estimado: <b>${r.d}</b><br/>🏠 ${r.b}<br/>🛣️ ${r.rd}<br/>🔧 ${r.t}`)
+    .addTo(m1);
+    lbl2(r.la,r.ln,r.n,r.c).addTo(m1);
+  });
+  const lg1=L.control({position:'bottomright'});
+  lg1.onAdd=()=>legBox('<b>DAÑO ESTIMADO (RDNA5)</b><br/><span style="color:#f87171;">⬤</span> >$50B crítico<br/><span style="color:#fb923c;">⬤</span> $20–50B severo<br/><span style="color:#fbbf24;">⬤</span> $10–20B alto<br/><span style="color:#fde68a;">⬤</span> &lt;$10B moderado<br/><i style="color:#6b7280;font-size:10px;">Click en zona → datos</i>');
+  lg1.addTo(m1);
+
+  // ── MAP 2: Territorios ocupados ─────────────────────────────
+  const m2=L.map('map2',{center:[47.5,35.5],zoom:7,maxBounds:[[43,20],[53,42]]});
+  sat().addTo(m2);lbl().addTo(m2);
+  // Crimea
+  L.polygon([[46.1,32.6],[45.4,32.5],[45.1,33.0],[44.5,33.6],[44.4,35.4],[45.0,36.6],[45.6,36.2],[46.1,34.8],[46.2,33.5],[46.1,32.6]],
+    {color:'#dc2626',fillColor:'#dc2626',fillOpacity:0.38,weight:1.5})
+  .bindPopup('<b>CRIMEA</b><br/>Ocupada desde Mar 2014 · 26.081 km²<br/>2,4M habitantes bajo ocupación rusa<br/>Reconstrucción condicionada a reintegración')
+  .addTo(m2);
+  // Mainland occupied zone
+  L.polygon([[49.7,37.55],[49.35,37.9],[49.0,38.2],[48.6,38.1],[48.14,37.74],[47.85,37.4],[47.55,36.9],[47.2,36.2],[47.05,35.5],[46.85,34.6],[46.6,33.8],[46.4,33.2],[46.1,32.6],[45.4,32.5],[46.1,34.8],[46.4,35.6],[46.7,36.2],[47.1,37.6],[47.8,38.5],[48.5,38.9],[49.0,38.8],[49.5,38.3],[49.7,37.55]],
+    {color:'#ef4444',fillColor:'#ef4444',fillOpacity:0.30,weight:1.5})
+  .bindPopup('<b>ZONA OCUPADA (continental)</b><br/>~18% territorio ucraniano<br/>Donetsk, Luhansk, Zaporizhzhia (sur), Kherson (este)<br/>Daño estimado: >$200B')
+  .addTo(m2);
+  // Front line
+  L.polyline([[49.7,37.55],[49.35,37.9],[49.0,38.2],[48.6,38.1],[48.14,37.74],[47.85,37.4],[47.55,36.9],[47.2,36.2],[47.05,35.5],[46.85,34.6],[46.6,33.8],[46.4,33.2]],
+    {color:'#fbbf24',weight:3,dashArray:'8,5',opacity:0.95})
+  .bindPopup('<b>LÍNEA DE FRENTE</b><br/>~1.000 km estabilizada desde mediados 2023<br/>Actividad bélica baja-media · Abril 2026')
+  .addTo(m2);
+  // Key cities map2
+  [{la:47.1,ln:37.55,n:'Mariupol',c:'#f87171',i:'90% destruida · Capturada May 2022<br/>$14B reconstrucción · 400.000 hab. desplazados'},{la:48.6,ln:38.0,n:'Bakhmut',c:'#f87171',i:'~90% destruida · Capturada May 2023<br/>$8B reconstrucción · Ciudad símbolo'},{la:48.14,ln:37.74,n:'Avdiivka',c:'#f87171',i:'Capturada Feb 2024 · 90% destruida<br/>$5B reconstrucción estimada'},{la:47.84,ln:35.12,n:'Zaporizhzhia',c:'#fbbf24',i:'Ciudad en primera línea · $28B región<br/>Central nuclear bajo control ruso (47,51 N / 34,59 E)'},{la:46.64,ln:32.63,n:'Kherson',c:'#4ade80',i:'Liberada Nov 2022 · $14B región<br/>Este del Dnipro aún bajo ocupación rusa'}].forEach(p=>{
+    L.circleMarker([p.la,p.ln],{radius:8,color:p.c,fillColor:p.c,fillOpacity:0.9,weight:2})
+    .bindPopup(`<b>${p.n}</b><hr/>${p.i}`).addTo(m2);
+    lbl2(p.la,p.ln,p.n,p.c).addTo(m2);
+  });
+  const lg2=L.control({position:'bottomright'});
+  lg2.onAdd=()=>legBox('<b>LEYENDA</b><br/><span style="color:#ef4444;">⬤</span> Territorio ocupado<br/><span style="color:#fbbf24;">━</span> Línea de frente<br/><span style="color:#f87171;">⬤</span> Ciudad destruida/ocupada<br/><span style="color:#fbbf24;">⬤</span> Ciudad en zona de frente<br/><span style="color:#4ade80;">⬤</span> Ciudad liberada');
+  lg2.addTo(m2);
+
+  // ── MAP 3: Infraestructura y reconstrucción ──────────────────
+  const m3=L.map('map3',{center:[49.0,33.5],zoom:6,maxBounds:[[43,20],[55,42]]});
+  sat().addTo(m3);lbl().addTo(m3);
+  [{la:47.51,ln:34.59,n:'Central Nuclear Zaporizhzhia',c:'#f87171',t:'⚡',i:'6 reactores bajo control ruso<br/>Riesgo nuclear · Inspecciones IAEA continuas<br/>Costo rehabilitación: $10B+'},{la:50.00,ln:31.00,n:'TPP Trypilska',c:'#f87171',t:'⚡',i:'Destruida Abr 2024 por misil ruso<br/>1.800 MW de capacidad perdidos<br/>Costo reconstrucción: ~$2B'},{la:49.99,ln:36.23,n:'Kharkiv',c:'#fb923c',t:'🏗️',i:'2ª ciudad de Ucrania · 1,4M hab.<br/>$42B daño regional · ~30% infraestructura destruida<br/>Bajo ataques constantes 2022–2026'},{la:50.45,ln:30.52,n:'Kyiv',c:'#a78bfa',t:'🏛️',i:'Capital · Defensas antiaéreas activas<br/>Ataques drone periódicos<br/>Centro coordinación reconstrucción $588B'},{la:50.43,ln:30.25,n:'Irpin / Bucha',c:'#4ade80',t:'🔄',i:'Liberadas Mar 2022 · Reconstruidas ~70%<br/>$3B invertidos por UE<br/>Modelo piloto reconstrucción rápida'},{la:51.49,ln:31.28,n:'Chernihiv',c:'#fbbf24',t:'🏗️',i:'$4B daño · 750+ edificios destruidos<br/>Puentes y carreteras críticos dañados<br/>Reconstrucción parcialmente iniciada'},{la:46.97,ln:32.00,n:'Mykolaiv',c:'#60a5fa',t:'🚢',i:'Puerto clave Mar Negro<br/>$8B daño · Astilleros destruidos<br/>Reconstrucción portuaria: ~$3B'},{la:46.64,ln:32.63,n:'Kherson',c:'#4ade80',t:'🚢',i:'Puerto del Dnipro · Liberado Nov 2022<br/>$14B daño región · Este del río aún ocupado<br/>Infraestructura hídrica destruida'},{la:47.10,ln:37.55,n:'Mariupol',c:'#f87171',t:'🏭',i:'Mayor devastación urbana de la guerra<br/>$14B reconstrucción total · Azovstal destruida<br/>400.000 hab. desplazados · 90% edificios'},{la:48.40,ln:34.98,n:'Dnipro',c:'#4ade80',t:'🏭',i:'Hub logístico clave · Relativamente estable<br/>$5B daño · Centro de coordinación<br/>Base operativa reconstrucción este de Ucrania'},{la:50.90,ln:34.80,n:'Sumy',c:'#fde68a',t:'🌾',i:'$3B daño · Región agrícola<br/>Infraestructura rural destruida<br/>5.000+ edificios dañados'}].forEach(p=>{
+    L.circleMarker([p.la,p.ln],{radius:10,color:p.c,fillColor:p.c,fillOpacity:0.88,weight:2})
+    .bindPopup(`<b>${p.t} ${p.n}</b><hr/>${p.i}`).addTo(m3);
+    lbl2(p.la,p.ln,p.n,p.c).addTo(m3);
+  });
+  const infoCtrl=L.control({position:'topleft'});
+  infoCtrl.onAdd=()=>legBox('<b style="color:#4ade80;font-size:14px;">$588B</b> reconstrucción<br/><span style="color:#6b7280;font-size:10px;">RDNA5 · World Bank · Feb 2026</span><br/><hr style="border-color:rgba(255,255,255,0.1);margin:6px 0;"/>🏠 180.000 edificios destruidos<br/>🛣️ 25.000 km carreteras dañadas<br/>🌉 800+ puentes destruidos<br/>⚡ 60–70% red eléctrica<br/>🏥 2.000+ hospitales dañados<br/>🏫 3.600+ escuelas dañadas');
+  infoCtrl.addTo(m3);
+  const lg3=L.control({position:'bottomright'});
+  lg3.onAdd=()=>legBox('<b>TIPO DE ZONA</b><br/><span style="color:#f87171;">⬤</span> Destruida / ocupada<br/><span style="color:#fb923c;">⬤</span> Daño severo activo<br/><span style="color:#fbbf24;">⬤</span> En reconstrucción<br/><span style="color:#60a5fa;">⬤</span> Portuario / logística<br/><span style="color:#4ade80;">⬤</span> Liberada / estable<br/><span style="color:#a78bfa;">⬤</span> Capital');
+  lg3.addTo(m3);
+}
+if(document.getElementById('map1'))initMaps();
+
+// Contadores dinámicos del header
+(function(){
+  const c=document.getElementById('hs-count');
+  if(c)c.textContent=companies.length+top6Section3.length+spanishCompanies.length;
+  const s=document.getElementById('hs-spain');
+  if(s)s.textContent=spanishCompanies.length;
+})();
+
+// RESPONSIVE
+function fixChartGrid(){
+  const cg=document.getElementById('chart-grid');
+  cg.style.gridTemplateColumns=window.innerWidth<700?'1fr':'1fr 1fr';
+}
+fixChartGrid();
+window.addEventListener('resize',fixChartGrid);
+
+// NAV
+function goTo(id){document.querySelector(id).scrollIntoView({behavior:'smooth'});}
+document.querySelectorAll('.nb').forEach(b=>b.addEventListener('click',function(){
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');
+}));
+</script>
+</body>
+</html>
