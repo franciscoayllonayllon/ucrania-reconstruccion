@@ -1347,7 +1347,12 @@ document.getElementById('ranking-table').innerHTML=`<thead><tr>
 </tr>`).join('')}</tbody>`;
 
 // CHARTS
-const labels=companies.map(c=>c.name.split(' ')[0]);
+// Etiquetas: primera palabra; si hay colisión (e.g. Siemens Energy + Siemens AG), usa 2 palabras
+const labels=companies.map(c=>{
+  const first=c.name.split(' ')[0];
+  const dups=companies.filter(x=>x.name.split(' ')[0]===first).length;
+  return dups>1?c.name.split(' ').slice(0,2).join(' '):first;
+});
 new Chart(document.getElementById('c1'),{
   type:'bar',data:{labels,datasets:[
     {label:'Upside (%)',data:companies.map(c=>c.upside),backgroundColor:companies.map(c=>uColor(c.upside)),yAxisID:'y'},
