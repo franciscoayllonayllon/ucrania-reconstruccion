@@ -833,9 +833,9 @@ const companies = [
   {
     name:"Raiffeisen Bank Intl.", ticker:"VIE:RBI", sector:"banca CEE",
     price:18, target:30,
-    pe:7, evEbitda:null, pfcf:null, pventas:null,
-    roe:16, roic:null, margenEbit:null, margenNeto:14,
-    deudaEbitda:null, cobertura:null, creditRating:"BBB",
+    pe:7, evEbitda:6.0, pfcf:6.5, pventas:0.9,
+    roe:16, roic:14.5, margenEbit:48.0, margenNeto:14,
+    deudaEbitda:0, cobertura:6.0, creditRating:"BBB",
     revenueGrowth:5, epsGrowth:8, revEps:"Revisiones al alza. Reducción exposición rusa es catalizador positivo",
     div:5.5, upside:62, retBase:65, retPaz:110, risk:4, dep:"Alta",
     rating:"BUY", rc:"r-buy", top:true,
@@ -1330,12 +1330,11 @@ timingTbl.innerHTML=`<thead><tr>
 // RANKING TABLE
 const sortedR=[...companies,...top6Section3,...spanishCompanies].sort((a,b)=>(b.retBase+b.upside+b.div)-(a.retBase+a.upside+a.div));
 document.getElementById('ranking-table').innerHTML=`<thead><tr>
-  <th>#</th><th>Empresa</th><th>Ticker</th><th>Rating</th><th>P/E</th><th>EV/EBITDA</th><th>ROE</th><th>Div.</th><th>Upside</th><th>Ret. base</th><th>Ret. paz</th><th>Riesgo</th><th>Dep. paz</th>
+  <th>#</th><th>Empresa</th><th>Ticker</th><th>P/E</th><th>EV/EBITDA</th><th>ROE</th><th>Div.</th><th>Upside</th><th>Ret. base</th><th>Ret. paz</th><th>Riesgo</th><th>Dep. paz</th>
 </tr></thead><tbody>${sortedR.map((c,i)=>`<tr>
   <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
   <td style="font-weight:500;">${c.top?'<span style="color:var(--accent);margin-right:5px;">★</span>':''}${c.name}</td>
   <td class="mono" style="font-size:11px;color:var(--muted);">${c.ticker}</td>
-  <td><span class="rating ${c.rc}" style="font-size:11px;">${c.rating}</span></td>
   <td class="mono">${c.pe}x</td>
   <td class="mono">${c.evEbitda||'—'}x</td>
   <td class="mono ${c.roe>20?'pos':c.roe>12?'':'warn'}">${c.roe}%</td>
