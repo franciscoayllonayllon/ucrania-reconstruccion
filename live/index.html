@@ -103,6 +103,41 @@
   .leg span{display:flex;align-items:center;gap:5px;}
   .leg-sq{width:10px;height:10px;border-radius:2px;display:inline-block;}
 
+  /* Modal de noticias */
+  .fcard{cursor:pointer;}
+  .news-modal-bg{position:fixed;inset:0;background:rgba(10,12,24,0.85);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:60px 20px;}
+  .news-modal-bg.open{display:flex;}
+  .news-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;max-width:680px;width:100%;max-height:80vh;overflow:auto;padding:24px;}
+  .news-modal-head{display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:14px;gap:14px;}
+  .news-modal-title{font-size:17px;font-weight:600;color:var(--text);}
+  .news-modal-sub{font-size:11px;color:var(--muted);margin-top:4px;font-family:var(--font-m);}
+  .news-modal-close{background:none;border:none;color:var(--muted);font-size:28px;cursor:pointer;padding:0 6px;line-height:1;flex-shrink:0;}
+  .news-modal-close:hover{color:var(--text);}
+  .news-list{display:flex;flex-direction:column;gap:10px;}
+  .news-item{padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;transition:border-color .15s, background .15s;text-decoration:none;display:block;}
+  .news-item:hover{border-color:rgba(91,156,246,0.3);background:rgba(91,156,246,0.03);}
+  .news-item-title{font-size:14px;color:var(--text);font-weight:500;margin-bottom:6px;line-height:1.4;}
+  .news-item-meta{font-size:11px;color:var(--muted);font-family:var(--font-m);}
+  .news-loading,.news-empty{text-align:center;color:var(--muted);font-size:13px;padding:30px;}
+
+  /* Catalizadores próximos */
+  .cat-list{display:flex;flex-direction:column;gap:8px;}
+  .cat-item{display:grid;grid-template-columns:90px 1fr auto;gap:16px;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;transition:border-color .15s, transform .15s;}
+  .cat-item:hover{border-color:rgba(91,156,246,0.3);transform:translateX(2px);}
+  .cat-item.cat-imminent{border-left:3px solid var(--accent);}
+  .cat-date{font-family:var(--font-m);font-size:13px;color:var(--accent);font-weight:500;}
+  .cat-date-rel{display:block;font-size:10px;color:var(--muted);font-weight:400;margin-top:2px;}
+  .cat-info{font-size:14px;}
+  .cat-name{font-weight:500;color:var(--text);}
+  .cat-event{color:var(--muted);font-size:12px;margin-top:2px;}
+  .cat-type{font-family:var(--font-m);font-size:10px;letter-spacing:.07em;padding:4px 10px;border-radius:14px;flex-shrink:0;}
+  .cat-type.agm{background:rgba(91,156,246,0.12);color:var(--blue);}
+  .cat-type.results{background:rgba(74,222,128,0.12);color:var(--green);}
+  .cat-type.event{background:rgba(232,201,125,0.12);color:var(--accent);}
+  .cat-type.dividend{background:rgba(78,205,196,0.12);color:var(--accent2);}
+  .cat-empty{color:var(--muted);text-align:center;padding:40px 20px;font-size:13px;}
+  @media(max-width:700px){.cat-item{grid-template-columns:80px 1fr;}.cat-type{grid-column:2;justify-self:start;margin-top:4px;}}
+
   /* Comparativa rendimiento */
   .cmp-block{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;}
   .cmp-controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:16px;}
@@ -285,6 +320,7 @@
     <button class="nb" onclick="goTo('#graficos')">Gráficos</button>
     <button class="nb" onclick="goTo('#cestas')">TOP 6 fuera de Cestas</button>
     <button class="nb spain-nav" onclick="goTo('#espanolas')">Empresas españolas</button>
+    <button class="nb" onclick="goTo('#catalizadores')">Próximos catalizadores</button>
     <button class="nb" onclick="goTo('#timing')">Timing de entrada</button>
     <button class="nb" onclick="goTo('#ranking')">Ranking final</button>
   </div>
@@ -640,10 +676,24 @@
   </div>
 </div>
 
-<!-- SECTION 5: TIMING -->
+<!-- SECTION 5: PRÓXIMOS CATALIZADORES -->
+<div class="section" id="catalizadores">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">Próximos catalizadores</h2></div>
+    <p style="color:var(--muted);font-size:14px;max-width:780px;margin-bottom:28px;line-height:1.7;">
+      Calendario de eventos corporativos relevantes en las próximas <strong style="color:var(--text);">12 semanas</strong>: juntas generales (AGM), publicación de resultados (Q1, H1, Q3) y días del inversor. Estos eventos suelen ser catalizadores de movimiento del precio. Datos compilados de las páginas oficiales de relación con inversores. Refresco trimestral recomendado.
+    </p>
+    <div class="cat-list" id="cat-list"></div>
+    <div style="margin-top:18px;font-size:11px;color:var(--muted);font-family:var(--font-m);background:rgba(255,255,255,0.03);border-radius:6px;padding:10px 14px;">
+      ⓘ Fechas confirmadas en docs oficiales · Eventos marcados con (est.) son estimaciones basadas en patrones históricos · Verificar siempre en la página IR de cada empresa antes de decisiones de inversión.
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: TIMING -->
 <div class="section" id="timing">
   <div class="container">
-    <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">Timing de entrada recomendado</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title">Timing de entrada recomendado</h2></div>
     <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:32px;line-height:1.7;">
       El timing en esta tesis tiene tres fases: <strong style="color:var(--green);">Entrar ahora</strong> (acumulación silenciosa antes de que el mercado cotice la paz), <strong style="color:var(--amber);">Esperar corrección</strong> (empresas ya revalorizadas donde hay que buscar el pull-back), y <strong style="color:var(--red);">Comprar al anuncio de la paz</strong> (empresas cuyo catalizador principal es el evento puntual). El mapa completo por empresa está en las fichas. Aquí el resumen:
     </p>
@@ -656,7 +706,7 @@
 <!-- SECTION 6: RANKING -->
 <div class="section" id="ranking">
   <div class="container">
-    <div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title">Ranking final por potencial de inversión</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2 class="sec-title">Ranking final por potencial de inversión</h2></div>
 
     <!-- CRITERIOS DE RANKING -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:20px;">
@@ -707,7 +757,8 @@
           <div>
             <div style="color:var(--accent);font-family:var(--font-m);font-size:11px;letter-spacing:.05em;margin-bottom:6px;">DATOS DE MERCADO EN TIEMPO REAL</div>
             <ul style="margin:0;padding-left:18px;line-height:1.7;">
-              <li><strong style="color:var(--text);">Financial Modeling Prep (FMP)</strong> — perfiles corporativos: precio, capitalización, empleados, rango 52 semanas, beta, e histórico de cotizaciones. <a href="https://financialmodelingprep.com" target="_blank" rel="noopener" style="color:#5b9cf6;">financialmodelingprep.com</a></li>
+              <li><strong style="color:var(--text);">Yahoo Finance API</strong> — históricos OHLC (chart endpoint), precio actual, rango 52 semanas. Vía proxy Cloudflare Worker para acceder desde IPs no bloqueadas. <a href="https://finance.yahoo.com" target="_blank" rel="noopener" style="color:#5b9cf6;">finance.yahoo.com</a></li>
+              <li><strong style="color:var(--text);">Financial Modeling Prep (FMP)</strong> — perfiles corporativos: precio, capitalización, empleados, rango 52 semanas, beta. Fallback cuando Yahoo no responde. <a href="https://financialmodelingprep.com" target="_blank" rel="noopener" style="color:#5b9cf6;">financialmodelingprep.com</a></li>
               <li><strong style="color:var(--text);">Finnhub</strong> — cotización intradía y variación porcentual diaria (mercados US). <a href="https://finnhub.io" target="_blank" rel="noopener" style="color:#5b9cf6;">finnhub.io</a></li>
               <li><strong style="color:var(--text);">Chart.js + date-fns</strong> — librerías open-source para visualización de gráficos.</li>
               <li><strong style="color:var(--text);">Leaflet + Esri World Imagery</strong> — mapas satelitales interactivos.</li>
@@ -725,7 +776,7 @@
         </div>
         <div style="margin-top:14px;font-size:11px;color:var(--muted);font-family:var(--font-m);background:rgba(255,255,255,0.03);border-radius:6px;padding:10px 14px;">
           <strong style="color:var(--accent);">Versión pública (datos pre-bakeados):</strong> los datos de mercado se actualizan una vez al día a las 08:00 UTC mediante un proceso automatizado.&nbsp;
-          <strong style="color:var(--accent);">Versión privada (<a href="live/" style="color:#5b9cf6;">/live/</a>):</strong> las APIs se llaman en tiempo real con cache de 30 min – 24 h.
+          <strong style="color:var(--accent);">Versión privada<span class="live-hide-on-live"> (<a href="live/" style="color:#5b9cf6;">/live/</a>)</span>:</strong> las APIs se llaman en tiempo real con cache de 30 min – 24 h.
         </div>
       </div>
     </div>
@@ -736,6 +787,20 @@
   <div>Análisis de Inversión · Ucrania: Reconstrucción post-conflicto · <span class="js-current-date">—</span> · v2.0</div>
   <div style="margin-top:6px;opacity:.45;font-size:11px;">Fuentes: RDNA5 (World Bank / CE / ONU, Feb 2026) · Morgan Stanley · Goldman Sachs · Bank of America · Erste Group · ACS Group · Sacyr · Técnicas Reunidas · Alpha Spread · Simply Wall St · MarketScreener</div>
 </footer>
+
+<!-- Modal de noticias por empresa -->
+<div id="news-modal-bg" class="news-modal-bg">
+  <div class="news-modal">
+    <div class="news-modal-head">
+      <div>
+        <div id="news-modal-title" class="news-modal-title">—</div>
+        <div id="news-modal-sub" class="news-modal-sub">ÚLTIMAS NOTICIAS · YAHOO FINANCE</div>
+      </div>
+      <button id="news-modal-close" class="news-modal-close" aria-label="Cerrar">×</button>
+    </div>
+    <div id="news-list" class="news-list"></div>
+  </div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -1596,6 +1661,29 @@ const ANALYSTS = {
   'BME_IDR':    {numAnalysts:15, recommendationKey:'buy',        recommendationMean:2.3, targetMean:62.95,  targetHigh:75,    targetLow:53}
 };
 
+// =============================================
+// PRÓXIMOS CATALIZADORES — calendario corporativo
+// Fuente: páginas IR oficiales · refrescar trimestralmente
+// type: 'agm'=Junta General · 'results'=Resultados · 'event'=Otro · 'dividend'=Dividendo
+// est=true → estimación basada en patrón histórico (no confirmada en IR)
+// =============================================
+const CATALYSTS = [
+  {date:'2026-05-07', company:'Wienerberger',          type:'agm',      desc:'AGM 2026 · 157ª Junta General (Erste Campus, Viena)'},
+  {date:'2026-05-07', company:'ACS Group',             type:'agm',      desc:'Junta General Ordinaria de Accionistas (1ª convocatoria)'},
+  {date:'2026-05-08', company:'ACS Group',             type:'agm',      desc:'Junta General Ordinaria de Accionistas (2ª convocatoria)'},
+  {date:'2026-05-13', company:'Heidelberg Materials',  type:'agm',      desc:'AGM 2026 · Junta General'},
+  {date:'2026-05-13', company:'Holcim',                type:'agm',      desc:'AGM 2026 · Junta General'},
+  {date:'2026-06-04', company:'Saint-Gobain',          type:'agm',      desc:'Junta General · Salle Pleyel, París'},
+  {date:'2026-06-04', company:'Sacyr',                 type:'agm',      desc:'Junta General de Accionistas (telemática)'},
+  {date:'2026-07-22', company:'ABB',                   type:'results',  desc:'Resultados Q2 2026 (est.)', est:true},
+  {date:'2026-07-23', company:'Schneider Electric',    type:'results',  desc:'Resultados H1 2026 (est.)', est:true},
+  {date:'2026-07-24', company:'Sika AG',               type:'results',  desc:'Resultados H1 2026 (est.)', est:true},
+  {date:'2026-07-29', company:'Saint-Gobain',          type:'results',  desc:'Resultados H1 2026 (est.)', est:true},
+  {date:'2026-07-30', company:'Heidelberg Materials',  type:'results',  desc:'Resultados H1 2026 confirmado'},
+  {date:'2026-07-30', company:'Vinci',                 type:'results',  desc:'Resultados H1 2026 (est. histórico 30/7)', est:true},
+  {date:'2026-07-31', company:'Holcim',                type:'results',  desc:'Resultados H1 2026'}
+];
+
 function fmpCcy(sym){
   if(!sym)return'';
   const e=sym.split('.').pop();
@@ -1729,6 +1817,40 @@ async function loadPrices(){
 }
 loadPrices();
 
+// Próximos catalizadores — render lista cronológica filtrada (próximas 12 semanas)
+function loadCatalysts(){
+  const el=document.getElementById('cat-list');
+  if(!el) return;
+  const now=new Date();
+  const horizon=new Date(now.getTime()+84*86400e3); // 12 semanas
+  const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const upcoming=CATALYSTS
+    .map(c=>({...c, _dt:new Date(c.date)}))
+    .filter(c=>c._dt>=new Date(now.toDateString()) && c._dt<=horizon)
+    .sort((a,b)=>a._dt-b._dt);
+  if(upcoming.length===0){
+    el.innerHTML='<div class="cat-empty">No hay catalizadores programados en las próximas 12 semanas.</div>';
+    return;
+  }
+  const typeLabel={agm:'JUNTA',results:'RESULTADOS',event:'EVENTO',dividend:'DIVIDENDO'};
+  el.innerHTML=upcoming.map(c=>{
+    const d=c._dt;
+    const days=Math.round((d-now)/86400e3);
+    const rel=days<=0?'hoy':(days===1?'mañana':'en '+days+' días');
+    const imminent=days<=10;
+    const fecha=d.getDate()+' '+meses[d.getMonth()];
+    return `<div class="cat-item${imminent?' cat-imminent':''}">
+      <div class="cat-date">${fecha}<span class="cat-date-rel">${rel}</span></div>
+      <div class="cat-info">
+        <div class="cat-name">${c.company}</div>
+        <div class="cat-event">${c.desc}</div>
+      </div>
+      <div class="cat-type ${c.type}">${typeLabel[c.type]||c.type.toUpperCase()}</div>
+    </div>`;
+  }).join('');
+}
+loadCatalysts();
+
 // Datos de analistas (manual, ANALYSTS map) — independiente de APIs
 function loadAnalysts(){
   Object.entries(ANALYSTS).forEach(([tid, a])=>{
@@ -1743,6 +1865,83 @@ function loadAnalysts(){
   });
 }
 loadAnalysts();
+
+// =============================================
+// MODAL NOTICIAS — fetch a Yahoo Finance vía CF Worker proxy
+// =============================================
+const YAHOO_PROXY_PUBLIC='https://yahoo-proxy.franciscoayllon-ayllon.workers.dev/';
+
+async function fetchNews(sym){
+  const ck='news_'+sym;
+  try{
+    const c=sessionStorage.getItem(ck);
+    if(c){const{ts,data}=JSON.parse(c); if(Date.now()-ts<30*60*1000) return data;}
+  }catch(e){}
+  try{
+    const u=YAHOO_PROXY_PUBLIC+'?url='+encodeURIComponent('https://query2.finance.yahoo.com/v1/finance/search?q='+encodeURIComponent(sym)+'&newsCount=6&quotesCount=0');
+    const r=await fetch(u);
+    const d=await r.json();
+    const news=(d.news||[]).slice(0,6);
+    try{sessionStorage.setItem(ck, JSON.stringify({ts:Date.now(), data:news}));}catch(e){}
+    return news;
+  }catch(e){return [];}
+}
+
+function timeAgo(seconds){
+  if(!seconds) return '';
+  const diff=Date.now()/1000-seconds;
+  if(diff<60) return 'hace unos segundos';
+  if(diff<3600) return 'hace '+Math.floor(diff/60)+' min';
+  if(diff<86400) return 'hace '+Math.floor(diff/3600)+' h';
+  if(diff<2592000) return 'hace '+Math.floor(diff/86400)+' días';
+  return 'hace '+Math.floor(diff/2592000)+' meses';
+}
+
+async function openNewsModal(tid){
+  const all=[...companies, ...top6Section3, ...spanishCompanies];
+  const co=all.find(c=>c.ticker.replace(/[^a-z0-9]/gi,'_')===tid);
+  if(!co) return;
+  const sym=FMP_SYM[tid];
+  if(!sym) return;
+  const bg=document.getElementById('news-modal-bg');
+  const list=document.getElementById('news-list');
+  if(!bg||!list) return;
+  document.getElementById('news-modal-title').textContent=co.name+' · '+co.ticker;
+  list.innerHTML='<div class="news-loading">Cargando últimas noticias…</div>';
+  bg.classList.add('open');
+  document.body.style.overflow='hidden';
+  const news=await fetchNews(sym);
+  if(!news.length){
+    list.innerHTML='<div class="news-empty">No hay noticias recientes disponibles para este símbolo.<br><span style="font-size:11px;opacity:.7;">Yahoo Finance no devolvió resultados.</span></div>';
+    return;
+  }
+  list.innerHTML=news.map(n=>{
+    const time=timeAgo(n.providerPublishTime);
+    const title=(n.title||'—').replace(/</g,'&lt;');
+    const pub=(n.publisher||'').replace(/</g,'&lt;');
+    return `<a href="${n.link||'#'}" target="_blank" rel="noopener" class="news-item">
+      <div class="news-item-title">${title}</div>
+      <div class="news-item-meta">${pub}${time?' · '+time:''}</div>
+    </a>`;
+  }).join('');
+}
+
+(function initNewsModal(){
+  const bg=document.getElementById('news-modal-bg');
+  if(!bg) return;
+  function close(){bg.classList.remove('open'); document.body.style.overflow='';}
+  document.getElementById('news-modal-close').addEventListener('click', close);
+  bg.addEventListener('click', e=>{if(e.target===bg) close();});
+  document.addEventListener('keydown', e=>{if(e.key==='Escape' && bg.classList.contains('open')) close();});
+  // Click handler global en cards (delegación)
+  document.addEventListener('click', e=>{
+    const card=e.target.closest('.fcard');
+    if(!card) return;
+    if(e.target.closest('a')) return; // No interferir con links existentes
+    const tid=card.dataset.tid;
+    if(tid) openNewsModal(tid);
+  });
+})();
 
 // =============================================
 // COMPARATIVA RENDIMIENTO vs ÍNDICES — Chart 5
@@ -2008,6 +2207,13 @@ if(document.getElementById('map1'))initMaps();
   const d=new Date();
   const txt=meses[d.getMonth()]+' '+d.getFullYear();
   document.querySelectorAll('.js-current-date').forEach(el=>el.textContent=txt);
+})();
+
+// Detección modo /live/ — oculta elementos redundantes (ej. links a /live/ cuando ya estás en /live/)
+(function(){
+  if(window.location.pathname.includes('/live/')){
+    document.querySelectorAll('.live-hide-on-live').forEach(el=>el.style.display='none');
+  }
 })();
 
 // RESPONSIVE
