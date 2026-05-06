@@ -700,6 +700,34 @@
     </div>
     <div class="disclaimer">
       <strong style="color:var(--red);">Aviso importante:</strong> Este documento es un análisis informativo elaborado con datos públicos de consenso de analistas y publicaciones institucionales. No constituye asesoramiento financiero ni recomendación de inversión. Las proyecciones de retorno son estimaciones basadas en supuestos sobre la evolución del conflicto y la reconstrucción de Ucrania, y pueden no materializarse. El daño total estimado fue actualizado por el World Bank, la CE y la ONU al 23 de febrero de 2026 ($588B, RDNA5). Consulta siempre con un asesor financiero autorizado antes de tomar cualquier decisión de inversión. Toda inversión conlleva riesgo de pérdida parcial o total del capital.
+
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);">
+        <strong style="color:var(--text);">Fuentes de datos y APIs utilizadas</strong>
+        <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;">
+          <div>
+            <div style="color:var(--accent);font-family:var(--font-m);font-size:11px;letter-spacing:.05em;margin-bottom:6px;">DATOS DE MERCADO EN TIEMPO REAL</div>
+            <ul style="margin:0;padding-left:18px;line-height:1.7;">
+              <li><strong style="color:var(--text);">Financial Modeling Prep (FMP)</strong> — perfiles corporativos: precio, capitalización, empleados, rango 52 semanas, beta, e histórico de cotizaciones. <a href="https://financialmodelingprep.com" target="_blank" rel="noopener" style="color:#5b9cf6;">financialmodelingprep.com</a></li>
+              <li><strong style="color:var(--text);">Finnhub</strong> — cotización intradía y variación porcentual diaria (mercados US). <a href="https://finnhub.io" target="_blank" rel="noopener" style="color:#5b9cf6;">finnhub.io</a></li>
+              <li><strong style="color:var(--text);">Chart.js + date-fns</strong> — librerías open-source para visualización de gráficos.</li>
+              <li><strong style="color:var(--text);">Leaflet + Esri World Imagery</strong> — mapas satelitales interactivos.</li>
+            </ul>
+          </div>
+          <div>
+            <div style="color:var(--accent);font-family:var(--font-m);font-size:11px;letter-spacing:.05em;margin-bottom:6px;">FUENTES INSTITUCIONALES Y DE INVESTIGACIÓN</div>
+            <ul style="margin:0;padding-left:18px;line-height:1.7;">
+              <li><strong style="color:var(--text);">RDNA5</strong> — Banco Mundial / Comisión Europea / ONU / Gobierno de Ucrania (Feb 2026): coste reconstrucción $588B.</li>
+              <li><strong style="color:var(--text);">Cestas institucionales:</strong> Morgan Stanley "Rebuild Ukraine", Goldman Sachs, Bank of America, Erste Group, Jefferies, JPMorgan, Citi, Deutsche Bank, Barclays.</li>
+              <li><strong style="color:var(--text);">Análisis cualitativo:</strong> Alpha Spread, Simply Wall St, MarketScreener, La Moncloa, Garrigues, OK Diario, Economia 3, Defensa.com.</li>
+              <li><strong style="color:var(--text);">Datos corporativos:</strong> presentaciones anuales y reportes de cada empresa analizada.</li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top:14px;font-size:11px;color:var(--muted);font-family:var(--font-m);background:rgba(255,255,255,0.03);border-radius:6px;padding:10px 14px;">
+          <strong style="color:var(--accent);">Versión pública (datos pre-bakeados):</strong> los datos de mercado se actualizan una vez al día a las 08:00 UTC mediante un proceso automatizado.&nbsp;
+          <strong style="color:var(--accent);">Versión privada (<a href="live/" style="color:#5b9cf6;">/live/</a>):</strong> las APIs se llaman en tiempo real con cache de 30 min – 24 h.
+        </div>
+      </div>
     </div>
   </div>
 </div>
