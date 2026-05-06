@@ -54,12 +54,12 @@
   .tab.active,.tab:hover{background:rgba(91,156,246,0.15);color:var(--blue);border-color:rgba(91,156,246,0.4);}
 
   /* FUNDAMENTAL CARDS — extended */
-  .fcard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px 22px;transition:border-color .2s,transform .15s;}
+  .fcard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 26px;transition:border-color .2s,transform .15s;font-size:14px;}
   .fcard:hover{border-color:var(--border2);transform:translateY(-2px);}
   .fcard.top{border:1.5px solid rgba(232,201,125,0.4);background:rgba(232,201,125,0.03);}
   .fcard.spain{border:1px solid rgba(231,76,60,0.3);background:rgba(231,76,60,0.03);}
   .fcard-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
-  .fcard-name{font-weight:500;font-size:16px;} .fcard-ticker{font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:2px;}
+  .fcard-name{font-weight:500;font-size:18px;} .fcard-ticker{font-family:var(--font-m);font-size:12px;color:var(--muted);margin-top:2px;}
   .rating{font-size:11px;font-family:var(--font-m);padding:3px 9px;border-radius:20px;flex-shrink:0;font-weight:500;}
   .r-buy{background:rgba(74,222,128,0.12);color:#4ade80;} .r-hold{background:rgba(251,191,36,0.12);color:#fbbf24;} .r-watch{background:rgba(248,113,113,0.12);color:#f87171;}
   .top-badge{display:inline-block;font-size:10px;font-family:var(--font-m);background:rgba(232,201,125,0.12);color:var(--accent);padding:2px 8px;border-radius:20px;margin-bottom:6px;}
@@ -67,10 +67,10 @@
   .fcard-sector{font-size:11px;color:var(--muted);margin-bottom:12px;}
 
   /* Metrics grid */
-  .metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
+  .metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
   .met{background:var(--bg3);border-radius:6px;padding:8px;}
-  .met-l{font-size:10px;color:var(--muted);margin-bottom:3px;line-height:1.3;}
-  .met-v{font-size:13px;font-weight:500;font-family:var(--font-m);color:var(--text);}
+  .met-l{font-size:11px;color:var(--muted);margin-bottom:4px;line-height:1.3;}
+  .met-v{font-size:14px;font-weight:500;font-family:var(--font-m);color:var(--text);}
   .met-v.pos{color:var(--green);} .met-v.neg{color:var(--red);} .met-v.warn{color:var(--amber);}
   .metrics-grid2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;}
 
@@ -95,7 +95,9 @@
   .timing-watch{border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.04);}
 
   /* Cards grid */
-  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;max-width:100%;}
+  /* Tope explícito de 3 columnas */
+  @media(min-width:1280px){.cards-grid{grid-template-columns:repeat(3,1fr);}}
 
   /* Charts */
   .chart-wrap{position:relative;width:100%;}
