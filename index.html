@@ -612,7 +612,47 @@
 <div class="section" id="ranking">
   <div class="container">
     <div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title">Ranking final por potencial de inversión</h2></div>
+
+    <!-- CRITERIOS DE RANKING -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:20px;">
+      <div style="font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:10px;">CRITERIOS DE ORDENACIÓN</div>
+      <p style="color:var(--text);font-size:13px;line-height:1.6;margin-bottom:10px;">
+        Las empresas están ordenadas de mayor a menor por una <strong>puntuación compuesta</strong> que combina los tres principales generadores de retorno total para el inversor:
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px;">
+        <div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.25);border-radius:8px;padding:12px 14px;">
+          <div style="font-family:var(--font-m);font-size:12px;color:#4ade80;margin-bottom:4px;">RETORNO BASE</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Retorno % esperado a 2-3 años en el escenario base (acuerdo congelado tipo Corea, sin paz formal). Ya descuenta el contexto actual.</div>
+        </div>
+        <div style="background:rgba(91,156,246,0.06);border:1px solid rgba(91,156,246,0.25);border-radius:8px;padding:12px 14px;">
+          <div style="font-family:var(--font-m);font-size:12px;color:#5b9cf6;margin-bottom:4px;">UPSIDE CONSENSO</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Distancia % del precio actual al precio objetivo medio de los analistas. Mide si la empresa ya está cara o tiene recorrido inmediato.</div>
+        </div>
+        <div style="background:rgba(232,201,125,0.06);border:1px solid rgba(232,201,125,0.25);border-radius:8px;padding:12px 14px;">
+          <div style="font-family:var(--font-m);font-size:12px;color:var(--accent);margin-bottom:4px;">DIVIDENDO</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Rentabilidad por dividendo anual (yield %). Aporta retorno tangible mientras esperas la materialización de la tesis.</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;font-size:12px;color:var(--muted);font-family:var(--font-m);background:rgba(255,255,255,0.03);border-radius:6px;padding:10px 14px;">
+        Puntuación = <span style="color:#4ade80;">retorno base</span> + <span style="color:#5b9cf6;">upside</span> + <span style="color:var(--accent);">dividendo</span> &nbsp;·&nbsp; ordenado descendente.
+      </div>
+      <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-top:12px;">
+        El <strong style="color:var(--text);">retorno paz</strong> y el <strong style="color:var(--text);">riesgo</strong> se muestran como información complementaria pero <strong>no se usan para ordenar</strong>: el primero es opcionalidad asimétrica que no se debe sobreponderar; el segundo es subjetivo y depende del perfil de cada inversor.
+      </p>
+    </div>
+
     <div style="overflow-x:auto;"><table class="ftable" id="ranking-table"></table></div>
+
+    <!-- LEYENDA -->
+    <div style="margin-top:18px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 22px;">
+      <div style="font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:10px;">LEYENDA</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;font-size:13px;line-height:1.5;">
+        <div><span style="color:var(--accent);font-size:16px;margin-right:4px;">★</span> <strong>Top pick:</strong> empresa con tesis más sólida según el análisis fundamental — combinación destacada de valoración, calidad del negocio, exposición directa a Ucrania y catalizadores claros. Marcadas con <code style="font-family:var(--font-m);font-size:11px;background:rgba(232,201,125,0.1);padding:2px 6px;border-radius:4px;">top:true</code> en los datos.</div>
+        <div><span style="color:#4ade80;">Verde</span> en upside o ROE: valor positivo / por encima del umbral favorable. <span style="color:#fbbf24;">Ámbar</span>: zona neutra. <span style="color:#f87171;">Rojo</span>: valor negativo o por debajo del umbral.</div>
+        <div><strong>Riesgo:</strong> <span style="color:#4ade80;">Bajo</span> = perfil defensivo; <span style="color:#fbbf24;">Medio</span> = riesgo moderado; <span style="color:#f87171;">Medio-Alto / Alto</span> = mayor volatilidad o ciclicidad.</div>
+        <div><strong>Dependencia paz:</strong> qué tanto necesita la empresa un acuerdo formal para materializar el retorno. <span style="color:#4ade80;">Baja</span> = retorno mayoritariamente independiente; <span style="color:#f87171;">Alta</span> = la mayoría del retorno se desbloquea solo con paz.</div>
+      </div>
+    </div>
     <div class="disclaimer">
       <strong style="color:var(--red);">Aviso importante:</strong> Este documento es un análisis informativo elaborado con datos públicos de consenso de analistas y publicaciones institucionales. No constituye asesoramiento financiero ni recomendación de inversión. Las proyecciones de retorno son estimaciones basadas en supuestos sobre la evolución del conflicto y la reconstrucción de Ucrania, y pueden no materializarse. El daño total estimado fue actualizado por el World Bank, la CE y la ONU al 23 de febrero de 2026 ($588B, RDNA5). Consulta siempre con un asesor financiero autorizado antes de tomar cualquier decisión de inversión. Toda inversión conlleva riesgo de pérdida parcial o total del capital.
     </div>
