@@ -1324,6 +1324,14 @@ function makeFCard(c, isSpain=false) {
     </div>
     <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-style:italic;">${c.revEps}</div>
 
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:6px;">ANALISTAS WALL STREET <span style="opacity:.5;font-size:9px;">(Yahoo Finance)</span></div>
+    <div class="metrics-grid">
+      <div class="met"><div class="met-l">Nº analistas</div><div class="met-v live-numa">—</div></div>
+      <div class="met"><div class="met-l">Rating consenso</div><div class="met-v live-rec">—</div></div>
+      <div class="met"><div class="met-l">Target medio</div><div class="met-v live-tgtmean">—</div></div>
+      <div class="met"><div class="met-l">Próx. earnings</div><div class="met-v live-earn">—</div></div>
+    </div>
+
     <div class="upside-row"><span>Precio actual vs objetivo</span><span style="color:${uc};font-family:var(--font-m);font-weight:500;">${c.upside>0?'+':''}${c.upside}%</span></div>
     <div class="bar-bg"><div class="bar-fill" style="width:${bw}%;background:${uc};"></div></div>
     <div style="font-size:10px;color:var(--muted);margin-bottom:12px;">Retorno base +${c.retBase}% · Escenario paz +${c.retPaz}% · Riesgo: ${riskLabel(c.risk)} · Dep. paz: ${c.dep}</div>
@@ -1569,6 +1577,30 @@ function fmtMcap(v,ccy){
   if(v>=1e9)return(v/1e9).toFixed(1)+'B '+ccy;
   return(v/1e6).toFixed(0)+'M '+ccy;
 }
+// — Helpers para datos de analistas (Yahoo Finance)
+function fmtRec(key, mean){
+  if(!key) return '—';
+  const map={strong_buy:'STRONG BUY',buy:'BUY',hold:'HOLD',sell:'SELL',strong_sell:'STRONG SELL',underperform:'UNDERPERFORM',outperform:'OUTPERFORM',none:'—'};
+  const label=map[key]||key.toUpperCase();
+  return mean?label+' ('+parseFloat(mean).toFixed(1)+')':label;
+}
+function recColor(key){
+  if(!key) return '';
+  if(key==='strong_buy'||key==='buy'||key==='outperform') return 'pos';
+  if(key==='hold') return '';
+  return 'warn';
+}
+function fmtTargetMean(mean, ccy){
+  if(!mean) return '—';
+  return ccy+parseFloat(mean).toFixed(2);
+}
+function fmtEarnings(iso){
+  if(!iso) return '—';
+  const d=new Date(iso);
+  if(isNaN(d.getTime())) return '—';
+  const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return d.getDate()+' '+meses[d.getMonth()]+' '+d.getFullYear();
+}
 async function loadPrices(){
   // — Modo STATIC: usa datos pre-bakeados (versión pública sin APIs)
   if(STATIC_DATA && STATIC_DATA.prices){
@@ -1588,6 +1620,11 @@ async function loadPrices(){
       if(q.fullTimeEmployees)sel('.live-emp').forEach(el=>el.textContent=parseInt(q.fullTimeEmployees).toLocaleString('es'));
       if(q.range)sel('.live-range').forEach(el=>el.textContent=ccy+q.range.replace('-',' – '+ccy));
       if(q.beta)sel('.live-beta').forEach(el=>el.textContent=parseFloat(q.beta).toFixed(2));
+      // — Analistas (Yahoo Finance)
+      if(q.numAnalysts)sel('.live-numa').forEach(el=>el.textContent=q.numAnalysts);
+      if(q.recommendationKey)sel('.live-rec').forEach(el=>{el.textContent=fmtRec(q.recommendationKey,q.recommendationMean);const rc=recColor(q.recommendationKey);if(rc)el.classList.add(rc);});
+      if(q.targetMean)sel('.live-tgtmean').forEach(el=>el.textContent=fmtTargetMean(q.targetMean,ccy));
+      if(q.earningsDate)sel('.live-earn').forEach(el=>el.textContent=fmtEarnings(q.earningsDate));
     });
     return;
   }
@@ -1646,6 +1683,11 @@ async function loadPrices(){
       if(fund.fullTimeEmployees)sel('.live-emp').forEach(el=>el.textContent=parseInt(fund.fullTimeEmployees).toLocaleString('es'));
       if(fund.range)sel('.live-range').forEach(el=>el.textContent=ccy+fund.range.replace('-',' – '+ccy));
       if(fund.beta)sel('.live-beta').forEach(el=>el.textContent=parseFloat(fund.beta).toFixed(2));
+      // — Analistas (cuando FMP devuelva estos campos en una versión futura, o desde Yahoo en /live/)
+      if(fund.numAnalysts)sel('.live-numa').forEach(el=>el.textContent=fund.numAnalysts);
+      if(fund.recommendationKey)sel('.live-rec').forEach(el=>{el.textContent=fmtRec(fund.recommendationKey,fund.recommendationMean);const rc=recColor(fund.recommendationKey);if(rc)el.classList.add(rc);});
+      if(fund.targetMean)sel('.live-tgtmean').forEach(el=>el.textContent=fmtTargetMean(fund.targetMean,ccy));
+      if(fund.earningsDate)sel('.live-earn').forEach(el=>el.textContent=fmtEarnings(fund.earningsDate));
     }
   });
 }

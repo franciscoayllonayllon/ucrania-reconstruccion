@@ -1,0 +1,12 @@
+{
+  "name": "ucrania-reconstruccion-bake",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Daily data bake script for the Ukraine reconstruction dashboard",
+  "scripts": {
+    "bake": "node scripts/bake.js"
+  },
+  "dependencies": {
+    "yahoo-finance2": "^2.13.3"
+  }
+}
