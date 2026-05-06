@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<!-- STATIC_DATA: poblado por scripts/bake.js en la versión pública. Vacío en /live/. -->
+<script id="static-data" type="application/json"></script>
 <style>
   :root {
     --bg:#0a0e1a; --bg2:#111827; --bg3:#1a2235; --bg4:#0f1629;
@@ -1473,6 +1475,13 @@ new Chart(document.getElementById('c4'),{
 // Finnhub: precio live (sin límite diario) · sessionStorage 30 min
 // FMP: fundamentales (mcap, empleados, rango, beta) · localStorage 24h
 // =============================================
+// STATIC_DATA: si existe bloque <script id="static-data"> con datos pre-bakeados,
+// se usan en lugar de las APIs (versión pública sin límites). En /live/ es null → APIs activas.
+const STATIC_DATA=(function(){
+  const el=document.getElementById('static-data');
+  if(!el||!el.textContent.trim())return null;
+  try{return JSON.parse(el.textContent);}catch(e){return null;}
+})();
 const FMP_KEY='inmiuLFBXl9g0ede2SWSH83mQgx0S4wf';
 const FH_KEY='d7of1k1r01qsb7bemmt0d7of1k1r01qsb7bemmtg';
 // ticker_archivo (saneado) → symbol FMP (Yahoo Finance format)
@@ -1525,7 +1534,29 @@ function fmtMcap(v,ccy){
   return(v/1e6).toFixed(0)+'M '+ccy;
 }
 async function loadPrices(){
-  // — Fundamentales FMP: localStorage 24h (persiste entre pestañas/sesiones)
+  // — Modo STATIC: usa datos pre-bakeados (versión pública sin APIs)
+  if(STATIC_DATA && STATIC_DATA.prices){
+    Object.entries(FMP_SYM).forEach(tid_sym=>{
+      const tid=tid_sym[0], sym=tid_sym[1];
+      const q=STATIC_DATA.prices[tid];
+      if(!q) return;
+      const sel=s=>document.querySelectorAll(`.fcard[data-tid="${tid}"] ${s}`);
+      const ccy=fmpCcy(sym);
+      const chg=parseFloat(q.changesPercentage??q.changePercentage??0);
+      if(q.price){
+        const clr=chg>=0?'#4ade80':'#f87171';
+        const chgStr=` <span style="opacity:.7;font-size:10px">${chg>0?'+':''}${chg.toFixed(1)}%</span>`;
+        sel('.live-px').forEach(el=>{el.innerHTML=`<span style="color:${clr}">${ccy}${parseFloat(q.price).toFixed(2)}${chgStr}</span>`;el.classList.add('ok');});
+      }
+      if(q.marketCap)sel('.live-mcap').forEach(el=>el.textContent=fmtMcap(q.marketCap,ccy));
+      if(q.fullTimeEmployees)sel('.live-emp').forEach(el=>el.textContent=parseInt(q.fullTimeEmployees).toLocaleString('es'));
+      if(q.range)sel('.live-range').forEach(el=>el.textContent=ccy+q.range.replace('-',' – '+ccy));
+      if(q.beta)sel('.live-beta').forEach(el=>el.textContent=parseFloat(q.beta).toFixed(2));
+    });
+    return;
+  }
+  // — Modo LIVE: APIs en tiempo real (versión privada /live/)
+  // Fundamentales FMP: localStorage 24h (persiste entre pestañas/sesiones)
   // Solo se llama a la API para los símbolos que NO estén ya en cache (permite añadir empresas sin esperar al TTL)
   const FK='fmp_fund'; const FT=24*60*60*1000;
   let fundData={};
@@ -1636,6 +1667,13 @@ function periodRange(p){
 
 window.__cmpErrors=[];
 async function fetchHist(sym, period){
+  // — Modo STATIC: usa históricos pre-bakeados si están disponibles
+  if(STATIC_DATA && STATIC_DATA.historical){
+    const k=sym+'__'+period;
+    if(STATIC_DATA.historical[k]) return STATIC_DATA.historical[k];
+    // No tenemos pre-bakeada esta combo → en modo público devolvemos null silencioso
+    if(!FMP_KEY){window.__cmpErrors.push({sym, err:'static no data for '+period}); return null;}
+  }
   const {from, to}=periodRange(period);
   // Cache v3: namespace fresco para invalidar entradas anteriores
   const ck='hist3_'+sym+'_'+period;
@@ -1691,7 +1729,9 @@ async function renderCmp(){
     if(datasets.length===0){
       const errs=window.__cmpErrors||[];
       const limitHit=errs.some(e=>/limit|reach/i.test(e.err||''));
-      if(limitHit) status.innerHTML='⚠ Límite diario de la API agotado.<br><span style="opacity:.7;font-size:11px;">Vuelve a probar mañana cuando se resetee, o avísame para cambiar a otra API.</span>';
+      const isStatic=STATIC_DATA && !FMP_KEY;
+      if(isStatic) status.innerHTML='ⓘ Periodo no disponible en la versión pública.<br><span style="opacity:.7;font-size:11px;">Solo el periodo 1Y está pre-bakeado. Para el resto de periodos, accede a la versión <a href="live/" style="color:#5b9cf6;">live</a>.</span>';
+      else if(limitHit) status.innerHTML='⚠ Límite diario de la API agotado.<br><span style="opacity:.7;font-size:11px;">Vuelve a probar mañana cuando se resetee.</span>';
       else status.textContent='Sin datos disponibles para este símbolo o periodo.';
       status.style.display='flex';
     }

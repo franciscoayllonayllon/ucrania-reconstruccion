@@ -1,0 +1,41 @@
+name: Bake static data daily
+
+on:
+  schedule:
+    # Cada día a las 08:00 UTC (10:00 Madrid invierno / 09:00 verano)
+    - cron: '0 8 * * *'
+  workflow_dispatch:  # Permite lanzarlo manualmente desde la UI de GitHub
+
+permissions:
+  contents: write  # Necesario para que el bot pueda commitear
+
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run bake script
+        env:
+          FMP_KEY: ${{ secrets.FMP_KEY }}
+        run: node scripts/bake.js
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --staged --quiet; then
+            echo "No hay cambios — nada que commitear"
+          else
+            git commit -m "Bake daily data $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
