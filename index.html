@@ -1634,6 +1634,7 @@ function periodRange(p){
   return {from:from.toISOString().slice(0,10), to};
 }
 
+window.__cmpErrors=[];
 async function fetchHist(sym, period){
   const {from, to}=periodRange(period);
   const ck='hist_'+sym+'_'+period;
@@ -1645,15 +1646,19 @@ async function fetchHist(sym, period){
     const u='https://financialmodelingprep.com/stable/historical-price-eod/light?symbol='+encodeURIComponent(sym)+'&from='+from+'&to='+to+'&apikey='+FMP_KEY;
     const r=await fetch(u);
     const d=await r.json();
+    // Detectar errores de la API
+    if(d && d['Error Message']){
+      window.__cmpErrors.push({sym, err:d['Error Message']});
+      return null;
+    }
     let arr=Array.isArray(d) ? d : (d.historical||d.data||[]);
-    if(!arr.length) return null;
-    // Normalizar a {date, price} ascendente
+    if(!arr.length){window.__cmpErrors.push({sym, err:'empty response'}); return null;}
     arr=arr.map(x=>({date:x.date, price:parseFloat(x.price??x.close??x.adjClose)})).filter(x=>x.date && !isNaN(x.price));
     arr.sort((a,b)=>a.date.localeCompare(b.date));
-    if(!arr.length) return null;
+    if(!arr.length){window.__cmpErrors.push({sym, err:'no valid prices'}); return null;}
     try{localStorage.setItem(ck, JSON.stringify({ts:Date.now(), data:arr}));}catch(e){}
     return arr;
-  }catch(e){return null;}
+  }catch(e){window.__cmpErrors.push({sym, err:String(e)}); return null;}
 }
 
 let cmpChart=null;
@@ -1686,9 +1691,16 @@ async function renderCmp(){
   if(idxData) datasets.push({label:cIdx.name, data:norm(idxData), borderColor:'#5b9cf6', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.15});
   if(euData) datasets.push({label:EU_IDX.name, data:norm(euData), borderColor:'#4ade80', backgroundColor:'transparent', borderWidth:1.5, borderDash:[5,5], pointRadius:0, tension:0.15});
   if(status){
-    if(datasets.length===0){status.textContent='Sin datos disponibles para este símbolo o periodo. Intenta otro.'; status.style.display='flex';}
+    if(datasets.length===0){
+      const errs=window.__cmpErrors||[];
+      const limitHit=errs.some(e=>/limit|reach/i.test(e.err||''));
+      if(limitHit) status.innerHTML='⚠ Límite diario de la API agotado.<br><span style="opacity:.7;font-size:11px;">Vuelve a probar mañana cuando se resetee, o avísame para cambiar a otra API.</span>';
+      else status.textContent='Sin datos disponibles para este símbolo o periodo.';
+      status.style.display='flex';
+    }
     else status.style.display='none';
   }
+  window.__cmpErrors=[];
   if(cmpChart) cmpChart.destroy();
   if(datasets.length===0){const c=document.getElementById('c5'); if(c){const ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height);} return;}
   const ctx=document.getElementById('c5');
