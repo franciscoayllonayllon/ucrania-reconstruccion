@@ -57,7 +57,7 @@ async function yahooProfile(sym) {
   try {
     const data = await yf.quoteSummary(sym, {
       modules: ['price', 'summaryDetail', 'financialData', 'defaultKeyStatistics', 'calendarEvents', 'summaryProfile']
-    });
+    }, { validateResult: false });
     const price = data.price || {};
     const summary = data.summaryDetail || {};
     const fin = data.financialData || {};
@@ -89,16 +89,17 @@ async function yahooProfile(sym) {
       earningsDate
     };
 
-    if (!out.price) return null;
+    if (!out.price) { console.error(`  yahoo profile ${sym}: respuesta sin price`); return null; }
     return out;
   } catch (e) {
+    console.error(`  yahoo profile ${sym}: ${e.message}`);
     return null;
   }
 }
 
 async function yahooHistorical(sym, fromDate, toDate) {
   try {
-    const data = await yf.historical(sym, { period1: fromDate, period2: toDate, interval: '1d' });
+    const data = await yf.historical(sym, { period1: fromDate, period2: toDate, interval: '1d' }, { validateResult: false });
     if (!data || !data.length) return null;
     const arr = data
       .filter(d => d.close != null && !isNaN(d.close))
@@ -106,6 +107,7 @@ async function yahooHistorical(sym, fromDate, toDate) {
       .filter(d => d.date);
     return arr.length ? arr : null;
   } catch (e) {
+    console.error(`  yahoo hist ${sym}: ${e.message}`);
     return null;
   }
 }
@@ -114,13 +116,13 @@ async function yahooHistorical(sym, fromDate, toDate) {
 // FMP — fallback si Yahoo falla
 // ───────────────────────────────────────────────────────────────────────────
 async function fmpProfile(sym) {
-  if (!FMP_KEY) return null;
+  if (!FMP_KEY) { console.error(`  fmp profile ${sym}: SIN FMP_KEY`); return null; }
   try {
     const url = `https://financialmodelingprep.com/stable/profile?symbol=${encodeURIComponent(sym)}&apikey=${FMP_KEY}`;
     const d = await fetchJson(url);
-    if (d && d['Error Message']) return null;
+    if (d && d['Error Message']) { console.error(`  fmp profile ${sym}: ${d['Error Message']}`); return null; }
     const q = Array.isArray(d) ? d[0] : d;
-    if (!q || !q.price) return null;
+    if (!q || !q.price) { console.error(`  fmp profile ${sym}: respuesta sin price`); return null; }
     return {
       price: q.price,
       changesPercentage: q.changesPercentage ?? q.changePercentage ?? 0,
@@ -131,6 +133,7 @@ async function fmpProfile(sym) {
       // sin datos de analistas en FMP free
     };
   } catch (e) {
+    console.error(`  fmp profile ${sym}: ${e.message}`);
     return null;
   }
 }
@@ -140,7 +143,7 @@ async function fmpHistorical(sym, fromDate, toDate) {
   try {
     const url = `https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=${encodeURIComponent(sym)}&from=${fromDate}&to=${toDate}&apikey=${FMP_KEY}`;
     const d = await fetchJson(url);
-    if (d && d['Error Message']) return null;
+    if (d && d['Error Message']) { console.error(`  fmp hist ${sym}: ${d['Error Message']}`); return null; }
     let arr = Array.isArray(d) ? d : (d.historical || d.data || []);
     if (!arr.length) return null;
     arr = arr.map(x => ({ date: x.date, price: parseFloat(x.price ?? x.close ?? x.adjClose) })).filter(x => x.date && !isNaN(x.price));
@@ -207,6 +210,8 @@ async function main() {
   // Cargar yahoo-finance2 (ESM-only)
   yf = (await import('yahoo-finance2')).default;
   try { yf.suppressNotices(['yahooSurvey', 'ripHistorical']); } catch(e) {}
+  console.log('▸ FMP_KEY presente:', !!FMP_KEY);
+  console.log('▸ yahoo-finance2 cargado');
 
   console.log('▸ Source: live/index.html');
   const src = fs.readFileSync(SRC, 'utf8');
