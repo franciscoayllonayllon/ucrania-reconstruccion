@@ -1599,14 +1599,26 @@ const COUNTRY_IDX={
   CO:{sym:'^OMXC25',  name:'OMXC 25 (Dinamarca)'},
   IR:{sym:'^ISEQ',    name:'ISEQ (Irlanda)'},
   WA:{sym:'WIG20.WA', name:'WIG 20 (Polonia)'},
+  AMS:{sym:'^AEX',    name:'AEX (Países Bajos)'},
   US:{sym:'^GSPC',    name:'S&P 500 (USA)'}
 };
 const EU_IDX={sym:'^STOXX', name:'Stoxx Europe 600'};
 
-function pickCountryIdx(fmpSym){
-  if(!fmpSym) return COUNTRY_IDX.US;
-  const ext=fmpSym.includes('.') ? fmpSym.split('.').pop() : 'US';
-  return COUNTRY_IDX[ext] || COUNTRY_IDX.US;
+// Mapeo prefijo del ticker original → código de país
+const TICKER_PREFIX={VIE:'VI',ETR:'DE',XETRA:'DE',EPA:'PA',SWX:'SW',BIT:'MI',BME:'MC',OM:'ST',CPH:'CO',ISE:'IR',WAR:'WA',AMS:'AMS',NYSE:'US',NASDAQ:'US'};
+
+function pickCountryIdx(originalTicker, fmpSym){
+  // Prefijo del ticker original (ej. "AMS:MT" → AMS → Países Bajos · AEX)
+  if(originalTicker && originalTicker.includes(':')){
+    const code=TICKER_PREFIX[originalTicker.split(':')[0]];
+    if(code && COUNTRY_IDX[code]) return COUNTRY_IDX[code];
+  }
+  // Fallback: sufijo del símbolo FMP
+  if(fmpSym && fmpSym.includes('.')){
+    const ext=fmpSym.split('.').pop();
+    if(COUNTRY_IDX[ext]) return COUNTRY_IDX[ext];
+  }
+  return COUNTRY_IDX.US;
 }
 
 function periodRange(p){
@@ -1657,7 +1669,7 @@ async function renderCmp(){
   if(!sym||!co) return;
   const status=document.getElementById('cmp-status');
   if(status){status.textContent='Cargando datos…'; status.style.display='flex';}
-  const cIdx=pickCountryIdx(sym);
+  const cIdx=pickCountryIdx(co.ticker, sym);
   const [coData, idxData, euData]=await Promise.all([
     fetchHist(sym, period),
     fetchHist(cIdx.sym, period),
