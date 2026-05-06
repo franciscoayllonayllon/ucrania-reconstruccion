@@ -1589,18 +1589,18 @@ loadPrices();
 // FMP /stable/historical-price-eod/light · cache localStorage 24h por (símbolo, periodo)
 // =============================================
 const COUNTRY_IDX={
-  VI:{sym:'^ATX',     name:'ATX (Austria)'},
-  DE:{sym:'^GDAXI',   name:'DAX (Alemania)'},
-  PA:{sym:'^FCHI',    name:'CAC 40 (Francia)'},
-  SW:{sym:'^SSMI',    name:'SMI (Suiza)'},
+  VI:{sym:'^ATX',      name:'ATX (Austria)'},
+  DE:{sym:'^GDAXI',    name:'DAX (Alemania)'},
+  PA:{sym:'^FCHI',     name:'CAC 40 (Francia)'},
+  SW:{sym:'^SSMI',     name:'SMI (Suiza)'},
   MI:{sym:'FTSEMIB.MI', name:'FTSE MIB (Italia)'},
-  MC:{sym:'^IBEX',    name:'IBEX 35 (España)'},
-  ST:{sym:'^OMX',     name:'OMX Stockholm 30'},
-  CO:{sym:'^OMXC25',  name:'OMXC 25 (Dinamarca)'},
-  IR:{sym:'^ISEQ',    name:'ISEQ (Irlanda)'},
-  WA:{sym:'WIG20.WA', name:'WIG 20 (Polonia)'},
-  AMS:{sym:'^AEX',    name:'AEX (Países Bajos)'},
-  US:{sym:'^GSPC',    name:'S&P 500 (USA)'}
+  MC:{sym:'^IBEX',     name:'IBEX 35 (España)'},
+  ST:{sym:'^OMX',      name:'OMX Stockholm 30'},
+  CO:{sym:'^OMXC25',   name:'OMXC 25 (Dinamarca)'},
+  IR:{sym:'^ISEQ',     name:'ISEQ (Irlanda)'},
+  WA:{sym:'WIG20.WA',  name:'WIG 20 (Polonia)'},
+  AMS:{sym:'^AEX',     name:'AEX (Países Bajos)'},
+  US:{sym:'^GSPC',     name:'S&P 500 (USA)'}
 };
 const EU_IDX={sym:'^STOXX', name:'Stoxx Europe 600'};
 
@@ -1637,7 +1637,8 @@ function periodRange(p){
 window.__cmpErrors=[];
 async function fetchHist(sym, period){
   const {from, to}=periodRange(period);
-  const ck='hist_'+sym+'_'+period;
+  // Cache v3: namespace fresco para invalidar entradas anteriores
+  const ck='hist3_'+sym+'_'+period;
   try{
     const c=localStorage.getItem(ck);
     if(c){const{ts,data}=JSON.parse(c); if(Date.now()-ts<24*60*60*1000) return data;}
@@ -1646,11 +1647,7 @@ async function fetchHist(sym, period){
     const u='https://financialmodelingprep.com/stable/historical-price-eod/light?symbol='+encodeURIComponent(sym)+'&from='+from+'&to='+to+'&apikey='+FMP_KEY;
     const r=await fetch(u);
     const d=await r.json();
-    // Detectar errores de la API
-    if(d && d['Error Message']){
-      window.__cmpErrors.push({sym, err:d['Error Message']});
-      return null;
-    }
+    if(d && d['Error Message']){window.__cmpErrors.push({sym, err:d['Error Message']}); return null;}
     let arr=Array.isArray(d) ? d : (d.historical||d.data||[]);
     if(!arr.length){window.__cmpErrors.push({sym, err:'empty response'}); return null;}
     arr=arr.map(x=>({date:x.date, price:parseFloat(x.price??x.close??x.adjClose)})).filter(x=>x.date && !isNaN(x.price));
