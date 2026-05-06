@@ -776,7 +776,7 @@
         </div>
         <div style="margin-top:14px;font-size:11px;color:var(--muted);font-family:var(--font-m);background:rgba(255,255,255,0.03);border-radius:6px;padding:10px 14px;">
           <strong style="color:var(--accent);">Versión pública (datos pre-bakeados):</strong> los datos de mercado se actualizan una vez al día a las 08:00 UTC mediante un proceso automatizado.&nbsp;
-          <strong style="color:var(--accent);">Versión privada<span class="live-hide-on-live"> (<a href="live/" style="color:#5b9cf6;">/live/</a>)</span>:</strong> las APIs se llaman en tiempo real con cache de 30 min – 24 h.
+          <strong style="color:var(--accent);">Versión privada:</strong> las APIs se llaman en tiempo real con cache de 30 min – 24 h.
         </div>
       </div>
     </div>
@@ -1871,20 +1871,48 @@ loadAnalysts();
 // =============================================
 const YAHOO_PROXY_PUBLIC='https://yahoo-proxy.franciscoayllon-ayllon.workers.dev/';
 
-async function fetchNews(sym){
-  const ck='news_'+sym;
+// Comprueba si una noticia es relevante para nuestro símbolo (evita ruido de Yahoo default feed)
+function isNewsRelevant(news, sym, companyName){
+  // 1. Match estricto por relatedTickers
+  const symPrefix=sym.split('.')[0];          // 'WIE.VI' → 'WIE'
+  const tickers=news.relatedTickers||[];
+  if(tickers.some(t=>t===sym || t===symPrefix || t.startsWith(symPrefix+'.'))) return true;
+  // 2. Match por nombre de empresa en el título (case-insensitive)
+  if(companyName && news.title){
+    const firstWord=companyName.split(' ')[0].toLowerCase();
+    if(firstWord.length>=4 && news.title.toLowerCase().includes(firstWord)) return true;
+  }
+  return false;
+}
+
+async function fetchNews(sym, companyName){
+  const ck='news_v2_'+sym;
   try{
     const c=sessionStorage.getItem(ck);
     if(c){const{ts,data}=JSON.parse(c); if(Date.now()-ts<30*60*1000) return data;}
   }catch(e){}
-  try{
-    const u=YAHOO_PROXY_PUBLIC+'?url='+encodeURIComponent('https://query2.finance.yahoo.com/v1/finance/search?q='+encodeURIComponent(sym)+'&newsCount=6&quotesCount=0');
-    const r=await fetch(u);
-    const d=await r.json();
-    const news=(d.news||[]).slice(0,6);
-    try{sessionStorage.setItem(ck, JSON.stringify({ts:Date.now(), data:news}));}catch(e){}
-    return news;
-  }catch(e){return [];}
+  // Intentar 2 queries: ticker primero (cobertura US), luego nombre de empresa (cobertura europea)
+  const queries=[sym, companyName].filter(Boolean);
+  const seen=new Set();
+  const filtered=[];
+  for(const q of queries){
+    try{
+      const u=YAHOO_PROXY_PUBLIC+'?url='+encodeURIComponent('https://query2.finance.yahoo.com/v1/finance/search?q='+encodeURIComponent(q)+'&newsCount=10&quotesCount=0');
+      const r=await fetch(u);
+      const d=await r.json();
+      (d.news||[]).forEach(n=>{
+        if(!n.uuid || seen.has(n.uuid)) return;
+        if(isNewsRelevant(n, sym, companyName)){
+          seen.add(n.uuid);
+          filtered.push(n);
+        }
+      });
+      if(filtered.length>=6) break;
+    }catch(e){}
+  }
+  const result=filtered.slice(0,6);
+  try{sessionStorage.setItem(ck, JSON.stringify({ts:Date.now(), data:result}));}catch(e){}
+  return result;
 }
 
 function timeAgo(seconds){
@@ -1910,9 +1938,9 @@ async function openNewsModal(tid){
   list.innerHTML='<div class="news-loading">Cargando últimas noticias…</div>';
   bg.classList.add('open');
   document.body.style.overflow='hidden';
-  const news=await fetchNews(sym);
+  const news=await fetchNews(sym, co.name);
   if(!news.length){
-    list.innerHTML='<div class="news-empty">No hay noticias recientes disponibles para este símbolo.<br><span style="font-size:11px;opacity:.7;">Yahoo Finance no devolvió resultados.</span></div>';
+    list.innerHTML='<div class="news-empty">No hay noticias recientes específicas de '+co.name+'.<br><span style="font-size:11px;opacity:.7;">Yahoo Finance tiene cobertura limitada para algunas acciones europeas. Consulta la página IR de la empresa o MarketScreener para más información.</span></div>';
     return;
   }
   list.innerHTML=news.map(n=>{
