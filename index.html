@@ -913,7 +913,7 @@ const companies = [
     price:18, target:30,
     pe:7, evEbitda:6.0, pfcf:6.5, pventas:0.9,
     roe:16, roic:14.5, margenEbit:48.0, margenNeto:14,
-    deudaEbitda:0, cobertura:6.0, creditRating:"BBB",
+    deudaEbitda:0.5, cobertura:6.0, creditRating:"BBB",
     revenueGrowth:5, epsGrowth:8, revEps:"Revisiones al alza. Reducción exposición rusa es catalizador positivo",
     div:5.5, upside:62, retBase:65, retPaz:110, risk:4, dep:"Alta",
     rating:"BUY", rc:"r-buy", top:true,
@@ -1450,10 +1450,11 @@ new Chart(document.getElementById('c2'),{
     scales:{x:{ticks:{color:'#8b93a8',font:{size:10},autoSkip:false,maxRotation:45},grid:{color:'rgba(255,255,255,0.05)'}},
       y:{ticks:{color:'#8b93a8',callback:v=>'+'+v+'%'},grid:{color:'rgba(255,255,255,0.05)'}}}}
 });
-const bubbleColors=['#5b9cf6','#4ade80','#fbbf24','#f87171','#4ecdc4','#e8c97d','#a78bfa','#fb7185','#34d399','#60a5fa','#f59e0b','#ef4444'];
+// Paleta extendida: 20 colores distintos para soportar más empresas (companies tiene 17+)
+const bubbleColors=['#5b9cf6','#4ade80','#fbbf24','#f87171','#4ecdc4','#e8c97d','#a78bfa','#fb7185','#34d399','#60a5fa','#f59e0b','#ef4444','#06b6d4','#84cc16','#ec4899','#8b5cf6','#10b981','#facc15','#f472b6','#22d3ee'];
 new Chart(document.getElementById('c3'),{
   type:'bubble',
-  data:{datasets:companies.map((c,i)=>({label:c.name.split(' ')[0],data:[{x:c.roe,y:c.roic||c.roe*0.7,r:Math.max(6,c.retBase/7)}],backgroundColor:bubbleColors[i]+'99',borderColor:bubbleColors[i]}))},
+  data:{datasets:companies.map((c,i)=>{const col=bubbleColors[i%bubbleColors.length];return{label:c.name.split(' ')[0],data:[{x:c.roe,y:c.roic||c.roe*0.7,r:Math.max(6,c.retBase/7)}],backgroundColor:col+'99',borderColor:col};})},
   options:{responsive:true,maintainAspectRatio:false,
     plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ROE ${ctx.raw.x}% · ROIC ${ctx.raw.y.toFixed(1)}%`}}},
     scales:{x:{title:{display:true,text:'ROE (%)',color:'#8b93a8'},ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.05)'},min:3,max:58},
