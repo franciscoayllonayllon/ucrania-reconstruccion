@@ -1596,6 +1596,7 @@ const STATIC_DATA=(function(){
 })();
 const FMP_KEY='inmiuLFBXl9g0ede2SWSH83mQgx0S4wf';
 const FH_KEY='d7of1k1r01qsb7bemmt0d7of1k1r01qsb7bemmtg';
+const YAHOO_PROXY_PUBLIC='https://yahoo-proxy.franciscoayllon-ayllon.workers.dev/';
 // ticker_archivo (saneado) → symbol FMP (Yahoo Finance format)
 const FMP_SYM={
   'VIE_WIE':'WIE.VI',        // Wienerberger · Viena
@@ -1872,8 +1873,8 @@ loadAnalysts();
 
 // =============================================
 // MODAL NOTICIAS — fetch a Yahoo Finance vía CF Worker proxy
+// (YAHOO_PROXY_PUBLIC ya definido al inicio del script)
 // =============================================
-const YAHOO_PROXY_PUBLIC='https://yahoo-proxy.franciscoayllon-ayllon.workers.dev/';
 
 // Filtro de relevancia (común a todas las fuentes)
 function isNewsRelevant(item, sym, companyName){
@@ -2098,24 +2099,32 @@ async function fetchHist(sym, period){
   if(STATIC_DATA && STATIC_DATA.historical){
     const k=sym+'__'+period;
     if(STATIC_DATA.historical[k]) return STATIC_DATA.historical[k];
-    // No tenemos pre-bakeada esta combo → en modo público devolvemos null silencioso
-    if(!FMP_KEY){window.__cmpErrors.push({sym, err:'static no data for '+period}); return null;}
+    // No tenemos pre-bakeada esta combo → fall through al runtime fetch (Yahoo via proxy)
   }
-  const {from, to}=periodRange(period);
-  // Cache v3: namespace fresco para invalidar entradas anteriores
-  const ck='hist3_'+sym+'_'+period;
+  // Cache 24h (key v4 — invalida cache anterior de FMP)
+  const ck='hist4_'+sym+'_'+period;
   try{
     const c=localStorage.getItem(ck);
     if(c){const{ts,data}=JSON.parse(c); if(Date.now()-ts<24*60*60*1000) return data;}
   }catch(e){}
+  // Map periodo → range/interval Yahoo
+  const rangeMap={'1M':'1mo','3M':'3mo','6M':'6mo','YTD':'ytd','1Y':'1y','5Y':'5y'};
+  const range=rangeMap[period]||'1y';
   try{
-    const u='https://financialmodelingprep.com/stable/historical-price-eod/light?symbol='+encodeURIComponent(sym)+'&from='+from+'&to='+to+'&apikey='+FMP_KEY;
+    const yahooUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?range='+range+'&interval=1d';
+    const u=YAHOO_PROXY_PUBLIC+'?url='+encodeURIComponent(yahooUrl);
     const r=await fetch(u);
     const d=await r.json();
-    if(d && d['Error Message']){window.__cmpErrors.push({sym, err:d['Error Message']}); return null;}
-    let arr=Array.isArray(d) ? d : (d.historical||d.data||[]);
-    if(!arr.length){window.__cmpErrors.push({sym, err:'empty response'}); return null;}
-    arr=arr.map(x=>({date:x.date, price:parseFloat(x.price??x.close??x.adjClose)})).filter(x=>x.date && !isNaN(x.price));
+    if(d && d.chart && d.chart.error){window.__cmpErrors.push({sym, err:d.chart.error.description||'yahoo error'}); return null;}
+    const result=d.chart && d.chart.result && d.chart.result[0];
+    if(!result){window.__cmpErrors.push({sym, err:'empty response'}); return null;}
+    const timestamps=result.timestamp||[];
+    const closes=(result.indicators && result.indicators.quote && result.indicators.quote[0] && result.indicators.quote[0].close)||[];
+    if(!timestamps.length||!closes.length){window.__cmpErrors.push({sym, err:'no timestamps/closes'}); return null;}
+    let arr=timestamps.map((t,i)=>({
+      date:new Date(t*1000).toISOString().slice(0,10),
+      price:parseFloat(closes[i])
+    })).filter(x=>x.date && !isNaN(x.price));
     arr.sort((a,b)=>a.date.localeCompare(b.date));
     if(!arr.length){window.__cmpErrors.push({sym, err:'no valid prices'}); return null;}
     try{localStorage.setItem(ck, JSON.stringify({ts:Date.now(), data:arr}));}catch(e){}
