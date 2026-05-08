@@ -999,7 +999,7 @@ const companies = [
   // ── 11 Rockwool International (GS + Erste) ────────────────────────────────
   {
     name:"Rockwool International", ticker:"CPH:ROCK-B", sector:"aislamiento mineral",
-    price:2800, target:3360,
+    price:188, target:240,
     pe:20, evEbitda:10, pfcf:15, pventas:1.5,
     roe:20, roic:15, margenEbit:15, margenNeto:10,
     deudaEbitda:1.2, cobertura:10, creditRating:"BBB+",
@@ -1580,6 +1580,22 @@ function getCurrentRetPaz(c){
 // Helpers de formato signo
 function fmtPct(n){if(n==null)return'—';return(n>0?'+':'')+n+'%';}
 
+// Timing DINÁMICO basado en upside live + retorno base live
+// Sustituye al timingType/timingLabel hardcoded para mantener coherencia
+function getCurrentTiming(c){
+  const up=getCurrentUpside(c);
+  const rB=getCurrentRetBase(c);
+  // Sobrevalorada (ambos negativos o muy negativos)
+  if(up<=-15 || rB<=-15) return {type:'watch', label:'Sobrevalorada · Esperar gran corrección', dot:'#f87171'};
+  if(up<-5 && rB<5) return {type:'watch', label:'Esperar gran corrección', dot:'#f87171'};
+  // Esperar pullback (upside o retorno base débiles)
+  if(up<10 || rB<15) return {type:'wait', label:'Esperar pullback', dot:'#fbbf24'};
+  // Acumular gradual (decentes pero no top)
+  if(up<20 && rB<30) return {type:'wait', label:'Acumular gradualmente', dot:'#fbbf24'};
+  // Entrar ahora (upside y retorno fuertes)
+  return {type:'now', label:'Entrar ahora', dot:'#4ade80'};
+}
+
 // Símbolo de moneda según FMP_SYM
 function getCurrencySymbol(c){
   const tid=getTid(c);
@@ -1603,21 +1619,26 @@ function renderTimingTable(){
   const allForTiming=[...companies,...top6Section3,...spanishCompanies];
   const tbl=document.getElementById('timing-table');
   if(!tbl) return;
+  // Pre-computar timing dinámico para cada empresa (usado en sort y render)
+  const withTiming=allForTiming.map(c=>({c, t:getCurrentTiming(c)}));
+  // Sort por orden: now → wait → watch (timing dinámico, no hardcoded)
+  withTiming.sort((a,b)=>{const o={now:0,wait:1,watch:2};return o[a.t.type]-o[b.t.type];});
   tbl.innerHTML=`<thead><tr>
-    <th>#</th><th>Empresa</th><th>Ticker</th><th>Timing</th><th>Precio live</th><th>Target consenso</th><th>Upside</th><th>Entrada ideal</th><th>Ret. base</th><th>Ret. paz</th>
-  </tr></thead><tbody>${allForTiming.slice().sort((a,b)=>{const o={now:0,wait:1,watch:2};return o[a.timingType]-o[b.timingType];}).map((c,i)=>{
-    const dot=tDot(c.timingType);
+    <th>#</th><th>Empresa</th><th>Ticker</th><th>Timing live</th><th>Precio live</th><th>Target consenso</th><th>Upside</th><th>Tesis del analista</th><th>Ret. base</th><th>Ret. paz</th>
+  </tr></thead><tbody>${withTiming.map(({c,t},i)=>{
+    const dot=t.dot;
     const ccy=getCurrencySymbol(c);
     const price=getCurrentPrice(c);
     const target=getCurrentTarget(c);
     const upside=getCurrentUpside(c);
     const retB=getCurrentRetBase(c);
     const retP=getCurrentRetPaz(c);
+    const bg=dot==='#4ade80'?'rgba(74,222,128,0.12)':dot==='#fbbf24'?'rgba(251,191,36,0.12)':'rgba(248,113,113,0.12)';
     return `<tr>
       <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
       <td style="font-weight:500;">${c.name}${c.top?'<span style="color:var(--accent);margin-left:6px;">★</span>':''}</td>
       <td class="mono" style="font-size:11px;">${c.ticker}</td>
-      <td><span style="font-size:11px;padding:3px 9px;border-radius:20px;background:${dot==='#4ade80'?'rgba(74,222,128,0.12)':dot==='#fbbf24'?'rgba(251,191,36,0.12)':'rgba(248,113,113,0.12)'};color:${dot};font-family:var(--font-m);">${c.timingLabel}</span></td>
+      <td><span style="font-size:11px;padding:3px 9px;border-radius:20px;background:${bg};color:${dot};font-family:var(--font-m);">${t.label}</span></td>
       <td class="mono">${price?ccy+fmtPrice(price):'—'}</td>
       <td class="mono pos">${target?ccy+fmtPrice(target):'—'}</td>
       <td class="mono" style="color:${uColor(upside)};">${fmtPct(upside)}</td>
@@ -1775,7 +1796,7 @@ const ANALYSTS = {
   'OM_ASSA_B':  {numAnalysts:12, recommendationKey:'buy',        recommendationMean:2.2, targetMean:397.9,  targetHigh:500,   targetLow:291},
   'SWX_SIKA':   {numAnalysts:22, recommendationKey:'buy',        recommendationMean:2.4, targetMean:178.82, targetHigh:255,   targetLow:143},
   'ISE_KRX':    {numAnalysts:17, recommendationKey:'buy',        recommendationMean:2.1, targetMean:91.77,  targetHigh:130,   targetLow:70},
-  'CPH_ROCK_B': {numAnalysts:13, recommendationKey:'buy',        recommendationMean:2.3, targetMean:2700,   targetHigh:3100,  targetLow:2200},
+  'CPH_ROCK_B': {numAnalysts:13, recommendationKey:'buy',        recommendationMean:2.3, targetMean:237,    targetHigh:265,   targetLow:190},
   'VIE_RBI':    {numAnalysts:18, recommendationKey:'buy',        recommendationMean:2.2, targetMean:42.22,  targetHigh:55,    targetLow:30},
   'EPA_SU':     {numAnalysts:37, recommendationKey:'strong_buy', recommendationMean:1.7, targetMean:304.36, targetHigh:340,   targetLow:275},
   'ETR_SIE':    {numAnalysts:23, recommendationKey:'buy',        recommendationMean:2.5, targetMean:274.85, targetHigh:335,   targetLow:225},
