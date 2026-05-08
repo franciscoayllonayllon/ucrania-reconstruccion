@@ -1497,43 +1497,116 @@ ovData.forEach(c=>{
   </div>`;
 });
 
-// TIMING TABLE
-const allForTiming=[...companies,...top6Section3,...spanishCompanies];
-const timingTbl=document.getElementById('timing-table');
-timingTbl.innerHTML=`<thead><tr>
-  <th>#</th><th>Empresa</th><th>Ticker</th><th>Timing</th><th>Precio actual</th><th>Target</th><th>Entrada ideal</th><th>Retorno base</th><th>Retorno paz</th>
-</tr></thead><tbody>${allForTiming.sort((a,b)=>{const o={now:0,wait:1,watch:2};return o[a.timingType]-o[b.timingType];}).map((c,i)=>{
-  const dot=tDot(c.timingType);
-  return `<tr>
+// =============================================
+// TABLAS DE TIMING + RANKING — usan precio LIVE + target ANALYSTS para
+// recalcular upside dinámicamente. Coherente con las cards de arriba.
+// =============================================
+function getTid(c){return c.ticker.replace(/[^a-z0-9]/gi,'_');}
+
+// Devuelve precio live (STATIC_DATA → localStorage FMP cache → c.price fallback)
+function getCurrentPrice(c){
+  const tid=getTid(c);
+  if(typeof STATIC_DATA!=='undefined' && STATIC_DATA && STATIC_DATA.prices && STATIC_DATA.prices[tid] && STATIC_DATA.prices[tid].price){
+    return parseFloat(STATIC_DATA.prices[tid].price);
+  }
+  try{
+    const cached=localStorage.getItem('fmp_fund');
+    if(cached){
+      const{ts,data}=JSON.parse(cached);
+      if(Date.now()-ts<24*60*60*1000 && data[tid] && data[tid].price) return parseFloat(data[tid].price);
+    }
+  }catch(e){}
+  return c.price;
+}
+
+// Target del consenso analistas (ANALYSTS map) → fallback c.target
+function getCurrentTarget(c){
+  const tid=getTid(c);
+  if(typeof ANALYSTS!=='undefined' && ANALYSTS[tid] && ANALYSTS[tid].targetMean) return parseFloat(ANALYSTS[tid].targetMean);
+  return c.target;
+}
+
+// Upside recalculado: (target - precio) / precio · 100, redondeado
+function getCurrentUpside(c){
+  const p=getCurrentPrice(c);
+  const t=getCurrentTarget(c);
+  if(!p || !t) return c.upside;
+  return Math.round((t-p)/p*100);
+}
+
+// Símbolo de moneda según FMP_SYM
+function getCurrencySymbol(c){
+  const tid=getTid(c);
+  const sym=FMP_SYM[tid];
+  if(!sym) return '€';
+  return fmpCcy(sym);
+}
+
+// Formatea número con decimales sensatos (2 si <100, 1 si <1000, 0 si >=1000)
+function fmtPrice(n){
+  if(!n) return '—';
+  n=parseFloat(n);
+  if(n<10) return n.toFixed(2);
+  if(n<100) return n.toFixed(2);
+  if(n<1000) return n.toFixed(1);
+  return Math.round(n).toString();
+}
+
+// — TIMING TABLE — re-renderable
+function renderTimingTable(){
+  const allForTiming=[...companies,...top6Section3,...spanishCompanies];
+  const tbl=document.getElementById('timing-table');
+  if(!tbl) return;
+  tbl.innerHTML=`<thead><tr>
+    <th>#</th><th>Empresa</th><th>Ticker</th><th>Timing</th><th>Precio live</th><th>Target consenso</th><th>Upside</th><th>Entrada ideal</th><th>Ret. base</th><th>Ret. paz</th>
+  </tr></thead><tbody>${allForTiming.slice().sort((a,b)=>{const o={now:0,wait:1,watch:2};return o[a.timingType]-o[b.timingType];}).map((c,i)=>{
+    const dot=tDot(c.timingType);
+    const ccy=getCurrencySymbol(c);
+    const price=getCurrentPrice(c);
+    const target=getCurrentTarget(c);
+    const upside=getCurrentUpside(c);
+    return `<tr>
+      <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
+      <td style="font-weight:500;">${c.name}${c.top?'<span style="color:var(--accent);margin-left:6px;">★</span>':''}</td>
+      <td class="mono" style="font-size:11px;">${c.ticker}</td>
+      <td><span style="font-size:11px;padding:3px 9px;border-radius:20px;background:${dot==='#4ade80'?'rgba(74,222,128,0.12)':dot==='#fbbf24'?'rgba(251,191,36,0.12)':'rgba(248,113,113,0.12)'};color:${dot};font-family:var(--font-m);">${c.timingLabel}</span></td>
+      <td class="mono">${price?ccy+fmtPrice(price):'—'}</td>
+      <td class="mono pos">${target?ccy+fmtPrice(target):'—'}</td>
+      <td class="mono" style="color:${uColor(upside)};">${upside>0?'+':''}${upside}%</td>
+      <td style="font-size:11px;color:var(--muted);max-width:200px;">${c.timingText.substring(0,80)}…</td>
+      <td class="pos">+${c.retBase}%</td>
+      <td style="color:#4ade80;font-family:var(--font-m);font-weight:500;">+${c.retPaz}%</td>
+    </tr>`;}).join('')}</tbody>`;
+}
+
+// — RANKING TABLE — re-renderable, sort con upside live
+function renderRankingTable(){
+  const all=[...companies,...top6Section3,...spanishCompanies];
+  const sortedR=all.slice().sort((a,b)=>(b.retBase+getCurrentUpside(b)+b.div)-(a.retBase+getCurrentUpside(a)+a.div));
+  const tbl=document.getElementById('ranking-table');
+  if(!tbl) return;
+  tbl.innerHTML=`<thead><tr>
+    <th>#</th><th>Empresa</th><th>Ticker</th><th>P/E</th><th>EV/EBITDA</th><th>ROE</th><th>Div.</th><th>Upside live</th><th>Ret. base</th><th>Ret. paz</th><th>Riesgo</th><th>Dep. paz</th>
+  </tr></thead><tbody>${sortedR.map((c,i)=>{
+    const upside=getCurrentUpside(c);
+    return `<tr>
     <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
-    <td style="font-weight:500;">${c.name}${c.top?'<span style="color:var(--accent);margin-left:6px;">★</span>':''}</td>
-    <td class="mono" style="font-size:11px;">${c.ticker}</td>
-    <td><span style="font-size:11px;padding:3px 9px;border-radius:20px;background:${dot==='#4ade80'?'rgba(74,222,128,0.12)':dot==='#fbbf24'?'rgba(251,191,36,0.12)':'rgba(248,113,113,0.12)'};color:${dot};font-family:var(--font-m);">${c.timingLabel}</span></td>
-    <td class="mono">${c.price?c.price+'€':'-'}</td>
-    <td class="mono pos">${c.target?c.target+'€':'-'}</td>
-    <td style="font-size:11px;color:var(--muted);max-width:200px;">${c.timingText.substring(0,80)}…</td>
+    <td style="font-weight:500;">${c.top?'<span style="color:var(--accent);margin-right:5px;">★</span>':''}${c.name}</td>
+    <td class="mono" style="font-size:11px;color:var(--muted);">${c.ticker}</td>
+    <td class="mono">${c.pe}x</td>
+    <td class="mono">${c.evEbitda||'—'}x</td>
+    <td class="mono ${c.roe>20?'pos':c.roe>12?'':'warn'}">${c.roe}%</td>
+    <td class="mono">${c.div}%</td>
+    <td class="mono" style="color:${uColor(upside)}">${upside>0?'+':''}${upside}%</td>
     <td class="pos">+${c.retBase}%</td>
     <td style="color:#4ade80;font-family:var(--font-m);font-weight:500;">+${c.retPaz}%</td>
+    <td class="${riskClass(c.risk)}">${riskLabel(c.risk)}</td>
+    <td style="color:var(--muted);font-size:12px;">${c.dep}</td>
   </tr>`;}).join('')}</tbody>`;
+}
 
-// RANKING TABLE
-const sortedR=[...companies,...top6Section3,...spanishCompanies].sort((a,b)=>(b.retBase+b.upside+b.div)-(a.retBase+a.upside+a.div));
-document.getElementById('ranking-table').innerHTML=`<thead><tr>
-  <th>#</th><th>Empresa</th><th>Ticker</th><th>P/E</th><th>EV/EBITDA</th><th>ROE</th><th>Div.</th><th>Upside</th><th>Ret. base</th><th>Ret. paz</th><th>Riesgo</th><th>Dep. paz</th>
-</tr></thead><tbody>${sortedR.map((c,i)=>`<tr>
-  <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
-  <td style="font-weight:500;">${c.top?'<span style="color:var(--accent);margin-right:5px;">★</span>':''}${c.name}</td>
-  <td class="mono" style="font-size:11px;color:var(--muted);">${c.ticker}</td>
-  <td class="mono">${c.pe}x</td>
-  <td class="mono">${c.evEbitda||'—'}x</td>
-  <td class="mono ${c.roe>20?'pos':c.roe>12?'':'warn'}">${c.roe}%</td>
-  <td class="mono">${c.div}%</td>
-  <td class="mono" style="color:${uColor(c.upside)}">${c.upside>0?'+':''}${c.upside}%</td>
-  <td class="pos">+${c.retBase}%</td>
-  <td style="color:#4ade80;font-family:var(--font-m);font-weight:500;">+${c.retPaz}%</td>
-  <td class="${riskClass(c.risk)}">${riskLabel(c.risk)}</td>
-  <td style="color:var(--muted);font-size:12px;">${c.dep}</td>
-</tr>`).join('')}</tbody>`;
+// Las tablas se renderizan tras definirse FMP_SYM/ANALYSTS (más abajo en el script)
+// y se re-renderizan al final de loadPrices() para reflejar precios fresh tras API call
 
 // CHARTS
 // Etiquetas: primera palabra; si hay colisión (e.g. Siemens Energy + Siemens AG), usa 2 palabras
@@ -1665,6 +1738,10 @@ const ANALYSTS = {
   'BME_OHLA':   {numAnalysts:4,  recommendationKey:'hold',       recommendationMean:2.8, targetMean:0.515,  targetHigh:0.74,  targetLow:0.38},
   'BME_IDR':    {numAnalysts:15, recommendationKey:'buy',        recommendationMean:2.3, targetMean:62.95,  targetHigh:75,    targetLow:53}
 };
+
+// Render inicial de las tablas (con datos disponibles de STATIC_DATA / cache si existen)
+renderTimingTable();
+renderRankingTable();
 
 // =============================================
 // PRÓXIMOS CATALIZADORES — calendario corporativo
@@ -1819,6 +1896,9 @@ async function loadPrices(){
       if(fund.earningsDate)sel('.live-earn').forEach(el=>el.textContent=fmtEarnings(fund.earningsDate));
     }
   });
+  // Re-render tablas timing + ranking con precios live frescos (live mode)
+  if(typeof renderTimingTable==='function') renderTimingTable();
+  if(typeof renderRankingTable==='function') renderRankingTable();
 }
 loadPrices();
 
