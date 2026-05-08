@@ -747,7 +747,7 @@
     <div style="margin-top:18px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 22px;">
       <div style="font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:.07em;margin-bottom:10px;">LEYENDA</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;font-size:13px;line-height:1.5;">
-        <div><span style="color:var(--accent);font-size:16px;margin-right:4px;">★</span> <strong>Top pick:</strong> empresa con tesis más sólida según el análisis fundamental — combinación destacada de valoración, calidad del negocio, exposición directa a Ucrania y catalizadores claros. Marcadas con <code style="font-family:var(--font-m);font-size:11px;background:rgba(232,201,125,0.1);padding:2px 6px;border-radius:4px;">top:true</code> en los datos.</div>
+        <div><span style="color:var(--accent);font-size:16px;margin-right:4px;">★</span> <strong>Top pick (dinámico):</strong> las 5 empresas con mayor score compuesto live (retorno base + upside + dividendo, todos calculados con el precio actual). Se actualiza automáticamente con cada precio nuevo — una empresa sale o entra en top picks según la realidad del mercado, no según la opinión histórica del analista.</div>
         <div><span style="color:#4ade80;">Verde</span> en upside o ROE: valor positivo / por encima del umbral favorable. <span style="color:#fbbf24;">Ámbar</span>: zona neutra. <span style="color:#f87171;">Rojo</span>: valor negativo o por debajo del umbral.</div>
         <div><strong>Riesgo:</strong> <span style="color:#4ade80;">Bajo</span> = perfil defensivo; <span style="color:#fbbf24;">Medio</span> = riesgo moderado; <span style="color:#f87171;">Medio-Alto / Alto</span> = mayor volatilidad o ciclicidad.</div>
         <div><strong>Dependencia paz:</strong> qué tanto necesita la empresa un acuerdo formal para materializar el retorno. <span style="color:#4ade80;">Baja</span> = retorno mayoritariamente independiente; <span style="color:#f87171;">Alta</span> = la mayoría del retorno se desbloquea solo con paz.</div>
@@ -1580,6 +1580,17 @@ function getCurrentRetPaz(c){
 // Helpers de formato signo
 function fmtPct(n){if(n==null)return'—';return(n>0?'+':'')+n+'%';}
 
+// Score compuesto live: retBase + upside + div (todos calculados con precio actual)
+function getCompositeScore(c){
+  return getCurrentRetBase(c) + getCurrentUpside(c) + getCurrentDivYield(c);
+}
+
+// Top picks dinámicos: top 5 por score compuesto live (sustituye a c.top hardcoded)
+function getTopPickTickers(){
+  const all=[...companies, ...top6Section3, ...spanishCompanies];
+  return new Set(all.slice().sort((a,b)=>getCompositeScore(b)-getCompositeScore(a)).slice(0,5).map(c=>c.ticker));
+}
+
 // Timing DINÁMICO basado en upside live + retorno base live
 // Sustituye al timingType/timingLabel hardcoded para mantener coherencia
 function getCurrentTiming(c){
@@ -1619,10 +1630,11 @@ function renderTimingTable(){
   const allForTiming=[...companies,...top6Section3,...spanishCompanies];
   const tbl=document.getElementById('timing-table');
   if(!tbl) return;
-  // Pre-computar timing dinámico para cada empresa (usado en sort y render)
-  const withTiming=allForTiming.map(c=>({c, t:getCurrentTiming(c)}));
-  // Sort por orden: now → wait → watch (timing dinámico, no hardcoded)
-  withTiming.sort((a,b)=>{const o={now:0,wait:1,watch:2};return o[a.t.type]-o[b.t.type];});
+  const topPicks=getTopPickTickers();
+  // Pre-computar timing dinámico + score para cada empresa
+  const withTiming=allForTiming.map(c=>({c, t:getCurrentTiming(c), s:getCompositeScore(c)}));
+  // Sort: 1º por timing (now > wait > watch), 2º por score compuesto desc
+  withTiming.sort((a,b)=>{const o={now:0,wait:1,watch:2};const d=o[a.t.type]-o[b.t.type];return d!==0?d:b.s-a.s;});
   tbl.innerHTML=`<thead><tr>
     <th>#</th><th>Empresa</th><th>Ticker</th><th>Timing live</th><th>Precio live</th><th>Target consenso</th><th>Upside</th><th>Tesis del analista</th><th>Ret. base</th><th>Ret. paz</th>
   </tr></thead><tbody>${withTiming.map(({c,t},i)=>{
@@ -1636,7 +1648,7 @@ function renderTimingTable(){
     const bg=dot==='#4ade80'?'rgba(74,222,128,0.12)':dot==='#fbbf24'?'rgba(251,191,36,0.12)':'rgba(248,113,113,0.12)';
     return `<tr>
       <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
-      <td style="font-weight:500;">${c.name}${c.top?'<span style="color:var(--accent);margin-left:6px;">★</span>':''}</td>
+      <td style="font-weight:500;">${c.name}${topPicks.has(c.ticker)?'<span style="color:var(--accent);margin-left:6px;" title="Top pick dinámico (top 5 por score live)">★</span>':''}</td>
       <td class="mono" style="font-size:11px;">${c.ticker}</td>
       <td><span style="font-size:11px;padding:3px 9px;border-radius:20px;background:${bg};color:${dot};font-family:var(--font-m);">${t.label}</span></td>
       <td class="mono">${price?ccy+fmtPrice(price):'—'}</td>
@@ -1651,8 +1663,9 @@ function renderTimingTable(){
 // — RANKING TABLE — re-renderable, todas las métricas dependientes del precio recalculadas live
 function renderRankingTable(){
   const all=[...companies,...top6Section3,...spanishCompanies];
-  // Sort criterio: retBase live + upside live + div yield live (composite score con datos actuales)
-  const sortedR=all.slice().sort((a,b)=>(getCurrentRetBase(b)+getCurrentUpside(b)+getCurrentDivYield(b))-(getCurrentRetBase(a)+getCurrentUpside(a)+getCurrentDivYield(a)));
+  const topPicks=getTopPickTickers();
+  // Sort criterio: score compuesto live (retBase + upside + div yield live)
+  const sortedR=all.slice().sort((a,b)=>getCompositeScore(b)-getCompositeScore(a));
   const tbl=document.getElementById('ranking-table');
   if(!tbl) return;
   tbl.innerHTML=`<thead><tr>
@@ -1666,7 +1679,7 @@ function renderRankingTable(){
     const retP=getCurrentRetPaz(c);
     return `<tr>
     <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
-    <td style="font-weight:500;">${c.top?'<span style="color:var(--accent);margin-right:5px;">★</span>':''}${c.name}</td>
+    <td style="font-weight:500;">${topPicks.has(c.ticker)?'<span style="color:var(--accent);margin-right:5px;" title="Top pick dinámico (top 5 por score live)">★</span>':''}${c.name}</td>
     <td class="mono" style="font-size:11px;color:var(--muted);">${c.ticker}</td>
     <td class="mono ${pe>30?'warn':pe<13?'pos':''}">${pe?pe+'x':'—'}</td>
     <td class="mono ${evEb>18?'warn':evEb<8?'pos':''}">${evEb?evEb+'x':'—'}</td>
