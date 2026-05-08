@@ -736,6 +736,9 @@
       <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-top:12px;">
         El <strong style="color:var(--text);">retorno paz</strong> y el <strong style="color:var(--text);">riesgo</strong> se muestran como información complementaria pero <strong>no se usan para ordenar</strong>: el primero es opcionalidad asimétrica que no se debe sobreponderar; el segundo es subjetivo y depende del perfil de cada inversor.
       </p>
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(91,156,246,0.06);border-left:3px solid var(--blue);border-radius:0 6px 6px 0;font-size:12px;color:var(--text);line-height:1.6;">
+        <strong style="color:var(--blue);">ⓘ Cálculo dinámico:</strong> P/E, EV/EBITDA, dividendo, upside, retorno base y retorno paz se <strong>recalculan en tiempo real</strong> usando el precio actual de cada acción (vía API). Los múltiplos se escalan con el ratio precio_actual/precio_análisis (asume EPS y EBITDA estables entre earnings). Los retornos base/paz se reexpresan como % desde el precio actual al target proyectado del analista (precio_análisis × (1 + ret%)).
+      </div>
     </div>
 
     <div style="overflow-x:auto;"><table class="ftable" id="ranking-table"></table></div>
@@ -1534,6 +1537,49 @@ function getCurrentUpside(c){
   return Math.round((t-p)/p*100);
 }
 
+// Ratio precio actual vs precio del análisis original (factor de escala para múltiplos)
+function priceRatio(c){
+  const live=getCurrentPrice(c);
+  if(!live || !c.price) return 1;
+  return live/c.price;
+}
+
+// P/E live: escala con el precio (asume EPS no cambió desde análisis)
+function getCurrentPE(c){
+  if(!c.pe) return null;
+  return +(c.pe*priceRatio(c)).toFixed(1);
+}
+
+// EV/EBITDA live: escala con el precio (aprox, EBITDA no cambia)
+function getCurrentEvEbitda(c){
+  if(!c.evEbitda) return null;
+  return +(c.evEbitda*priceRatio(c)).toFixed(1);
+}
+
+// Dividend yield live: dividendo por acción se mantiene, yield = div_pa / precio_live
+function getCurrentDivYield(c){
+  if(!c.div) return 0;
+  return +(c.div/priceRatio(c)).toFixed(1);
+}
+
+// Ret. base/paz recalculados: target del escenario sigue igual (precio_orig × (1+ret/100))
+// pero % desde precio_live es diferente
+function getCurrentRetBase(c){
+  if(c.retBase==null || !c.price) return c.retBase;
+  const live=getCurrentPrice(c); if(!live) return c.retBase;
+  const futureTarget=c.price*(1+c.retBase/100);
+  return Math.round((futureTarget-live)/live*100);
+}
+function getCurrentRetPaz(c){
+  if(c.retPaz==null || !c.price) return c.retPaz;
+  const live=getCurrentPrice(c); if(!live) return c.retPaz;
+  const futureTarget=c.price*(1+c.retPaz/100);
+  return Math.round((futureTarget-live)/live*100);
+}
+
+// Helpers de formato signo
+function fmtPct(n){if(n==null)return'—';return(n>0?'+':'')+n+'%';}
+
 // Símbolo de moneda según FMP_SYM
 function getCurrencySymbol(c){
   const tid=getTid(c);
@@ -1565,6 +1611,8 @@ function renderTimingTable(){
     const price=getCurrentPrice(c);
     const target=getCurrentTarget(c);
     const upside=getCurrentUpside(c);
+    const retB=getCurrentRetBase(c);
+    const retP=getCurrentRetPaz(c);
     return `<tr>
       <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
       <td style="font-weight:500;">${c.name}${c.top?'<span style="color:var(--accent);margin-left:6px;">★</span>':''}</td>
@@ -1572,34 +1620,40 @@ function renderTimingTable(){
       <td><span style="font-size:11px;padding:3px 9px;border-radius:20px;background:${dot==='#4ade80'?'rgba(74,222,128,0.12)':dot==='#fbbf24'?'rgba(251,191,36,0.12)':'rgba(248,113,113,0.12)'};color:${dot};font-family:var(--font-m);">${c.timingLabel}</span></td>
       <td class="mono">${price?ccy+fmtPrice(price):'—'}</td>
       <td class="mono pos">${target?ccy+fmtPrice(target):'—'}</td>
-      <td class="mono" style="color:${uColor(upside)};">${upside>0?'+':''}${upside}%</td>
+      <td class="mono" style="color:${uColor(upside)};">${fmtPct(upside)}</td>
       <td style="font-size:11px;color:var(--muted);max-width:200px;">${c.timingText.substring(0,80)}…</td>
-      <td class="pos">+${c.retBase}%</td>
-      <td style="color:#4ade80;font-family:var(--font-m);font-weight:500;">+${c.retPaz}%</td>
+      <td class="mono" style="color:${retB>0?'#4ade80':'#f87171'};">${fmtPct(retB)}</td>
+      <td class="mono" style="color:${retP>0?'#4ade80':'#f87171'};font-weight:500;">${fmtPct(retP)}</td>
     </tr>`;}).join('')}</tbody>`;
 }
 
-// — RANKING TABLE — re-renderable, sort con upside live
+// — RANKING TABLE — re-renderable, todas las métricas dependientes del precio recalculadas live
 function renderRankingTable(){
   const all=[...companies,...top6Section3,...spanishCompanies];
-  const sortedR=all.slice().sort((a,b)=>(b.retBase+getCurrentUpside(b)+b.div)-(a.retBase+getCurrentUpside(a)+a.div));
+  // Sort criterio: retBase live + upside live + div yield live (composite score con datos actuales)
+  const sortedR=all.slice().sort((a,b)=>(getCurrentRetBase(b)+getCurrentUpside(b)+getCurrentDivYield(b))-(getCurrentRetBase(a)+getCurrentUpside(a)+getCurrentDivYield(a)));
   const tbl=document.getElementById('ranking-table');
   if(!tbl) return;
   tbl.innerHTML=`<thead><tr>
-    <th>#</th><th>Empresa</th><th>Ticker</th><th>P/E</th><th>EV/EBITDA</th><th>ROE</th><th>Div.</th><th>Upside live</th><th>Ret. base</th><th>Ret. paz</th><th>Riesgo</th><th>Dep. paz</th>
+    <th>#</th><th>Empresa</th><th>Ticker</th><th>P/E</th><th>EV/EBITDA</th><th>ROE</th><th>Div.</th><th>Upside</th><th>Ret. base</th><th>Ret. paz</th><th>Riesgo</th><th>Dep. paz</th>
   </tr></thead><tbody>${sortedR.map((c,i)=>{
     const upside=getCurrentUpside(c);
+    const pe=getCurrentPE(c);
+    const evEb=getCurrentEvEbitda(c);
+    const div=getCurrentDivYield(c);
+    const retB=getCurrentRetBase(c);
+    const retP=getCurrentRetPaz(c);
     return `<tr>
     <td style="color:var(--muted);font-family:var(--font-m);">${i+1}</td>
     <td style="font-weight:500;">${c.top?'<span style="color:var(--accent);margin-right:5px;">★</span>':''}${c.name}</td>
     <td class="mono" style="font-size:11px;color:var(--muted);">${c.ticker}</td>
-    <td class="mono">${c.pe}x</td>
-    <td class="mono">${c.evEbitda||'—'}x</td>
+    <td class="mono ${pe>30?'warn':pe<13?'pos':''}">${pe?pe+'x':'—'}</td>
+    <td class="mono ${evEb>18?'warn':evEb<8?'pos':''}">${evEb?evEb+'x':'—'}</td>
     <td class="mono ${c.roe>20?'pos':c.roe>12?'':'warn'}">${c.roe}%</td>
-    <td class="mono">${c.div}%</td>
-    <td class="mono" style="color:${uColor(upside)}">${upside>0?'+':''}${upside}%</td>
-    <td class="pos">+${c.retBase}%</td>
-    <td style="color:#4ade80;font-family:var(--font-m);font-weight:500;">+${c.retPaz}%</td>
+    <td class="mono ${div>3?'pos':''}">${div}%</td>
+    <td class="mono" style="color:${uColor(upside)}">${fmtPct(upside)}</td>
+    <td class="mono" style="color:${retB>0?'#4ade80':'#f87171'};">${fmtPct(retB)}</td>
+    <td class="mono" style="color:${retP>0?'#4ade80':'#f87171'};font-weight:500;">${fmtPct(retP)}</td>
     <td class="${riskClass(c.risk)}">${riskLabel(c.risk)}</td>
     <td style="color:var(--muted);font-size:12px;">${c.dep}</td>
   </tr>`;}).join('')}</tbody>`;
