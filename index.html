@@ -335,7 +335,7 @@
       <span class="sec-num" style="border-color:rgba(248,113,113,.35);color:#f87171;">00</span>
       <h2 class="sec-title">Situación geopolítica — Estado del conflicto</h2>
     </div>
-    <div class="geo-live-badge"><span class="geo-live-dot"></span>Actualizado · Abril 2026 · Día 791 de guerra</div>
+    <div class="geo-live-badge"><span class="geo-live-dot"></span>Actualizado · <span class="js-last-manual-update">—</span> · Día <span id="days-of-war">—</span> de guerra</div>
 
     <!-- KPIs -->
     <div class="geo-kpi-grid">
@@ -369,7 +369,7 @@
     <!-- Estado diplomático y militar -->
     <div class="geo-grid">
       <div class="geo-card">
-        <h4>Estado diplomático — Abril 2026</h4>
+        <h4>Estado diplomático — <span class="js-current-date">—</span></h4>
         <div class="geo-row"><span class="geo-key">Marco negociador activo</span><span class="geo-val warn">Administración Trump como mediador principal</span></div>
         <div class="geo-row"><span class="geo-key">Posición Ucrania</span><span class="geo-val warn">Cese el fuego sí, pero exige garantías de seguridad OTAN o equivalente</span></div>
         <div class="geo-row"><span class="geo-key">Posición Rusia</span><span class="geo-val neg">Reconocimiento de territorios ocupados como condición previa</span></div>
@@ -585,6 +585,7 @@
     </div>
     <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:28px;line-height:1.7;">
       Las 17 empresas presentes en 2 o más cestas de grandes bancos de inversión (Morgan Stanley, Goldman Sachs, BofA, Erste, Jefferies, JPMorgan, Citi, Deutsche Bank, Barclays). Análisis fundamental completo: valoración, calidad, solidez financiera, momentum y tesis de inversión.
+      <br><span style="font-size:11px;color:var(--accent);font-family:var(--font-m);opacity:.8;">Tesis y catalizadores · Actualizado: <span class="js-last-manual-update">—</span></span>
     </p>
     <div style="margin-bottom:40px;">
       <div style="font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--font-m);letter-spacing:.05em;">EMPRESAS EN 2+ CESTAS INSTITUCIONALES — SOLAPAMIENTO</div>
@@ -658,6 +659,7 @@
     <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">TOP 6 — Mejores Oportunidades Fuera de Cestas</h2></div>
     <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:32px;line-height:1.7;">
       Las 6 mejores empresas no españolas con 0 ó 1 aparición en cestas institucionales, seleccionadas por su posicionamiento directo para beneficiarse de la reconstrucción de Ucrania. Análisis fundamental completo.
+      <br><span style="font-size:11px;color:var(--accent);font-family:var(--font-m);opacity:.8;">Tesis y catalizadores · Actualizado: <span class="js-last-manual-update">—</span></span>
     </p>
     <div class="cards-grid" id="cards2"></div>
   </div>
@@ -673,6 +675,7 @@
     </div>
     <p style="color:var(--muted);font-size:14px;max-width:700px;margin-bottom:32px;line-height:1.7;">
       Seis compañías cotizadas españolas con posicionamiento directo o indirecto en la reconstrucción de Ucrania, analizadas en profundidad con sus catalizadores, riesgos y el mejor momento de entrada. Selección basada en contratos confirmados (Indra, radar Lanza LTR-25 €37M), exposición vía filiales (Acciona/Mostostal Kielce nuclear), y mención explícita en docs del gobierno español (ACS, Sacyr, OHLA, Técnicas Reunidas).
+      <br><span style="font-size:11px;color:var(--accent);font-family:var(--font-m);opacity:.8;">Tesis y catalizadores · Actualizado: <span class="js-last-manual-update">—</span></span>
     </p>
     <div class="cards-grid" id="cards-spain"></div>
   </div>
@@ -683,7 +686,8 @@
   <div class="container">
     <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">Próximos catalizadores</h2></div>
     <p style="color:var(--muted);font-size:14px;max-width:780px;margin-bottom:28px;line-height:1.7;">
-      Calendario de eventos corporativos relevantes en las próximas <strong style="color:var(--text);">12 semanas</strong>: juntas generales (AGM), publicación de resultados (Q1, H1, Q3) y días del inversor. Estos eventos suelen ser catalizadores de movimiento del precio. Datos compilados de las páginas oficiales de relación con inversores. Refresco trimestral recomendado.
+      Calendario de eventos corporativos relevantes en las próximas <strong style="color:var(--text);">12 semanas</strong>: juntas generales (AGM), publicación de resultados (Q1, H1, Q3) y días del inversor. Estos eventos suelen ser catalizadores de movimiento del precio. Datos compilados de las páginas oficiales de relación con inversores.
+      <br><span style="font-size:11px;color:var(--accent);font-family:var(--font-m);opacity:.8;">Catalizadores · Actualizado: <span class="js-last-manual-update">—</span></span>
     </p>
     <div class="cat-list" id="cat-list"></div>
     <div style="margin-top:18px;font-size:11px;color:var(--muted);font-family:var(--font-m);background:rgba(255,255,255,0.03);border-radius:6px;padding:10px 14px;">
@@ -1758,6 +1762,10 @@ const STATIC_DATA=(function(){
 const FMP_KEY='inmiuLFBXl9g0ede2SWSH83mQgx0S4wf';
 const FH_KEY='d7of1k1r01qsb7bemmt0d7of1k1r01qsb7bemmtg';
 const YAHOO_PROXY_PUBLIC='https://yahoo-proxy.franciscoayllon-ayllon.workers.dev/';
+
+// Fecha (YYYY-MM) de la última revisión manual de tesis/catalysts/risks/geopolítica.
+// Bumpear este valor cada vez que se actualicen los datos manuales (tras revisión semanal).
+const LAST_MANUAL_UPDATE='2026-05';
 // ticker_archivo (saneado) → symbol FMP (Yahoo Finance format)
 const FMP_SYM={
   'VIE_WIE':'WIE.VI',        // Wienerberger · Viena
@@ -2516,6 +2524,23 @@ if(document.getElementById('map1'))initMaps();
   if(window.location.pathname.includes('/live/')){
     document.querySelectorAll('.live-hide-on-live').forEach(el=>el.style.display='none');
   }
+})();
+
+// Última actualización manual del contenido cualitativo (LAST_MANUAL_UPDATE)
+(function(){
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const parts=LAST_MANUAL_UPDATE.split('-');
+  const monthIdx=parseInt(parts[1],10)-1;
+  const txt=(meses[monthIdx]||'—')+' '+parts[0];
+  document.querySelectorAll('.js-last-manual-update').forEach(el=>el.textContent=txt);
+})();
+
+// Día de guerra (dinámico) desde 24 febrero 2022
+(function(){
+  const start=new Date('2022-02-24T00:00:00Z');
+  const days=Math.floor((Date.now()-start.getTime())/86400000);
+  const el=document.getElementById('days-of-war');
+  if(el)el.textContent=days.toLocaleString('es');
 })();
 
 // RESPONSIVE

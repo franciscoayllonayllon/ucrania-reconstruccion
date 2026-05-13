@@ -1,9 +1,9 @@
-name: Review reminder (cada 15 días)
+name: Review reminder (cada 7 días)
 
 on:
   schedule:
-    # Día 1 y 16 de cada mes a las 09:00 UTC (= 11:00 Madrid verano / 10:00 invierno)
-    - cron: '0 9 1,16 * *'
+    # Todos los lunes a las 09:00 UTC (= 11:00 Madrid verano / 10:00 invierno)
+    - cron: '0 9 * * 1'
   workflow_dispatch:
 
 permissions:

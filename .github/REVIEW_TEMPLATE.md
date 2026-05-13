@@ -1,6 +1,8 @@
-# Revisión quincenal del dashboard
+# Revisión semanal del dashboard
 
 > Recordatorio automático generado el **{{TODAY}}**. Esta issue contiene el checklist de todas las secciones con contenido **manual** que conviene revisar y actualizar si ha habido cambios.
+>
+> **Tras actualizar:** bumpea la constante `LAST_MANUAL_UPDATE` en `live/index.html` al formato `YYYY-MM` para que el dashboard muestre el mes correcto en "Actualizado: …".
 >
 > **Cuando termines la revisión, marca las casillas relevantes y cierra esta issue.**
 
