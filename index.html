@@ -2543,17 +2543,22 @@ if(document.getElementById('map1'))initMaps();
   if(el)el.textContent=days.toLocaleString('es');
 })();
 
-// Alinea el badge "ESTAMOS AQUÍ" con el centro del milestone marcado como .current
+// Alinea badge + bola amarilla + relleno con el centro del milestone .current
 (function(){
-  const badge=document.getElementById('meter-here-badge');
   const milestones=document.querySelector('.meter-milestones');
-  if(!badge||!milestones)return;
+  if(!milestones)return;
   const items=Array.from(milestones.children);
   const idx=items.findIndex(el=>el.classList.contains('current'));
   if(idx<0)return;
   // Centro del milestone idx: (idx + 0.5) / total · 100%
   const left=((idx+0.5)/items.length)*100;
-  badge.style.left=left.toFixed(2)+'%';
+  const leftStr=left.toFixed(2)+'%';
+  const badge=document.getElementById('meter-here-badge');
+  if(badge)badge.style.left=leftStr;
+  const now=document.querySelector('.meter-now');
+  if(now)now.style.left=leftStr;
+  const fill=document.querySelector('.meter-fill');
+  if(fill)fill.style.width=leftStr;
 })();
 
 // RESPONSIVE
